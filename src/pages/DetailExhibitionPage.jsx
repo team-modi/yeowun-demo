@@ -22,6 +22,44 @@ const periodDots = (start, end) => {
   return `${dot(start)} ~ ${dot(end)}`.trim();
 };
 
+/**
+ * 전시 소개 정제 — 백엔드가 워드프레스 블록 HTML(주석/figure/img/태그)을
+ * 통째로 내려주는 경우가 있어, 마크업을 걷어내고 "소개글 텍스트"만 남긴다.
+ * (포스터 이미지는 상단 히어로에 이미 표시되므로 본문 이미지는 제거)
+ */
+function extractDescriptionText(raw) {
+  if (!raw) return "";
+  const source = String(raw);
+  // 태그가 전혀 없으면 그대로 사용(이미 순수 텍스트)
+  if (!/[<&]/.test(source)) return source.trim();
+  // wp 블록 주석 <!-- wp:... --> 선제거
+  const cleaned = source.replace(/<!--[\s\S]*?-->/g, "");
+  try {
+    const doc = new DOMParser().parseFromString(cleaned, "text/html");
+    doc
+      .querySelectorAll("figure, img, script, style, iframe")
+      .forEach((el) => el.remove());
+    doc.querySelectorAll("br").forEach((el) => el.replaceWith("\n"));
+    doc
+      .querySelectorAll("p, div, h1, h2, h3, h4, h5, h6, li, blockquote")
+      .forEach((el) => el.append("\n\n"));
+    return (doc.body.textContent || "")
+      .replace(/[ \t]+/g, " ")
+      .replace(/ *\n */g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  } catch {
+    // DOMParser 실패 시 정규식 폴백
+    return cleaned
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  }
+}
+
 export default function DetailExhibitionPage() {
   const { exhibitionId } = useParams();
   const navigate = useNavigate();
@@ -143,6 +181,7 @@ export default function DetailExhibitionPage() {
   } = detail;
 
   const poster = posterUrl || imgUrl;
+  const descriptionText = extractDescriptionText(description);
   const period = periodDots(startDate, endDate);
   const dday = ddayLabel(endDate);
   const genre =
@@ -238,10 +277,10 @@ export default function DetailExhibitionPage() {
             </dd>
           </div>
 
-          {description && (
+          {descriptionText && (
             <div className="detail-info__row">
               <dt>전시 소개</dt>
-              <dd className="detail-desc">{description}</dd>
+              <dd className="detail-desc">{descriptionText}</dd>
             </div>
           )}
         </dl>
