@@ -175,7 +175,10 @@ export default function EmotionMediaStep({
       </div>
 
       <div className="rec-actions rec-actions--single">
-        <Button block onClick={onNext}>
+        {emotions.length === 0 && (
+          <p className="rec-field__desc rec-actions__hint">감정 키워드를 하나 이상 선택해 주세요</p>
+        )}
+        <Button block disabled={emotions.length === 0} onClick={onNext}>
           다음
         </Button>
       </div>
