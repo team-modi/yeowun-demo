@@ -39,7 +39,6 @@ export default function ExhibitionPage() {
   const section = searchParams.get("section") ?? undefined;
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [keywordHint, setKeywordHint] = useState("");
-  const [totalCount, setTotalCount] = useState(null);
 
   // ---- 요청 파라미터(값이 바뀌면 useInfiniteCursor 가 자동 리셋) ----
   const params = useMemo(() => {
@@ -51,14 +50,13 @@ export default function ExhibitionPage() {
     return p;
   }, [sort, section, keyword, regions, categories]);
 
-  // totalCount 를 곁들여 잡기 위한 래퍼
+  // ApiResponse 봉투를 풀어 CursorResponse data 를 반환(총계는 훅이 세대 가드 안에서 관리).
   const fetchPage = useCallback(async (reqParams) => {
     const { data } = await getList(reqParams);
-    setTotalCount(data?.totalElements ?? data?.totalCount ?? 0);
     return data;
   }, []);
 
-  const { items, loading, error, hasNext, loadMore, reset, setItems } =
+  const { items, total: totalCount, loading, error, hasNext, loadMore, reset, setItems } =
     useInfiniteCursor(fetchPage, { params, size: PAGE_SIZE });
 
   // ---- 필터 상태를 URL 에 반영(공유/새로고침 유지, Home ?section= 유지) ----
