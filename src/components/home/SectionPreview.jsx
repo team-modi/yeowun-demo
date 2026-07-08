@@ -16,6 +16,7 @@ export default function SectionPreview({
   items = [],
   onToggleBookmark,
   variant = "list",
+  showOpenDate = false,
 }) {
   const shown = items.slice(0, 2);
 
@@ -37,6 +38,7 @@ export default function SectionPreview({
               key={item.exhibitionId}
               item={item}
               variant={variant}
+              showOpenDate={showOpenDate}
               onToggleBookmark={onToggleBookmark}
             />
           ))}

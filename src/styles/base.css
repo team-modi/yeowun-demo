@@ -320,6 +320,20 @@
   white-space: nowrap;
 }
 
+/* 오픈일 배지("7.12 오픈") — wf-03 "이번 달 새로 열리는 전시" 그리드 카드 전용(opt-in) */
+.exh-card__open {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 /* ---- grid variant: 테두리 없는 포스터 타일 (wf-03 "이번 달" / wf-13 아카이브) ---- */
 .exh-card--grid {
   background: transparent;

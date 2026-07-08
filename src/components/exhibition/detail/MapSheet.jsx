@@ -19,8 +19,16 @@ export default function MapSheet({ place, address, gpsX, gpsY, onClose }) {
 
   const placeName = place || "전시장";
   const hasCoord = gpsX != null && gpsY != null;
-  const mapUrl = hasCoord
-    ? `https://map.kakao.com/link/map/${encodeURIComponent(placeName)},${gpsY},${gpsX}`
+  const lat = Number(gpsY);
+  const lng = Number(gpsX);
+  const validCoord = hasCoord && Number.isFinite(lat) && Number.isFinite(lng);
+  const mapUrl = validCoord
+    ? `https://map.kakao.com/link/map/${encodeURIComponent(placeName)},${lat},${lng}`
+    : null;
+  // 키리스 OpenStreetMap 임베드로 실제 지도 미리보기(±0.004° ≈ 반경 약 400m).
+  const delta = 0.004;
+  const embedSrc = validCoord
+    ? `https://www.openstreetmap.org/export/embed.html?bbox=${lng - delta}%2C${lat - delta}%2C${lng + delta}%2C${lat + delta}&layer=mapnik&marker=${lat}%2C${lng}`
     : null;
 
   return (
@@ -44,16 +52,26 @@ export default function MapSheet({ place, address, gpsX, gpsY, onClose }) {
 
         <p className="mapsheet__place">{placeName}</p>
 
-        {mapUrl ? (
-          <a
-            className="mapsheet__map"
-            href={mapUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <span className="mapsheet__map-label">Map</span>
-            <span className="mapsheet__map-hint">카카오맵에서 열기</span>
-          </a>
+        {validCoord ? (
+          <>
+            <div className="mapsheet__map">
+              <iframe
+                className="mapsheet__frame"
+                title={`${placeName} 위치 지도`}
+                src={embedSrc}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+            <a
+              className="mapsheet__open-btn"
+              href={mapUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              카카오맵에서 열기
+            </a>
+          </>
         ) : (
           <div className="mapsheet__map mapsheet__map--empty">
             <span className="mapsheet__map-label">위치 정보 없음</span>
