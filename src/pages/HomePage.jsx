@@ -31,22 +31,27 @@ export default function HomePage() {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    try {
-      const [bannerRes, ...sectionRes] = await Promise.all([
-        getBanners(),
-        ...SECTIONS.map((s) => getList({ section: s.key, size: 2 })),
-      ]);
-      setBanners(bannerRes?.data?.banners ?? []);
-      const next = {};
-      SECTIONS.forEach((s, i) => {
-        next[s.key] = sectionRes[i]?.data?.content ?? [];
-      });
-      setSections(next);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
+    // 배너/섹션을 독립적으로 처리(allSettled) — 일부(예: 배너)가 실패해도 홈을 통째로 막지 않고
+    // 성공한 것만 보여주는 graceful degrade. 전체(배너+모든 섹션)가 실패했을 때만 전체 에러 화면.
+    const [bannerRes, ...sectionRes] = await Promise.allSettled([
+      getBanners(),
+      ...SECTIONS.map((s) => getList({ section: s.key, size: 2 })),
+    ]);
+    setBanners(
+      bannerRes.status === "fulfilled" ? (bannerRes.value?.data?.banners ?? []) : [],
+    );
+    const next = {};
+    SECTIONS.forEach((s, i) => {
+      const r = sectionRes[i];
+      next[s.key] = r.status === "fulfilled" ? (r.value?.data?.content ?? []) : [];
+    });
+    setSections(next);
+
+    const allFailed =
+      bannerRes.status === "rejected" &&
+      sectionRes.every((r) => r.status === "rejected");
+    setError(allFailed ? (bannerRes.reason ?? new Error("홈을 불러오지 못했습니다")) : null);
+    setLoading(false);
   }, []);
 
   // 마이크로태스크로 지연시켜 effect 내 동기 setState 를 피한다.
