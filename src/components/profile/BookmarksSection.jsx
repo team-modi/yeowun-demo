@@ -29,7 +29,8 @@ export default function BookmarksSection() {
     (params) =>
       getMyBookmarks(params).then((res) => {
         const d = res.data;
-        if (typeof d?.totalCount === "number") setTotal(d.totalCount);
+        const count = d?.totalElements ?? d?.totalCount;
+        if (typeof count === "number") setTotal(count);
         return d;
       }),
     [],

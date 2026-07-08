@@ -58,7 +58,7 @@ export default function FilterSheet({
         if (draftRegions.length) p.region = draftRegions.join(",");
         if (draftCategories.length) p.category = draftCategories.join(",");
         const { data } = await getList(p);
-        if (!cancelled) setCount(data?.totalCount ?? 0);
+        if (!cancelled) setCount(data?.totalElements ?? data?.totalCount ?? 0);
       } catch {
         if (!cancelled) setCount(null);
       }

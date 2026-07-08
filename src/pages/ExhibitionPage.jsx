@@ -54,7 +54,7 @@ export default function ExhibitionPage() {
   // totalCount 를 곁들여 잡기 위한 래퍼
   const fetchPage = useCallback(async (reqParams) => {
     const { data } = await getList(reqParams);
-    setTotalCount(data?.totalCount ?? 0);
+    setTotalCount(data?.totalElements ?? data?.totalCount ?? 0);
     return data;
   }, []);
 
