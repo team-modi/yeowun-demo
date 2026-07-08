@@ -20,13 +20,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * @param {number}  [options.size=10]  — 페이지 크기.
  * @param {boolean} [options.immediate=true] — 마운트 시 첫 페이지 즉시 로드.
  * @param {(item:any)=>any} [options.getKey] — 중복 제거용 키 추출기(기본: id ?? exhibitionId).
+ * @param {(res:any)=>number} [options.getTotal] — 응답에서 총 개수 추출(기본: totalCount ?? totalElements).
  *
- * @returns {{ items, loading, error, hasNext, loadMore, reset, setItems }}
+ * @returns {{ items, total, loading, error, hasNext, loadMore, reset, setItems }}
  */
 export default function useInfiniteCursor(fetchPage, options = {}) {
-  const { params, size = 10, immediate = true, getKey } = options;
+  const { params, size = 10, immediate = true, getKey, getTotal } = options;
 
   const [items, setItems] = useState([]);
+  const [total, setTotal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasNext, setHasNext] = useState(true);
@@ -43,6 +45,11 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
     [getKey],
   );
 
+  const totalOf = useCallback(
+    (res) => (getTotal ? getTotal(res) : (res?.totalCount ?? res?.totalElements ?? 0)),
+    [getTotal],
+  );
+
   const load = useCallback(
     async (fresh) => {
       // fresh(리셋/최초) 로드는 in-flight 여부와 무관하게 진행해 옛 요청을 이긴다(세대 무효화).
@@ -50,6 +57,15 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
       if (!fresh && !hasNextRef.current) return;
 
       const myEpoch = fresh ? ++epochRef.current : epochRef.current;
+      // fresh 는 시작 시점에 커서/hasNext/중복셋을 동기 초기화한다. 이렇게 해야
+      // fetchPage 가 실패해도 옛 커서가 남지 않아, 이후 loadMore 가 옛 sort 커서를 새 params 로 보내
+      // INVALID_CURSOR 를 내는 일이 없다. items 도 비워 새 sort 아래 옛 목록이 렌더/합쳐지지 않게 한다.
+      if (fresh) {
+        cursorRef.current = null;
+        hasNextRef.current = true;
+        seenRef.current = new Set();
+        setItems([]);
+      }
       loadingRef.current = true;
       setLoading(true);
       setError(null);
@@ -67,6 +83,7 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
         const next = !!res?.hasNext && !!res?.nextCursor;
         hasNextRef.current = next;
         setHasNext(next);
+        setTotal(totalOf(res)); // 세대 가드 안에서만 갱신 → 밀려난 응답이 총계를 덮어쓰지 않음
 
         if (fresh) {
           seenRef.current = new Set(content.map(keyOf));
@@ -88,7 +105,7 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fetchPage, paramsKey, size, keyOf],
+    [fetchPage, paramsKey, size, keyOf, totalOf],
   );
 
   const loadMore = useCallback(() => load(false), [load]);
@@ -111,5 +128,5 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey]);
 
-  return { items, loading, error, hasNext, loadMore, reset, setItems };
+  return { items, total, loading, error, hasNext, loadMore, reset, setItems };
 }
