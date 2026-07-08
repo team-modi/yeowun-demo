@@ -1,0 +1,114 @@
+/* 여운(yeowun) 디자인 토큰 — 와이어프레임(라이트) 톤: 흰 배경 · 근흑 텍스트 · 차콜 포인트 1개.
+   와이어프레임에는 다크 모드가 없어 OS 설정과 무관하게 항상 라이트로 렌더한다. */
+
+/* Pretendard (와이어프레임 지정 서체) — public/fonts에 번들, 로컬 설치 없이도 로드 */
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/Pretendard-Light.otf") format("opentype");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/Pretendard-Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/Pretendard-Medium.otf") format("opentype");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/Pretendard-SemiBold.otf") format("opentype");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/Pretendard-Bold.otf") format("opentype");
+}
+
+:root {
+  color-scheme: light;
+
+  /* color — base (라이트: 흰 배경 · 라이트그레이 서피스 · 근흑 텍스트) */
+  --color-bg: #ffffff; /* 앱 배경(흰색) */
+  --color-surface: #f2f1ef; /* 카드/플레이스홀더 라이트그레이 */
+  --color-surface-alt: #e9e8e5; /* 이미지 플레이스홀더(살짝 진한 그레이) */
+  --color-ink: #1b1a18; /* 근흑(제목) */
+  --color-text: #3a3936; /* 본문 */
+  --color-text-muted: #8a8884; /* 보조(미드그레이) */
+  --color-border: #e6e5e3; /* 옅은 경계선 */
+  --color-border-strong: #d9d8d5;
+
+  /* color — accent (차콜: 다음/완료/저장하기 등 주요 버튼) */
+  --color-accent: #2b2a28; /* 차콜 */
+  --color-accent-strong: #1b1a18; /* hover 시 더 진한 근흑 */
+  --color-accent-soft: #ededea; /* ghost hover 배경(라이트그레이) */
+  --color-accent-contrast: #ffffff; /* 차콜 위 텍스트(흰색) */
+
+  /* semantic */
+  --color-danger: #c0392b;
+  --color-success: #4b7a4b;
+  --color-badge-free-bg: #f2f1ef; /* 무료 배지: 라이트그레이 칩 */
+  --color-badge-free-text: #3a3936;
+  --color-dday-bg: #2b2a28; /* D-day 배지: 차콜 칩 */
+  --color-dday-text: #ffffff;
+
+  /* overlays */
+  --color-overlay: rgba(20, 19, 18, 0.45);
+  --color-scrim: rgba(20, 19, 18, 0.06);
+
+  /* spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+
+  /* shadow */
+  --shadow-sm: 0 1px 2px rgba(20, 19, 18, 0.06);
+  --shadow-md: 0 6px 18px -8px rgba(20, 19, 18, 0.18);
+  --shadow-lg: 0 14px 30px -12px rgba(20, 19, 18, 0.28);
+
+  /* layout */
+  --app-max-width: 430px;
+  --topbar-height: 52px;
+  --bottomnav-height: 60px;
+  --z-topbar: 20;
+  --z-bottomnav: 20;
+  --z-toast: 60;
+
+  /* typography */
+  --font-sans: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui,
+    -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 17px;
+  --font-size-xl: 21px;
+  --font-size-2xl: 26px;
+  --line-normal: 1.5;
+  --line-tight: 1.25;
+}
+/* 다크 모드 오버라이드 없음 — 와이어프레임은 라이트 테마 단일 톤이므로
+   OS가 다크여도 위 :root 라이트 팔레트를 그대로 사용한다. */

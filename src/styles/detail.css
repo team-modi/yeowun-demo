@@ -1,0 +1,327 @@
+/* ============================================================
+   [03] 전시 상세 (/exhibition/:exhibitionId)
+   ============================================================ */
+
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* 상단 포스터를 화면 폭에 꽉 채우기 위해 .page 좌우 패딩을 상쇄 */
+  padding: 0 0 calc(var(--space-10) + 72px);
+}
+
+/* ---------- 포스터 헤더 ---------- */
+.detail-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: var(--color-surface-alt);
+  overflow: hidden;
+}
+
+.detail-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-hero__empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+
+.detail-hero__bookmark {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(4px);
+}
+
+.detail-hero__bookmark.is-on {
+  color: var(--color-accent);
+}
+
+.detail-hero__bookmark:disabled {
+  opacity: 0.6;
+}
+
+/* ---------- 정보 카드 ---------- */
+.detail-card {
+  margin: 0 var(--space-4);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.detail-card__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.detail-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  line-height: var(--line-tight);
+  color: var(--color-ink);
+}
+
+.detail-artist {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.detail-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+/* ---------- 라벨/값 리스트 ---------- */
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.detail-info__row {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  align-items: start;
+}
+
+.detail-info__row dt {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  line-height: var(--line-normal);
+}
+
+.detail-info__row dd {
+  color: var(--color-text);
+  line-height: var(--line-normal);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detail-dday {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* 장소 행 */
+.detail-place-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  color: var(--color-ink);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.detail-place-btn__chev {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  line-height: 1;
+}
+
+.detail-place-btn:hover {
+  color: var(--color-accent);
+}
+
+.detail-place-addr {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.detail-place-phone {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  align-self: flex-start;
+}
+
+.detail-place-phone:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* 운영 시간 — 줄바꿈 유지 */
+.detail-hours {
+  white-space: pre-line;
+}
+
+/* 전시 소개 */
+.detail-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  line-height: var(--line-normal);
+  white-space: pre-line;
+}
+
+.detail-source {
+  align-self: flex-start;
+}
+
+/* ---------- 하단 고정 액션 ---------- */
+.detail-actions {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px));
+  width: 100%;
+  max-width: var(--app-max-width);
+  display: flex;
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--color-border);
+  z-index: var(--z-topbar);
+}
+
+.detail-actions__record {
+  flex: 1 1 auto;
+}
+
+/* ---------- 에러 상태 ---------- */
+.detail-error {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-back {
+  margin-top: var(--space-4);
+}
+
+/* ============================================================
+   [03] 전시상세_위치확인 바텀시트
+   ============================================================ */
+.mapsheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-toast);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--color-overlay);
+}
+
+.mapsheet {
+  position: relative;
+  width: 100%;
+  max-width: var(--app-max-width);
+  max-height: 88svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  background: var(--color-bg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-lg);
+}
+
+.mapsheet__handle {
+  width: 44px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  margin-bottom: var(--space-1);
+}
+
+.mapsheet__close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+.mapsheet__close:hover {
+  background: var(--color-scrim);
+}
+
+.mapsheet__place {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-ink);
+  text-align: center;
+}
+
+.mapsheet__map {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+}
+
+.mapsheet__map--empty {
+  color: var(--color-text-muted);
+}
+
+.mapsheet__map-label {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.mapsheet__map-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.mapsheet__addr {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}

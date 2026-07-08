@@ -1,0 +1,494 @@
+/* ============================================================
+   [06] 프로필 (/user) — profile.css
+   토큰/공통 클래스는 tokens.css · base.css (편집 금지)
+   ============================================================ */
+
+.pf-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ---------- Toolbar (설정 기어) ---------- */
+.pf-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: calc(-1 * var(--space-2));
+}
+
+.pf-toolbar__gear {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.pf-toolbar__gear:hover {
+  background: var(--color-scrim);
+  color: var(--color-ink);
+}
+
+/* ---------- Avatar ---------- */
+.pf-avatar {
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+}
+
+.pf-avatar--lg {
+  width: 96px;
+  height: 96px;
+}
+
+.pf-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Main header ---------- */
+.pf-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-1);
+}
+
+.pf-header__nickname {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* ---------- 내 전시 보관함 ---------- */
+.pf-storage__title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: var(--space-3);
+}
+
+.pf-storage__row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.pf-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s;
+}
+
+.pf-tile:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.pf-tile:active {
+  transform: translateY(0);
+}
+
+.pf-tile__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.pf-tile__icon--heart {
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+}
+
+.pf-tile__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.pf-tile__value {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* ---------- 나의 감정 키워드 ---------- */
+.pf-keywords__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.pf-keywords__title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.pf-keywords__more {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.pf-keywords__more:hover {
+  color: var(--color-accent-strong);
+}
+
+.pf-keywords__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pf-hashtag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.pf-keywords__empty {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Sub-view header (뒤로가기) ---------- */
+.pf-subhead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.pf-subhead__back,
+.pf-subhead__spacer {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+}
+
+.pf-subhead__back {
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.pf-subhead__back:hover {
+  background: var(--color-scrim);
+}
+
+.pf-subhead__title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* ---------- 설정 화면 ---------- */
+.pf-settings-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.pf-group__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.pf-group__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.pf-group__card--pad {
+  padding: var(--space-4);
+}
+
+.pf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-4);
+  font-size: var(--font-size-md);
+  color: var(--color-ink);
+  background: transparent;
+  text-align: left;
+}
+
+.pf-row + .pf-row {
+  border-top: 1px solid var(--color-border);
+}
+
+.pf-row--btn {
+  cursor: pointer;
+}
+
+.pf-row:hover {
+  background: var(--color-scrim);
+}
+
+.pf-row--danger {
+  color: var(--color-danger);
+}
+
+.pf-row__chev {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+}
+
+.pf-row:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pf-more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
+/* ---------- Toggles (NotificationSettings) ---------- */
+.pf-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pf-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  cursor: pointer;
+}
+
+.pf-toggle.is-disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.pf-toggle__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pf-toggle__label {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.pf-toggle__desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.pf-toggle__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.pf-toggle__track {
+  flex: 0 0 auto;
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  transition: background 0.15s;
+}
+
+.pf-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s;
+}
+
+.pf-toggle__input:checked + .pf-toggle__track {
+  background: var(--color-accent);
+}
+
+.pf-toggle__input:checked + .pf-toggle__track .pf-toggle__thumb {
+  transform: translateX(18px);
+}
+
+.pf-toggle__input:focus-visible + .pf-toggle__track {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- 프로필 수정 폼 ---------- */
+.pf-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pf-form__avatar {
+  position: relative;
+  align-self: center;
+  margin-bottom: var(--space-2);
+}
+
+.pf-avatar__badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border: 2px solid var(--color-bg);
+}
+
+.pf-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pf-field__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.pf-field__error {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+}
+
+.pf-input {
+  width: 100%;
+  padding: 11px var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--font-size-md);
+  font-family: inherit;
+}
+
+.pf-input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: var(--color-accent);
+}
+
+.pf-input[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
+select.pf-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%238b8377' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  padding-right: var(--space-6);
+}
+
+.pf-form__submit {
+  margin-top: var(--space-5);
+}
+
+/* ---------- 목록(기록한 전시 / 관심 전시) ---------- */
+.pf-list-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.pf-count {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.pf-sort-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 6px var(--space-6) 6px var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%238b8377' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+}
+
+.pf-sort-select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.pf-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

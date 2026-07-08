@@ -1,0 +1,903 @@
+/* ============================================================
+   [04] 전시 관람 기록 (RecordPage) 전용 스타일
+   (토큰/공통은 tokens.css · base.css — 여기선 편집 금지, 소비만)
+   ============================================================ */
+
+/* ---------- 스텝 컨테이너 · 헤딩 ---------- */
+.rec-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.rec-heading {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: var(--line-tight);
+}
+
+.rec-heading--center {
+  text-align: center;
+  margin: var(--space-6) 0 var(--space-2);
+}
+
+/* ---------- 공통 폼 ---------- */
+.rec-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.rec-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rec-field__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.rec-field__hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.rec-field__desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: -2px;
+}
+
+.rec-field__req {
+  color: var(--color-accent);
+  margin-left: 2px;
+}
+
+.rec-input,
+.rec-textarea,
+.rec-select {
+  width: 100%;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: var(--font-size-md);
+  font-family: inherit;
+}
+
+.rec-input:focus,
+.rec-textarea:focus,
+.rec-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.rec-textarea {
+  resize: vertical;
+  min-height: 160px;
+  line-height: var(--line-normal);
+}
+
+.rec-count {
+  align-self: flex-end;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.rec-count.is-over {
+  color: var(--color-danger);
+}
+
+.rec-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.rec-row > * {
+  flex: 1 1 0;
+}
+
+.rec-row--auto > * {
+  flex: 0 0 auto;
+}
+
+/* 선택 필드(셀렉트처럼 보이는 버튼) */
+.rec-selectfield {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: var(--font-size-md);
+  text-align: left;
+}
+
+.rec-selectfield.is-placeholder .rec-selectfield__val {
+  color: var(--color-text-muted);
+}
+
+.rec-selectfield__val {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rec-selectfield__chev {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+/* ---------- 칩 묶음(전시 직접추가 폼 등) ---------- */
+.rec-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---------- 감정 키워드(본문) ---------- */
+/* 미선택: 외곽선 "+" 필 버튼 */
+.rec-emotion-add {
+  width: 100%;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  border-radius: var(--radius-full);
+}
+
+.rec-emotion-add:hover {
+  background: var(--color-surface);
+}
+
+/* 선택됨: 다크 필 칩 묶음(탭하면 시트 재오픈) */
+.rec-emotion-picked {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  background: none;
+  border: none;
+  text-align: left;
+}
+
+.rec-emotion-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+/* ---------- 감정 시트 ---------- */
+.rec-emotion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* 프리셋 칩: 슬레이트그레이(미선택) → 차콜(선택) */
+.chip.rec-emotion-chip {
+  background: #d7d6d3;
+  border-color: transparent;
+  color: var(--color-text);
+}
+
+.chip.rec-emotion-chip:not(.is-active):hover {
+  background: #cdccc8;
+}
+
+.chip.rec-emotion-chip.is-active {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border-color: var(--color-accent);
+}
+
+/* 나만의 키워드(시트 내부) */
+.rec-keyword-block {
+  margin-top: var(--space-6);
+}
+
+.rec-keyword-row {
+  align-items: center;
+}
+
+.rec-keyword-row .rec-input {
+  flex: 1 1 auto;
+}
+
+.rec-keyword-add {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  border: 1px solid transparent;
+  color: var(--color-ink);
+  display: grid;
+  place-items: center;
+}
+
+.rec-keyword-add:hover {
+  background: var(--color-border-strong);
+}
+
+/* 추가된 나만의 키워드 칩(삭제 가능) */
+.rec-custom-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.rec-custom-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border: none;
+}
+
+/* ---------- 전시 선택 리스트 ---------- */
+.rec-search {
+  position: relative;
+}
+
+.rec-list-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rec-list-bar__count {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.rec-sort {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+}
+
+.rec-exh-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* 선택 래퍼: 공통 ExhibitionCard(variant=list)를 감싸 선택 하이라이트 */
+.rec-exh-pick {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: none;
+  text-align: left;
+}
+
+.rec-exh-pick .exh-card {
+  border: none;
+  box-shadow: none;
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.rec-exh-pick.is-selected {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+/* 직접 추가 배너 */
+.rec-add-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-border);
+}
+
+.rec-add-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.rec-add-banner__text strong {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.rec-add-banner__text small {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.rec-add-banner__chev {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
+}
+
+/* ---------- 포스터 placeholder ---------- */
+.rec-poster-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.rec-poster {
+  width: 120px;
+  height: 150px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.rec-poster__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rec-poster__ph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.rec-poster__icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.rec-poster-wrap .rec-input {
+  width: 100%;
+}
+
+/* ---------- 선택된 전시 요약 카드 ---------- */
+.rec-selected {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.rec-selected__poster {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  flex: 0 0 auto;
+}
+
+.rec-selected__poster--empty {
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.rec-selected__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.rec-selected__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: var(--line-tight);
+}
+
+.rec-selected__meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.rec-selected__meta--place {
+  margin-top: var(--space-3);
+}
+
+/* ---------- 미디어 타일 ---------- */
+.rec-media-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.rec-media-tile {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.rec-media-tile--filled {
+  background: var(--color-surface-alt);
+}
+
+.rec-media-tile__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 영상 썸네일 재생 오버레이 */
+.rec-media-tile__play {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: rgba(20, 19, 18, 0.35);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  padding-left: 1px;
+}
+
+/* N/5 추가 타일 */
+.rec-media-tile--add {
+  flex-direction: column;
+  gap: 4px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+}
+
+.rec-media-tile--add:hover {
+  background: var(--color-surface);
+}
+
+.rec-media-tile__icon {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.rec-media-tile__count {
+  font-size: var(--font-size-xs);
+}
+
+.rec-media-tile__remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: rgba(20, 19, 18, 0.55);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+/* ---------- 작성 방식 선택 ---------- */
+.rec-mode-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rec-mode {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  text-align: left;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+}
+
+.rec-mode.is-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.rec-mode__radio {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-strong);
+  background: var(--color-bg);
+}
+
+.rec-mode.is-active .rec-mode__radio {
+  border-color: var(--color-accent);
+  background: radial-gradient(circle, var(--color-accent) 0 42%, var(--color-bg) 48%);
+}
+
+.rec-mode__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.rec-mode__title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.rec-mode__desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-normal);
+}
+
+/* AI 다른 질문 링크 */
+.rec-textlink {
+  align-self: flex-start;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: underline;
+}
+
+/* ---------- 액션 바 ---------- */
+.rec-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.rec-actions > * {
+  flex: 1 1 0;
+}
+
+.rec-actions--single {
+  margin-top: var(--space-2);
+}
+
+/* 전시 선택 스텝(와이어프레임 wf-07): 목록은 스크롤 박스로 제한하고, 직접추가 배너 + 다음 버튼은 그 아래 항상 노출. */
+.rec-step .rec-exh-list {
+  max-height: 52vh !important;
+  overflow-y: auto !important;
+}
+.rec-select-footer {
+  padding-top: var(--space-3);
+  background: var(--color-bg);
+}
+.rec-select-footer .rec-add-banner {
+  margin-bottom: var(--space-2);
+}
+
+/* ---------- 저장 완료 ---------- */
+.rec-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-2) var(--space-6);
+}
+
+.rec-done__mark {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  margin-bottom: var(--space-2);
+}
+
+.rec-done__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.rec-done__sub {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.rec-done__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  margin-top: var(--space-6);
+}
+
+/* ---------- 바텀시트 ---------- */
+.rec-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--color-overlay);
+  animation: rec-fade 0.15s ease;
+}
+
+.rec-sheet {
+  width: 100%;
+  max-width: var(--app-max-width);
+  max-height: 82vh;
+  overflow-y: auto;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-3) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--shadow-lg);
+  animation: rec-slide-up 0.2s ease;
+}
+
+.rec-sheet__handle {
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  margin: 0 auto var(--space-4);
+}
+
+.rec-sheet__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.rec-sheet__sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.rec-sheet__body {
+  margin-top: var(--space-4);
+}
+
+.rec-sheet__footer {
+  margin-top: var(--space-4);
+}
+
+@keyframes rec-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rec-slide-up {
+  from {
+    transform: translateY(12%);
+  }
+}
+
+/* 시트 내부 옵션 리스트 */
+.rec-option-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rec-option {
+  width: 100%;
+  text-align: left;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--font-size-md);
+}
+
+.rec-option.is-selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  font-weight: 600;
+}
+
+.rec-option--icon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ---------- 전체화면(전시관 검색) ---------- */
+.rec-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  margin: 0 auto;
+  max-width: var(--app-max-width);
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.rec-screen__head {
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rec-screen__back {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--color-ink);
+}
+
+.rec-screen__title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.rec-screen__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rec-venue-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.rec-venue-item {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rec-venue-item__name {
+  font-size: var(--font-size-md);
+  color: var(--color-ink);
+}
+
+.rec-venue-item__addr {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ---------- 캘린더 ---------- */
+.rec-cal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rec-cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-1);
+  padding: 0 var(--space-1) var(--space-2);
+}
+
+.rec-cal__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.rec-cal__nav {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-lg);
+  color: var(--color-ink);
+}
+
+.rec-cal__nav:hover {
+  background: var(--color-surface-alt);
+}
+
+.rec-cal__row--dow,
+.rec-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.rec-cal__dow {
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  padding: var(--space-1) 0;
+}
+
+.rec-cal__cell {
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  border-radius: var(--radius-full);
+}
+
+.rec-cal__cell--empty {
+  visibility: hidden;
+}
+
+.rec-cal__cell:hover:not(.is-edge) {
+  background: var(--color-surface-alt);
+}
+
+.rec-cal__cell.is-mid {
+  background: var(--color-accent-soft);
+  border-radius: 0;
+}
+
+.rec-cal__cell.is-edge {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 700;
+}

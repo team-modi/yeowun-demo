@@ -1,0 +1,321 @@
+/* ============================================================
+   [02] 전시 탐색 (/exhibition) — wf-05
+   ============================================================ */
+
+.exh-page {
+  padding-bottom: var(--space-10);
+}
+
+/* ---------- 헤더(우측 상단 북마크) ---------- */
+.exh-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-1);
+}
+
+.exh-header__bookmark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--color-ink);
+}
+
+.exh-header__bookmark:hover {
+  background: var(--color-surface);
+}
+
+/* ---------- 검색바 ---------- */
+.exh-search {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: var(--space-2);
+}
+
+.exh-search__icon {
+  position: absolute;
+  left: var(--space-3);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  z-index: 1;
+}
+
+.exh-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  padding: 0 40px 0 42px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--font-size-md);
+}
+
+.exh-search__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.exh-search__input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: var(--color-bg);
+}
+
+.exh-search__clear {
+  position: absolute;
+  right: var(--space-3);
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.exh-hint {
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-2);
+}
+
+/* ---------- 툴바: 총 N개 · 정렬 · 필터 ---------- */
+.exh-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.exh-total {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  font-weight: 500;
+  min-height: 1em;
+}
+
+.exh-toolbar__ctrls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+
+/* ---------- 정렬 드롭다운 ---------- */
+.exh-sort {
+  position: relative;
+}
+
+.exh-sort__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 34px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.exh-sort__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 120px;
+  padding: var(--space-1);
+  list-style: none;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 30;
+}
+
+.exh-sort__opt {
+  width: 100%;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.exh-sort__opt:hover {
+  background: var(--color-surface);
+}
+
+.exh-sort__opt.is-active {
+  color: var(--color-ink);
+  font-weight: 600;
+  background: var(--color-surface);
+}
+
+/* ---------- 필터 아이콘 버튼 ---------- */
+.exh-filter-btn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.exh-filter-btn.is-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.exh-filter-btn__count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  border: 1.5px solid var(--color-bg);
+}
+
+/* ---------- 목록(list variant 카드) ---------- */
+.exh-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.exh-list .exh-card--list {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: none;
+  background: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.exh-list .exh-card--list:last-child {
+  border-bottom: none;
+}
+
+.exh-more {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) 0;
+}
+
+/* ---------- 필터 바텀시트 ---------- */
+.exh-sheet-root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+}
+
+.exh-sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--color-overlay);
+  opacity: 0;
+  transition: opacity 0.24s ease;
+}
+
+.exh-sheet__scrim.is-open {
+  opacity: 1;
+}
+
+.exh-sheet {
+  position: relative;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3) var(--space-5)
+    calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  max-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.exh-sheet.is-open {
+  transform: translateY(0);
+}
+
+.exh-sheet__handle {
+  width: 40px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  margin: 0 auto var(--space-3);
+}
+
+.exh-sheet__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: var(--space-4);
+}
+
+.exh-sheet__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-bottom: var(--space-4);
+}
+
+/* ---------- 필터 그룹(지역/장르 칩) ---------- */
+.exh-filter-group__label {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-3);
+}
+
+.exh-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---------- 시트 하단 액션 ---------- */
+.exh-sheet__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.exh-sheet__reset {
+  flex: 0 0 auto;
+}
+
+.exh-sheet__apply {
+  flex: 1 1 auto;
+}

@@ -1,0 +1,2070 @@
+{
+    "components": {
+        "schemas": {
+            "ApiResponseBookmarkResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/BookmarkResponse"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponseMeResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/MeResponse"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponseObject": {
+                "properties": {
+                    "data": {},
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponsePageResponseRecordListItemResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/PageResponseRecordListItemResponse"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponseProfileResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/ProfileResponse"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponseRecordCreateResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/RecordCreateResponse"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponseRecordDetailResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/RecordDetailResponse"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponseTokenResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/TokenResponse"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Metadata"
+                    }
+                },
+                "type": "object"
+            },
+            "BookmarkResponse": {
+                "properties": {
+                    "bookmarked": {
+                        "type": "boolean"
+                    },
+                    "recordId": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "CreatedResponse": {
+                "properties": {
+                    "exhibitionId": {
+                        "description": "\ub4f1\ub85d\ub41c \uc804\uc2dc ID",
+                        "example": 108,
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "\uc804\uc2dc \ucd9c\ucc98. \uac1c\uc778 \ub4f1\ub85d\uc740 \ud56d\uc0c1 CUSTOM.",
+                        "enum": [
+                            "CUSTOM"
+                        ],
+                        "example": "CUSTOM",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "CustomCreateRequest": {
+                "properties": {
+                    "category": {
+                        "description": "\uce74\ud14c\uace0\ub9ac \ucf54\ub4dc. \uc815\uc758\ub418\uc9c0 \uc54a\uc740 \ucf54\ub4dc\ub294 400 INVALID_INPUT.",
+                        "enum": [
+                            "PAINTING",
+                            "PHOTO",
+                            "MEDIA",
+                            "SCULPTURE",
+                            "ETC"
+                        ],
+                        "example": "PHOTO",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "endDate": {
+                        "description": "\uc885\ub8cc\uc77c(YYYY-MM-DD \ubb38\uc790\uc5f4). startDate\ubcf4\ub2e4 \ube60\ub974\uba74 400 INVALID_INPUT(\ub3c4\uba54\uc778 \uaddc\uce59).",
+                        "example": "2026-06-30",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "place": {
+                        "description": "\uc804\uc2dc \uc7a5\uc18c\uba85. \uc120\ud0dd.",
+                        "example": "\uc131\uc218 \uac24\ub7ec\ub9ac",
+                        "maxLength": 200,
+                        "minLength": 0,
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "posterUrl": {
+                        "description": "\ud3ec\uc2a4\ud130 \uc774\ubbf8\uc9c0 URL. \uc120\ud0dd.",
+                        "example": "https://cdn.modi.app/exhibitions/108/poster.jpg",
+                        "maxLength": 2048,
+                        "minLength": 0,
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "region": {
+                        "description": "\uc9c0\uc5ed \ucf54\ub4dc. \uc815\uc758\ub418\uc9c0 \uc54a\uc740 \ucf54\ub4dc\ub294 400 INVALID_INPUT.",
+                        "enum": [
+                            "SEOUL",
+                            "GYEONGGI",
+                            "INCHEON",
+                            "DAEGU",
+                            "GYEONGBUK",
+                            "BUSAN",
+                            "ULSAN",
+                            "GYEONGNAM",
+                            "SEJONG",
+                            "JEONNAM",
+                            "JEONBUK",
+                            "JEJU",
+                            "CHUNGNAM",
+                            "CHUNGBUK",
+                            "ETC"
+                        ],
+                        "example": "SEOUL",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "startDate": {
+                        "description": "\uc2dc\uc791\uc77c(YYYY-MM-DD \ubb38\uc790\uc5f4). Controller\uc5d0\uc11c LocalDate\ub85c \ud30c\uc2f1\ud558\uba70, \ud615\uc2dd\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc73c\uba74 400 INVALID_INPUT.",
+                        "example": "2026-06-20",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "title": {
+                        "description": "\uc804\uc2dc \uc81c\ubaa9. \ud544\uc218, \uacf5\ubc31 \ubd88\uac00.",
+                        "example": "\uce5c\uad6c\uc640 \ub2e4\ub140\uc628 \uc0ac\uc9c4\uc804",
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "title"
+                ],
+                "type": "object"
+            },
+            "DetailResponse": {
+                "properties": {
+                    "address": {
+                        "description": "\uc0c1\uc138 \uc9c0\uc5f0\uc218\uc9d1(catalog detail2) \ud544\ub4dc \u2014 \uc804\uc2dc\uc7a5 \uc8fc\uc18c. \ubbf8\uc218\uc9d1 \uc2dc null.",
+                        "example": "\uc11c\uc6b8\ud2b9\ubcc4\uc2dc \uc11c\ucd08\uad6c \ub0a8\ubd80\uc21c\ud658\ub85c 2406",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "artists": {
+                        "description": "\ucc38\uc5ec \uc791\uac00 \ubaa9\ub85d. \ub370\uc774\ud130 \uc5c6\uc73c\uba74 \ube48 \ubc30\uc5f4.",
+                        "example": [
+                            "\ud074\ub85c\ub4dc \ubaa8\ub124"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "category": {
+                        "description": "\uce74\ud14c\uace0\ub9ac \ucf54\ub4dc",
+                        "example": "PAINTING",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "\uc804\uc2dc \uc124\uba85. \ub370\uc774\ud130 \uc5c6\uc73c\uba74 null.",
+                        "example": "\uc778\uc0c1\uc8fc\uc758 \uac70\uc7a5 \ubaa8\ub124\uc758 \ub300\ud45c\uc791\uc744 \ub9cc\ub098\ub294 \ud2b9\ubcc4\uc804.",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "detailUrl": {
+                        "description": "\uc6d0\ubcf8 \uc0c1\uc138 \ud398\uc774\uc9c0 URL. \uc5c6\uc73c\uba74 null.",
+                        "example": "https://culture.go.kr/exhibitions/51",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "endDate": {
+                        "description": "\uc885\ub8cc\uc77c",
+                        "example": "2026-08-31",
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "exhibitionId": {
+                        "description": "\uc804\uc2dc ID",
+                        "example": 51,
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "gpsX": {
+                        "description": "GPS \uacbd\ub3c4. \uc5c6\uc73c\uba74 null.",
+                        "example": 127.0136,
+                        "format": "double",
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "gpsY": {
+                        "description": "GPS \uc704\ub3c4. \uc5c6\uc73c\uba74 null.",
+                        "example": 37.4783,
+                        "format": "double",
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "imgUrl": {
+                        "description": "\uc0c1\uc138 \uc9c0\uc5f0\uc218\uc9d1 \ud544\ub4dc \u2014 \uc0c1\uc138 \uc774\ubbf8\uc9c0 URL. \ubbf8\uc218\uc9d1 \uc2dc null.",
+                        "example": "https://cdn.modi.app/exhibitions/51/detail.jpg",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "keywords": {
+                        "description": "\ud0a4\uc6cc\ub4dc \ubaa9\ub85d. \ub370\uc774\ud130 \uc5c6\uc73c\uba74 \ube48 \ubc30\uc5f4.",
+                        "example": [
+                            "\uc778\uc0c1\uc8fc\uc758",
+                            "\ud68c\ud654"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "operatingHours": {
+                        "description": "\uc6b4\uc601\uc2dc\uac04. \ub370\uc774\ud130 \uc5c6\uc73c\uba74 null.",
+                        "example": "10:00~19:00(\uc6d4\uc694\uc77c \ud734\uad00)",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "description": "\uc0c1\uc138 \uc9c0\uc5f0\uc218\uc9d1 \ud544\ub4dc \u2014 \uc804\ud654\ubc88\ud638. \ubbf8\uc218\uc9d1 \uc2dc null.",
+                        "example": "02-580-1300",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "place": {
+                        "description": "\uc804\uc2dc \uc7a5\uc18c\uba85",
+                        "example": "\uc608\uc220\uc758\uc804\ub2f9 \ud55c\uac00\ub78c\ubbf8\uc220\uad00",
+                        "type": "string"
+                    },
+                    "placeUrl": {
+                        "description": "\uc0c1\uc138 \uc9c0\uc5f0\uc218\uc9d1 \ud544\ub4dc \u2014 \uc804\uc2dc\uc7a5 \ud648\ud398\uc774\uc9c0 URL. \ubbf8\uc218\uc9d1 \uc2dc null.",
+                        "example": "https://www.sac.or.kr",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "posterUrl": {
+                        "description": "\ud3ec\uc2a4\ud130 \uc774\ubbf8\uc9c0 URL. \uc5c6\uc73c\uba74 null.",
+                        "example": "https://cdn.modi.app/exhibitions/51/poster.jpg",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "price": {
+                        "description": "\uad00\ub78c \uac00\uaca9 \uc548\ub0b4. \ub370\uc774\ud130 \uc5c6\uc73c\uba74 null.",
+                        "example": "\uc131\uc778 20,000\uc6d0 / \uccad\uc18c\ub144 15,000\uc6d0",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "region": {
+                        "description": "\uc9c0\uc5ed \ucf54\ub4dc",
+                        "example": "SEOUL",
+                        "type": "string"
+                    },
+                    "serviceName": {
+                        "description": "\ucd9c\ucc98 \uc11c\ube44\uc2a4\uba85(\uc608: \ubb38\ud654\ud3ec\ud138). CUSTOM \uc804\uc2dc\ub294 null.",
+                        "example": "\ubb38\ud654\ud3ec\ud138",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sigungu": {
+                        "description": "\uc0c1\uc138 \uc9c0\uc5f0\uc218\uc9d1 \ud544\ub4dc \u2014 \uc2dc\uad70\uad6c. \ubbf8\uc218\uc9d1 \uc2dc null.",
+                        "example": "\uc11c\ucd08\uad6c",
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "startDate": {
+                        "description": "\uc2dc\uc791\uc77c",
+                        "example": "2026-06-01",
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "title": {
+                        "description": "\uc804\uc2dc \uc81c\ubaa9",
+                        "example": "\ubaa8\ub124: \ube5b\uc744 \uadf8\ub9ac\ub2e4",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "\uc804\uc2dc \ucd9c\ucc98. CATALOG=\uc678\ubd80 \uacf5\uac1c \uc804\uc2dc API \uc218\uc9d1, CUSTOM=\uc0ac\uc6a9\uc790 \uc9c1\uc811 \ub4f1\ub85d",
+                        "enum": [
+                            "CATALOG",
+                            "CUSTOM"
+                        ],
+                        "example": "CATALOG",
+                        "type": "string"
+                    },
+                    "viewCount": {
+                        "description": "\uc0c1\uc138 \uc9c0\uc5f0\uc218\uc9d1 \ud544\ub4dc \u2014 \ub204\uc801 \uc870\ud68c\uc218. \ubbf8\uc218\uc9d1 \uc2dc 0.",
+                        "example": 1024,
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "properties": {
+                    "code": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "redirectUri": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "code",
+                    "redirectUri"
+                ],
+                "type": "object"
+            },
+            "MeResponse": {
+                "properties": {
+                    "ageGroup": {
+                        "type": "string"
+                    },
+                    "birthYear": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "profileImageUrl": {
+                        "type": "string"
+                    },
+                    "provider": {
+                        "type": "string"
+                    },
+                    "residenceDistrict": {
+                        "type": "string"
+                    },
+                    "residenceRegion": {
+                        "type": "string"
+                    },
+                    "stats": {
+                        "$ref": "#/components/schemas/Stats"
+                    },
+                    "tasteKeywords": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "userId": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Metadata": {
+                "properties": {
+                    "errorCode": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "result": {
+                        "enum": [
+                            "SUCCESS",
+                            "FAIL"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "PageResponse": {
+                "properties": {
+                    "content": {
+                        "items": {},
+                        "type": "array"
+                    },
+                    "hasNext": {
+                        "type": "boolean"
+                    },
+                    "page": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "size": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "totalElements": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "totalPages": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "PageResponseRecordListItemResponse": {
+                "properties": {
+                    "content": {
+                        "items": {
+                            "$ref": "#/components/schemas/RecordListItemResponse"
+                        },
+                        "type": "array"
+                    },
+                    "hasNext": {
+                        "type": "boolean"
+                    },
+                    "page": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "size": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "totalElements": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "totalPages": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ProfileRequest": {
+                "properties": {
+                    "ageGroup": {
+                        "type": "string"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "profileImageUrl": {
+                        "type": "string"
+                    },
+                    "residenceDistrict": {
+                        "type": "string"
+                    },
+                    "residenceRegion": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ProfileResponse": {
+                "properties": {
+                    "ageGroup": {
+                        "type": "string"
+                    },
+                    "birthYear": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "profileCompleted": {
+                        "type": "boolean"
+                    },
+                    "profileImageUrl": {
+                        "type": "string"
+                    },
+                    "provider": {
+                        "type": "string"
+                    },
+                    "residenceDistrict": {
+                        "type": "string"
+                    },
+                    "residenceRegion": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "RecordCreateRequest": {
+                "properties": {
+                    "content": {
+                        "maxLength": 300,
+                        "minLength": 0,
+                        "type": "string"
+                    },
+                    "emotionCodes": {
+                        "items": {
+                            "maxLength": 10,
+                            "minLength": 0,
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "exhibitionId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "media": {
+                        "items": {
+                            "$ref": "#/components/schemas/RecordMediaRequest"
+                        },
+                        "type": "array"
+                    },
+                    "viewedAt": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "writeMode": {
+                        "enum": [
+                            "AI",
+                            "DIRECT"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "content",
+                    "emotionCodes",
+                    "exhibitionId",
+                    "writeMode"
+                ],
+                "type": "object"
+            },
+            "RecordCreateResponse": {
+                "properties": {
+                    "aiStatus": {
+                        "enum": [
+                            "READY",
+                            "PENDING",
+                            "FAILED"
+                        ],
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "exhibitionId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "recordId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "viewedAt": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "writeMode": {
+                        "enum": [
+                            "AI",
+                            "DIRECT"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RecordDetailResponse": {
+                "properties": {
+                    "aiKeywords": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "aiStatus": {
+                        "enum": [
+                            "READY",
+                            "PENDING",
+                            "FAILED"
+                        ],
+                        "type": "string"
+                    },
+                    "aiSummary": {
+                        "type": "string"
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
+                    },
+                    "cardPhrase": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "emotionCodes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "exhibitionCategory": {
+                        "type": "string"
+                    },
+                    "exhibitionEndDate": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "exhibitionId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "exhibitionPlace": {
+                        "type": "string"
+                    },
+                    "exhibitionPosterUrl": {
+                        "type": "string"
+                    },
+                    "exhibitionRegion": {
+                        "type": "string"
+                    },
+                    "exhibitionStartDate": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "exhibitionTitle": {
+                        "type": "string"
+                    },
+                    "exhibitionType": {
+                        "type": "string"
+                    },
+                    "media": {
+                        "items": {
+                            "$ref": "#/components/schemas/RecordMediaResponse"
+                        },
+                        "type": "array"
+                    },
+                    "recordId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "representativeEmotion": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "userKeywords": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "viewedAt": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "writeMode": {
+                        "enum": [
+                            "AI",
+                            "DIRECT"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RecordListItemResponse": {
+                "properties": {
+                    "aiSummary": {
+                        "type": "string"
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "exhibitionCategory": {
+                        "type": "string"
+                    },
+                    "exhibitionEndDate": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "exhibitionId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "exhibitionPlace": {
+                        "type": "string"
+                    },
+                    "exhibitionPosterUrl": {
+                        "type": "string"
+                    },
+                    "exhibitionRegion": {
+                        "type": "string"
+                    },
+                    "exhibitionStartDate": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "exhibitionTitle": {
+                        "type": "string"
+                    },
+                    "exhibitionType": {
+                        "type": "string"
+                    },
+                    "recordId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "representativeEmotion": {
+                        "type": "string"
+                    },
+                    "thumbnailUrl": {
+                        "type": "string"
+                    },
+                    "viewedAt": {
+                        "format": "date",
+                        "type": "string"
+                    },
+                    "writeMode": {
+                        "enum": [
+                            "AI",
+                            "DIRECT"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RecordMediaRequest": {
+                "properties": {
+                    "sizeBytes": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "sortOrder": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "enum": [
+                            "PHOTO",
+                            "VIDEO"
+                        ],
+                        "type": "string"
+                    },
+                    "url": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type",
+                    "url"
+                ],
+                "type": "object"
+            },
+            "RecordMediaResponse": {
+                "properties": {
+                    "mediaId": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "sizeBytes": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "sortOrder": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "enum": [
+                            "PHOTO",
+                            "VIDEO"
+                        ],
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RecordUpdateRequest": {
+                "properties": {
+                    "content": {
+                        "maxLength": 300,
+                        "minLength": 0,
+                        "type": "string"
+                    },
+                    "emotionCodes": {
+                        "items": {
+                            "maxLength": 10,
+                            "minLength": 0,
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "media": {
+                        "items": {
+                            "$ref": "#/components/schemas/RecordMediaRequest"
+                        },
+                        "type": "array"
+                    },
+                    "viewedAt": {
+                        "format": "date",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "content",
+                    "emotionCodes"
+                ],
+                "type": "object"
+            },
+            "Stats": {
+                "properties": {
+                    "bookmarkCount": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "exhibitionCount": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "recordCount": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "TokenResponse": {
+                "properties": {
+                    "accessToken": {
+                        "type": "string"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "properties": {
+                    "ageGroup": {
+                        "type": "string"
+                    },
+                    "birthYear": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "nickname": {
+                        "type": "string"
+                    },
+                    "profileCompleted": {
+                        "type": "boolean"
+                    },
+                    "provider": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "bearerFormat": "JWT",
+                "description": "\ub85c\uadf8\uc778 \uc751\ub2f5\uc758 accessToken\uc744 \uc785\ub825\ud55c\ub2e4.",
+                "scheme": "bearer",
+                "type": "http"
+            }
+        }
+    },
+    "info": {
+        "description": "\uc18c\uc15c \ub85c\uadf8\uc778(\uce74\uce74\uc624\u00b7\uad6c\uae00) + \uc790\uccb4 JWT \uc778\uc99d API. \uc131\uacf5\uc740 \uc804\ubd80 200, \uc5d0\ub7ec\ub294 code/message\ub85c \uad6c\ubd84\ud55c\ub2e4.",
+        "title": "\uc5ec\uc6b4 API",
+        "version": "v1"
+    },
+    "openapi": "3.1.0",
+    "paths": {
+        "/api/v1/auth/guest": {
+            "post": {
+                "description": "\uc18c\uc15c \uc778\uc99d \uc5c6\uc774 \uc784\uc2dc \uc0ac\uc6a9\uc790\ub97c \uc989\uc2dc \uc0dd\uc131\ud558\uace0 \uc790\uccb4 JWT\ub97c \ubc1c\uae09\ud55c\ub2e4(\uac00\uc785 \uacb8\uc6a9).\n- \uc694\uccad body \uc5c6\uc74c. \ud638\ucd9c\ud560 \ub54c\ub9c8\ub2e4 \uc0c8 \uac8c\uc2a4\ud2b8 \uc0ac\uc6a9\uc790\uac00 \uc0dd\uc131\ub41c\ub2e4(\ub2c9\ub124\uc784 \"\uac8c\uc2a4\ud2b8\", \ud504\ub85c\ud544 \ubbf8\uc644).\n- \uc751\ub2f5: \uc18c\uc15c \ub85c\uadf8\uc778\uacfc \ub3d9\uc77c\ud558\uac8c `access`\u00b7`refresh` \ud1a0\ud070\uc744 **HttpOnly \ucfe0\ud0a4**\ub85c \ub0b4\ub824\uc8fc\uace0, `accessToken`\uc740 \ubcf8\ubb38\uc5d0\ub3c4 \ud568\uaed8 \ubc18\ud658\ud55c\ub2e4.\n- \uc774 \ud1a0\ud070\uc73c\ub85c \uae30\ub85d \ub4f1 **\ub85c\uadf8\uc778 \uc804\uc6a9 API\ub97c \uadf8\ub300\ub85c \ud638\ucd9c**\ud560 \uc218 \uc788\ub2e4. \uc774\ud6c4 \ud504\ub85c\ud544 \uc218\uc815(`PUT /api/v1/users/me/profile`)\uc73c\ub85c \uc815\ubcf4\ub97c \ucc44\uc6b8 \uc218 \uc788\ub2e4.\n- `provider`\ub294 `guest`\ub85c \ub0b4\ub824\uac04\ub2e4. \uc131\uacf5\uc740 \ud56d\uc0c1 200(\ud504\ub85c\uc81d\ud2b8 \ucee8\ubca4\uc158).",
+                "operationId": "guestLogin",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseTokenResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "summary": "\uac8c\uc2a4\ud2b8 \ub85c\uadf8\uc778",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/v1/auth/login/{provider}": {
+            "post": {
+                "description": "FE \uc8fc\ub3c4 \ud50c\ub85c\uc6b0. FE\uac00 \uc18c\uc15c \uc778\uac00\ub97c \ub9c8\uce5c \ub4a4 \ucf5c\ubc31\uc5d0\uc11c \ubc1b\uc740 authorization code\ub97c \uadf8\ub300\ub85c \ubcf4\ub0b8\ub2e4.\n- Path `provider`: `kakao` | `google` (\uc18c\ubb38\uc790).\n- Body: `code`(\uc18c\uc15c \uc778\uac00 \ucf54\ub4dc), `redirectUri`(\uc18c\uc15c \ucf58\uc194\u00b7\uc11c\ubc84 \ud654\uc774\ud2b8\ub9ac\uc2a4\ud2b8\uc5d0 \ub4f1\ub85d\ub41c \uac12\uacfc \uc815\ud655\ud788 \uc77c\uce58\ud574\uc57c \ud568. \ubd88\uc77c\uce58 \uc2dc 400 INVALID_REDIRECT_URI).\n- \ucd5c\ucd08 \ub85c\uadf8\uc778\uc774\uba74 \ud68c\uc6d0\uc744 \uc790\ub3d9 \uc0dd\uc131(\uac00\uc785 \uacb8\uc6a9), \uc774\ud6c4\uc5d4 \uae30\uc874 \ud68c\uc6d0\uc73c\ub85c \ub85c\uadf8\uc778.\n- \uc751\ub2f5: `access`\u00b7`refresh` \ud1a0\ud070\uc744 **HttpOnly \ucfe0\ud0a4**\ub85c \ub0b4\ub824\uc900\ub2e4. \ube0c\ub77c\uc6b0\uc800 \ud074\ub77c\uc774\uc5b8\ud2b8\ub294 \uc774\ud6c4 \uc694\uccad\uc5d0 `credentials: 'include'`\ub9cc \ud558\uba74 \ub418\uace0 \ud1a0\ud070\uc744 \uc9c1\uc811 \uc800\uc7a5\ud560 \ud544\uc694\uac00 \uc5c6\ub2e4. \ube44\ucfe0\ud0a4 \ud074\ub77c\uc774\uc5b8\ud2b8(\ubaa8\ubc14\uc77c \ub4f1) \ud638\ud658\uc744 \uc704\ud574 `accessToken`\uc740 \uc751\ub2f5 \ubcf8\ubb38\uc5d0\ub3c4 \ud568\uaed8 \ubc18\ud658\ud55c\ub2e4.\n- \uc131\uacf5\uc740 \ud56d\uc0c1 200(\ud504\ub85c\uc81d\ud2b8 \ucee8\ubca4\uc158).",
+                "operationId": "login",
+                "parameters": [
+                    {
+                        "description": "\uc18c\uc15c provider \u2014 kakao | google",
+                        "example": "kakao",
+                        "in": "path",
+                        "name": "provider",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseTokenResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "summary": "\uc18c\uc15c \ub85c\uadf8\uc778 (\uac00\uc785 \uacb8\uc6a9)",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "description": "access\u00b7refresh \ucfe0\ud0a4\ub97c \uc989\uc2dc \ub9cc\ub8cc(Max-Age=0)\uc2dc\ud0a4\uace0 \uc11c\ubc84\uc5d0 \uc800\uc7a5\ub41c \ud574\ub2f9 \uc0ac\uc6a9\uc790\uc758 refresh \ud1a0\ud070\uc744 \ud3d0\uae30\ud55c\ub2e4.\n- \uc774\ud6c4 \uadf8 refresh \ud1a0\ud070\uc73c\ub85c \uc7ac\ubc1c\uae09\uc744 \uc2dc\ub3c4\ud558\uba74 401. \uba71\ub4f1(\ud1a0\ud070\uc774 \uc5c6\uac70\ub098 \uc774\ubbf8 \ubb34\ud6a8\uc5ec\ub3c4 200).\n- `credentials: 'include'`\ub85c \ud638\ucd9c.",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseObject"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "summary": "\ub85c\uadf8\uc544\uc6c3",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/v1/auth/refresh": {
+            "post": {
+                "description": "access \ud1a0\ud070\uc774 \ub9cc\ub8cc(401)\ub410\uc744 \ub54c \ud638\ucd9c\ud55c\ub2e4. `refresh_token` **\ucfe0\ud0a4**\ub97c \uc77d\uc5b4 \uac80\uc99d\ud558\uace0 access\u00b7refresh\ub97c \ud68c\uc804 \ubc1c\uae09\ud574 \ub450 \ucfe0\ud0a4\ub97c \ub2e4\uc2dc \ub0b4\ub824\uc900\ub2e4.\n- \ubcc4\ub3c4 \uc694\uccad body \uc5c6\uc74c(\ucfe0\ud0a4\ub9cc \ud544\uc694). `credentials: 'include'`\ub85c \ud638\ucd9c.\n- refresh \ucfe0\ud0a4\uac00 \uc5c6\uc73c\uba74 401, \ub9cc\ub8cc\u00b7\ud3d0\uae30(\ub85c\uadf8\uc544\uc6c3\ub428)\ub410\uc73c\uba74 401 INVALID_REFRESH_TOKEN \u2192 \uc7ac\ub85c\uadf8\uc778 \uc720\ub3c4.\n- access \ud1a0\ud070\uc740 \uc751\ub2f5 \ubcf8\ubb38\uc5d0\ub3c4 \ud638\ud658\uc6a9\uc73c\ub85c \ubc18\ud658.",
+                "operationId": "refresh",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseTokenResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "summary": "\ud1a0\ud070 \uc7ac\ubc1c\uae09",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/v1/exhibitions": {
+            "get": {
+                "description": "\ud544\ud130\u00b7\uc815\ub82c\u00b7\ud398\uc774\uc9c0\ub85c \uc804\uc2dc\ub97c \uc870\ud68c\ud55c\ub2e4. \ud544\ud130 \ubbf8\uc9c0\uc815 \uc2dc \uc624\ub298 \uc9c4\ud589 \uc911\uc778 \uc804\uc2dc\ub97c \uae30\ubcf8 \ub178\ucd9c\ud55c\ub2e4.\n\ube44\ub85c\uadf8\uc778\uc740 CATALOG\ub9cc, \ub85c\uadf8\uc778\uc740 CATALOG + \ubcf8\uc778 CUSTOM\uc744 \ud568\uaed8 \ubcf8\ub2e4.\n\uc778\uc99d\uc740 \uc120\ud0dd(Optional)\uc774\ub2e4 \u2014 Authorization \ud5e4\ub354\uac00 \uc5c6\uac70\ub098 \ud1a0\ud070\uc774 \ubb34\ud6a8\ud574\ub3c4 401\uc744 \ub0b4\uc9c0 \uc54a\uace0\n\ube44\ub85c\uadf8\uc778(\uc775\uba85)\uc73c\ub85c \ucde8\uae09\ud574 \uc870\ud68c\ub97c \uacc4\uc18d\ud55c\ub2e4.",
+                "operationId": "list",
+                "parameters": [
+                    {
+                        "description": "\uc804\uc2dc\uba85\u00b7\uc804\uc2dc\uc7a5\uba85 \ubd80\ubd84 \uc77c\uce58",
+                        "example": "\ubaa8\ub124",
+                        "in": "query",
+                        "name": "keyword",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "\ud574\ub2f9 \ub0a0\uc9dc\uc5d0 \uc9c4\ud589 \uc911\uc778 \uc804\uc2dc(YYYY-MM-DD)",
+                        "example": "2026-06-30",
+                        "in": "query",
+                        "name": "date",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "\uc9c0\uc5ed \ucf54\ub4dc(SEOUL\u00b7GYEONGGI\u00b7BUSAN\u00b7DAEGU\u00b7ETC \ub4f1)",
+                        "example": "SEOUL",
+                        "in": "query",
+                        "name": "region",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "\uce74\ud14c\uace0\ub9ac \ucf54\ub4dc(PAINTING\u00b7PHOTO\u00b7MEDIA\u00b7SCULPTURE\u00b7ETC)",
+                        "example": "PHOTO",
+                        "in": "query",
+                        "name": "category",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "\uc815\ub82c \ucf54\ub4dc. latest=\uc2dc\uc791\uc77c \ucd5c\uc2e0\uc21c(\uae30\ubcf8), ending=\uc885\ub8cc\uc77c \uc784\ubc15\uc21c, popular=\uc870\ud68c\uc218 \ub9ce\uc740\uc21c",
+                        "example": "latest",
+                        "in": "query",
+                        "name": "sort",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                "latest",
+                                "ending",
+                                "popular"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Zero-based page index (0..N)",
+                        "in": "query",
+                        "name": "page",
+                        "required": false,
+                        "schema": {
+                            "default": 0,
+                            "minimum": 0,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "The size of the page to be returned",
+                        "in": "query",
+                        "name": "size",
+                        "required": false,
+                        "schema": {
+                            "default": 20,
+                            "minimum": 1,
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\ubaa9\ub85d \uc870\ud68c \uc131\uacf5": {
+                                        "description": "\ubaa9\ub85d \uc870\ud68c \uc131\uacf5",
+                                        "value": {
+                                            "data": {
+                                                "content": [
+                                                    {
+                                                        "category": "PAINTING",
+                                                        "endDate": "2026-08-31",
+                                                        "exhibitionId": 51,
+                                                        "place": "\uc608\uc220\uc758\uc804\ub2f9 \ud55c\uac00\ub78c\ubbf8\uc220\uad00",
+                                                        "posterUrl": "https://cdn.modi.app/exhibitions/51/poster.jpg",
+                                                        "region": "SEOUL",
+                                                        "startDate": "2026-06-01",
+                                                        "title": "\ubaa8\ub124: \ube5b\uc744 \uadf8\ub9ac\ub2e4",
+                                                        "type": "CATALOG"
+                                                    },
+                                                    {
+                                                        "category": "PHOTO",
+                                                        "endDate": "2026-06-25",
+                                                        "exhibitionId": 108,
+                                                        "place": "\uc131\uc218 \uac24\ub7ec\ub9ac",
+                                                        "posterUrl": null,
+                                                        "region": "SEOUL",
+                                                        "startDate": "2026-06-20",
+                                                        "title": "\uce5c\uad6c\uc640 \ub2e4\ub140\uc628 \uc0ac\uc9c4\uc804",
+                                                        "type": "CUSTOM"
+                                                    }
+                                                ],
+                                                "hasNext": false,
+                                                "page": 0,
+                                                "size": 20,
+                                                "totalElements": 2,
+                                                "totalPages": 1
+                                            },
+                                            "meta": {
+                                                "errorCode": null,
+                                                "message": null,
+                                                "result": "SUCCESS"
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageResponse"
+                                }
+                            }
+                        },
+                        "description": "\uc870\ud68c \uc131\uacf5"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\ubbf8\uc815\uc758 \uc9c0\uc5ed \ucf54\ub4dc": {
+                                        "description": "\ubbf8\uc815\uc758 \uc9c0\uc5ed \ucf54\ub4dc",
+                                        "value": {
+                                            "data": null,
+                                            "meta": {
+                                                "errorCode": "INVALID_INPUT",
+                                                "message": "\uc785\ub825\uac12\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+                                                "result": "FAIL"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "INVALID_INPUT \u2014 region/category\uac00 \uc815\uc758\ub418\uc9c0 \uc54a\uc740 \ucf54\ub4dc\uc774\uac70\ub098, date\uac00 YYYY-MM-DD \ud615\uc2dd\uc774 \uc544\ub2d8"
+                    }
+                },
+                "summary": "\uc804\uc2dc \ubaa9\ub85d/\ud0d0\uc0c9",
+                "tags": [
+                    "Exhibition"
+                ]
+            }
+        },
+        "/api/v1/exhibitions/custom": {
+            "post": {
+                "description": "\uce74\ud0c8\ub85c\uadf8\uc5d0 \uc5c6\ub294 \uac1c\uc778 \uc804\uc2dc\ub97c \uc9c1\uc811 \ub4f1\ub85d\ud55c\ub2e4. access \ud1a0\ud070 \ud544\uc694(\uc778\uc99d \ud544\uc218).",
+                "operationId": "registerCustom",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CustomCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\ub4f1\ub85d \uc131\uacf5": {
+                                        "description": "\ub4f1\ub85d \uc131\uacf5",
+                                        "value": {
+                                            "data": {
+                                                "exhibitionId": 108,
+                                                "type": "CUSTOM"
+                                            },
+                                            "meta": {
+                                                "errorCode": null,
+                                                "message": null,
+                                                "result": "SUCCESS"
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreatedResponse"
+                                }
+                            }
+                        },
+                        "description": "\ub4f1\ub85d \uc131\uacf5(\ud504\ub85c\uc81d\ud2b8 \ucee8\ubca4\uc158\uc0c1 201 \ub300\uc2e0 200 \uc0ac\uc6a9)"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\uc81c\ubaa9 \uacf5\ubc31(\ud544\ub4dc \uac80\uc99d \uc2e4\ud328)": {
+                                        "description": "\uc81c\ubaa9 \uacf5\ubc31(\ud544\ub4dc \uac80\uc99d \uc2e4\ud328)",
+                                        "value": {
+                                            "data": [
+                                                {
+                                                    "field": "title",
+                                                    "reason": "\uacf5\ubc31\uc77c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4",
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "meta": {
+                                                "errorCode": "INVALID_INPUT",
+                                                "message": "\uc785\ub825\uac12\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+                                                "result": "FAIL"
+                                            }
+                                        }
+                                    },
+                                    "\uc885\ub8cc\uc77c\uc774 \uc2dc\uc791\uc77c\ubcf4\ub2e4 \ube60\ub984(\ub3c4\uba54\uc778 \uaddc\uce59 \uc704\ubc18)": {
+                                        "description": "\uc885\ub8cc\uc77c\uc774 \uc2dc\uc791\uc77c\ubcf4\ub2e4 \ube60\ub984(\ub3c4\uba54\uc778 \uaddc\uce59 \uc704\ubc18)",
+                                        "value": {
+                                            "data": null,
+                                            "meta": {
+                                                "errorCode": "INVALID_INPUT",
+                                                "message": "\uc785\ub825\uac12\uc774 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+                                                "result": "FAIL"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "INVALID_INPUT \u2014 \uc81c\ubaa9 \uacf5\ubc31, \uc885\ub8cc\uc77c\uc774 \uc2dc\uc791\uc77c\ubcf4\ub2e4 \ube60\ub984, \ubbf8\uc815\uc758 region/category \ucf54\ub4dc \ub4f1. Bean Validation \uc2e4\ud328 \uc2dc \ud544\ub4dc\ubcc4 \uc624\ub958\uac00 data\uc5d0 \ubc30\uc5f4\ub85c \ub2f4\uae34\ub2e4."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\ud1a0\ud070 \uc5c6\uc74c/\ubb34\ud6a8": {
+                                        "description": "\ud1a0\ud070 \uc5c6\uc74c/\ubb34\ud6a8",
+                                        "value": {
+                                            "data": null,
+                                            "meta": {
+                                                "errorCode": "UNAUTHORIZED",
+                                                "message": "\uc778\uc99d\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.",
+                                                "result": "FAIL"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "UNAUTHORIZED \u2014 Bearer access \ud1a0\ud070\uc774 \uc5c6\uac70\ub098 \ubb34\ud6a8\ud568"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\uac1c\uc778 \uc804\uc2dc \ub4f1\ub85d",
+                "tags": [
+                    "Exhibition"
+                ]
+            }
+        },
+        "/api/v1/exhibitions/{exhibitionId}": {
+            "get": {
+                "description": "CATALOG\ub294 \uacf5\uac1c, CUSTOM\uc740 \ub4f1\ub85d\uc790 \ubcf8\uc778\ub9cc \uc870\ud68c \uac00\ub2a5. \uc778\uc99d\uc740 \uc120\ud0dd(Optional) \u2014\n\ube44\ub85c\uadf8\uc778\u00b7\ubb34\ud6a8 \ud1a0\ud070\uc774\uc5b4\ub3c4 CATALOG \uc804\uc2dc\ub294 \uc815\uc0c1 \uc870\ud68c\ub41c\ub2e4.",
+                "operationId": "detail",
+                "parameters": [
+                    {
+                        "description": "\uc804\uc2dc ID",
+                        "example": 51,
+                        "in": "path",
+                        "name": "exhibitionId",
+                        "required": true,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\uc0c1\uc138 \uc870\ud68c \uc131\uacf5": {
+                                        "description": "\uc0c1\uc138 \uc870\ud68c \uc131\uacf5",
+                                        "value": {
+                                            "data": {
+                                                "address": "\uc11c\uc6b8\ud2b9\ubcc4\uc2dc \uc11c\ucd08\uad6c \ub0a8\ubd80\uc21c\ud658\ub85c 2406",
+                                                "artists": [
+                                                    "\ud074\ub85c\ub4dc \ubaa8\ub124"
+                                                ],
+                                                "category": "PAINTING",
+                                                "description": "\uc778\uc0c1\uc8fc\uc758 \uac70\uc7a5 \ubaa8\ub124\uc758 \ub300\ud45c\uc791\uc744 \ub9cc\ub098\ub294 \ud2b9\ubcc4\uc804.",
+                                                "detailUrl": "https://culture.go.kr/exhibitions/51",
+                                                "endDate": "2026-08-31",
+                                                "exhibitionId": 51,
+                                                "gpsX": 127.0136,
+                                                "gpsY": 37.4783,
+                                                "imgUrl": "https://cdn.modi.app/exhibitions/51/detail.jpg",
+                                                "keywords": [
+                                                    "\uc778\uc0c1\uc8fc\uc758",
+                                                    "\ud68c\ud654"
+                                                ],
+                                                "operatingHours": "10:00~19:00(\uc6d4\uc694\uc77c \ud734\uad00)",
+                                                "phone": "02-580-1300",
+                                                "place": "\uc608\uc220\uc758\uc804\ub2f9 \ud55c\uac00\ub78c\ubbf8\uc220\uad00",
+                                                "placeUrl": "https://www.sac.or.kr",
+                                                "posterUrl": "https://cdn.modi.app/exhibitions/51/poster.jpg",
+                                                "price": "\uc131\uc778 20,000\uc6d0 / \uccad\uc18c\ub144 15,000\uc6d0",
+                                                "region": "SEOUL",
+                                                "serviceName": "\ubb38\ud654\ud3ec\ud138",
+                                                "sigungu": "\uc11c\ucd08\uad6c",
+                                                "startDate": "2026-06-01",
+                                                "title": "\ubaa8\ub124: \ube5b\uc744 \uadf8\ub9ac\ub2e4",
+                                                "type": "CATALOG",
+                                                "viewCount": 1024
+                                            },
+                                            "meta": {
+                                                "errorCode": null,
+                                                "message": null,
+                                                "result": "SUCCESS"
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailResponse"
+                                }
+                            }
+                        },
+                        "description": "\uc870\ud68c \uc131\uacf5"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\ud0c0\uc778\uc758 CUSTOM \uc804\uc2dc \uc811\uadfc": {
+                                        "description": "\ud0c0\uc778\uc758 CUSTOM \uc804\uc2dc \uc811\uadfc",
+                                        "value": {
+                                            "data": null,
+                                            "meta": {
+                                                "errorCode": "FORBIDDEN",
+                                                "message": "\uc811\uadfc \uad8c\ud55c\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.",
+                                                "result": "FAIL"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "FORBIDDEN \u2014 \ud0c0\uc778\uc774 \ub4f1\ub85d\ud55c CUSTOM \uc804\uc2dc\uc5d0 \uc811\uadfc"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "\uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \uc804\uc2dc": {
+                                        "description": "\uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \uc804\uc2dc",
+                                        "value": {
+                                            "data": null,
+                                            "meta": {
+                                                "errorCode": "NOT_FOUND",
+                                                "message": "\uc694\uccad\ud55c \uc804\uc2dc\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.",
+                                                "result": "FAIL"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "NOT_FOUND \u2014 \uc694\uccad\ud55c exhibitionId\uc758 \uc804\uc2dc\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc74c"
+                    }
+                },
+                "summary": "\uc804\uc2dc \uc0c1\uc138",
+                "tags": [
+                    "Exhibition"
+                ]
+            }
+        },
+        "/api/v1/records": {
+            "get": {
+                "description": "\uc544\uce74\uc774\ube0c \ubaa9\ub85d\uc744 \uc870\ud68c\ud55c\ub2e4. \ubcf8\uc778 \uae30\ub85d\ub9cc \ubc18\ud658\ud55c\ub2e4.",
+                "operationId": "search",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "keyword",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "emotion",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "exhibitionId",
+                        "required": false,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "bookmarked",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "writeMode",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                "AI",
+                                "DIRECT"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "fromViewedAt",
+                        "required": false,
+                        "schema": {
+                            "format": "date",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "toViewedAt",
+                        "required": false,
+                        "schema": {
+                            "format": "date",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Zero-based page index (0..N)",
+                        "in": "query",
+                        "name": "page",
+                        "required": false,
+                        "schema": {
+                            "default": 0,
+                            "minimum": 0,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "The size of the page to be returned",
+                        "in": "query",
+                        "name": "size",
+                        "required": false,
+                        "schema": {
+                            "default": 20,
+                            "minimum": 1,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                        "in": "query",
+                        "name": "sort",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponsePageResponseRecordListItemResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\ub0b4 \uae30\ub85d \ubaa9\ub85d \uc870\ud68c",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            },
+            "post": {
+                "description": "\uc804\uc2dc \uad00\ub78c \uae30\ub85d\uc744 \uc791\uc131\ud55c\ub2e4. \ub85c\uadf8\uc778 \uc804\uc6a9 \u2014 access \ud1a0\ud070(\ucfe0\ud0a4/Bearer)\uc758 \uc0ac\uc6a9\uc790\ub85c \uae30\ub85d\uc744 \ub0a8\uae34\ub2e4. \uac8c\uc2a4\ud2b8 \ub85c\uadf8\uc778 \uc0ac\uc6a9\uc790\ub3c4 \ub3d9\uc77c\ud558\uac8c \uc0ac\uc6a9\ud560 \uc218 \uc788\ub2e4.",
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseRecordCreateResponse"
+                                }
+                            }
+                        },
+                        "description": "Created"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\uae30\ub85d \uc791\uc131",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            }
+        },
+        "/api/v1/records/exhibitions/visited": {
+            "get": {
+                "description": "\ubcf8\uc778\uc774 \uae30\ub85d\uc744 \ub0a8\uae34 \uc804\uc2dc \ubaa9\ub85d\uc744 \uc870\ud68c\ud55c\ub2e4. \uae30\uc874 \uae30\ub85d \ubaa9\ub85d \uc870\ud68c\uc640 \ub3d9\uc77c\ud55c \ud30c\ub77c\ubbf8\ud130/\uc751\ub2f5\uc744 \uc0ac\uc6a9\ud55c\ub2e4.",
+                "operationId": "visitedExhibitions",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "keyword",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "emotion",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "exhibitionId",
+                        "required": false,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "bookmarked",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "writeMode",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                "AI",
+                                "DIRECT"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "fromViewedAt",
+                        "required": false,
+                        "schema": {
+                            "format": "date",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "toViewedAt",
+                        "required": false,
+                        "schema": {
+                            "format": "date",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Zero-based page index (0..N)",
+                        "in": "query",
+                        "name": "page",
+                        "required": false,
+                        "schema": {
+                            "default": 0,
+                            "minimum": 0,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "The size of the page to be returned",
+                        "in": "query",
+                        "name": "size",
+                        "required": false,
+                        "schema": {
+                            "default": 20,
+                            "minimum": 1,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                        "in": "query",
+                        "name": "sort",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponsePageResponseRecordListItemResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\ub0b4\uac00 \ub2e4\ub140\uc628 \uc804\uc2dc \ubaa9\ub85d",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            }
+        },
+        "/api/v1/records/{recordId}": {
+            "delete": {
+                "description": "\ubcf8\uc778 \uae30\ub85d\uc744 \uc18c\ud504\ud2b8 \uc0ad\uc81c\ud55c\ub2e4.",
+                "operationId": "delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "recordId",
+                        "required": true,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseObject"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\uae30\ub85d \uc0ad\uc81c",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            },
+            "get": {
+                "description": "\ubcf8\uc778 \uae30\ub85d \uc0c1\uc138\ub97c \uc870\ud68c\ud55c\ub2e4.",
+                "operationId": "get",
+                "parameters": [
+                    {
+                        "description": "\uae30\ub85d ID",
+                        "in": "path",
+                        "name": "recordId",
+                        "required": true,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseRecordDetailResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\uae30\ub85d \uc0c1\uc138 \uc870\ud68c",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            },
+            "put": {
+                "description": "\ubcf8\uc778 \uae30\ub85d\uc758 \uac10\uc0c1, \uac10\uc815, \ud0a4\uc6cc\ub4dc, \ubbf8\ub514\uc5b4\ub97c \uad50\uccb4\ud55c\ub2e4.",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "recordId",
+                        "required": true,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseRecordDetailResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\uae30\ub85d \uc218\uc815",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            }
+        },
+        "/api/v1/records/{recordId}/bookmark": {
+            "delete": {
+                "description": "\ubcf8\uc778 \uae30\ub85d\uc758 \ubd81\ub9c8\ud06c\ub97c \ud574\uc81c\ud55c\ub2e4. \uc774\ubbf8 \ud574\uc81c\ub41c \uacbd\uc6b0\uc5d0\ub3c4 \uc131\uacf5\ud55c\ub2e4.",
+                "operationId": "unbookmark",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "recordId",
+                        "required": true,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseBookmarkResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\uae30\ub85d \ubd81\ub9c8\ud06c \ud574\uc81c",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            },
+            "post": {
+                "description": "\ubcf8\uc778 \uae30\ub85d\uc744 \ubd81\ub9c8\ud06c\ud55c\ub2e4. \uc774\ubbf8 \ubd81\ub9c8\ud06c\ub41c \uacbd\uc6b0\uc5d0\ub3c4 \uc131\uacf5\ud55c\ub2e4.",
+                "operationId": "bookmark",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "recordId",
+                        "required": true,
+                        "schema": {
+                            "format": "int64",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseBookmarkResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\uae30\ub85d \ubd81\ub9c8\ud06c",
+                "tags": [
+                    "record-v-1-controller"
+                ]
+            }
+        },
+        "/api/v1/users/me": {
+            "get": {
+                "description": "\ud504\ub85c\ud544 + \ucde8\ud5a5 \ud0a4\uc6cc\ub4dc + \ud65c\ub3d9 \ud1b5\uacc4. access \ud1a0\ud070 \ud544\uc694.",
+                "operationId": "me",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseMeResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\ub0b4 \ud504\ub85c\ud544 \uc870\ud68c",
+                "tags": [
+                    "User"
+                ]
+            }
+        },
+        "/api/v1/users/me/profile": {
+            "put": {
+                "description": "\uc804\ub2ec\ub41c \ud544\ub4dc\ub9cc \ubd80\ubd84 \uac31\uc2e0(\ub2c9\ub124\uc784\u00b7\ud504\ub85c\ud544\uc774\ubbf8\uc9c0\u00b7\uc5f0\ub839\ub300\u00b7\uac70\uc8fc\uc9c0\uc5ed). access \ud1a0\ud070 \ud544\uc694.",
+                "operationId": "updateProfile",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProfileRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponseProfileResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "\ub0b4 \ud504\ub85c\ud544 \uc218\uc815",
+                "tags": [
+                    "User"
+                ]
+            }
+        }
+    },
+    "servers": [
+        {
+            "description": "Generated server url",
+            "url": "http://localhost:8080"
+        }
+    ],
+    "tags": [
+        {
+            "description": "\ud504\ub85c\ud544 \uc870\ud68c \u00b7 \uc218\uc815",
+            "name": "User"
+        },
+        {
+            "description": "\uc18c\uc15c \ub85c\uadf8\uc778 \u00b7 JWT \ubc1c\uae09/\uc7ac\ubc1c\uae09 \u00b7 \ub0b4 \uc815\ubcf4",
+            "name": "Auth"
+        },
+        {
+            "description": "\uc804\uc2dc \ubaa9\ub85d/\ud0d0\uc0c9 \u00b7 \uc0c1\uc138 \u00b7 \uac1c\uc778 \uc804\uc2dc \ub4f1\ub85d.\n\n## \uacf5\ud1b5 \uc751\ub2f5 \ud3ec\ub9f7(ApiResponse)\n\ubaa8\ub4e0 \uc751\ub2f5\uc740 \uc544\ub798 \ubd09\ud22c(envelope)\ub85c \uac10\uc2f8\uc9c4\ub2e4. \uc131\uacf5\uc740 \uc608\uc678 \uc5c6\uc774 HTTP 200\uc774\uba70(\ud504\ub85c\uc81d\ud2b8 \ucee8\ubca4\uc158 \u2014 201 \ubbf8\uc0ac\uc6a9),\n\uc2e4\ud328\ub294 \uc5d0\ub7ec\uc758 HTTP \uc0c1\ud0dc \ucf54\ub4dc\uc640 \ud568\uaed8 meta.result=FAIL \u00b7 meta.errorCode \u00b7 meta.message\uac00 \ub0b4\ub824\uac04\ub2e4.\n```\n{\n  \"meta\": { \"result\": \"SUCCESS\" | \"FAIL\", \"errorCode\": string | null, \"message\": string | null },\n  \"data\": <T> | null\n}\n```\n\uac80\uc99d(Bean Validation) \uc2e4\ud328\ub294 \uc704 \ud3ec\ub9f7\uc758 data\uc5d0 \ud544\ub4dc\ubcc4 \uc624\ub958 \ubc30\uc5f4\uc774 \ucd94\uac00\ub85c \ub2f4\uae34\ub2e4:\n```\n\"data\": [ { \"field\": \"title\", \"value\": \"\", \"reason\": \"\uacf5\ubc31\uc77c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4\" } ]\n```\n\n## \uacf5\ud1b5 \uc5d0\ub7ec \ucf54\ub4dc(ErrorType)\n| errorCode | HTTP | \uc758\ubbf8 |\n|---|---|---|\n| INVALID_INPUT | 400 | \uc694\uccad \ud30c\ub77c\ubbf8\ud130/\ubc14\ub514\uac00 \uc62c\ubc14\ub974\uc9c0 \uc54a\uc74c(\ud615\uc2dd \uc624\ub958\u00b7\ubbf8\uc815\uc758 enum \ucf54\ub4dc \ub4f1) |\n| UNAUTHORIZED | 401 | \uc778\uc99d(Bearer access \ud1a0\ud070)\uc774 \ud544\uc694\ud558\uac70\ub098 \ubb34\ud6a8\ud568 |\n| FORBIDDEN | 403 | \uc778\uc99d\uc740 \ub410\uc73c\ub098 \ud574\ub2f9 \ub9ac\uc18c\uc2a4 \uc811\uadfc \uad8c\ud55c\uc774 \uc5c6\uc74c |\n| NOT_FOUND | 404 | \uc694\uccad\ud55c \ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c |\n| METHOD_NOT_ALLOWED | 405 | \ud5c8\uc6a9\ub418\uc9c0 \uc54a\uc740 HTTP \uba54\uc11c\ub4dc |\n| INTERNAL_ERROR | 500 | \uc11c\ubc84 \ub0b4\ubd80 \uc624\ub958 |\n\n## \uc804\uc2dc \ub3c4\uba54\uc778 \uc5d0\ub7ec \ucf54\ub4dc(ExhibitionErrorCode)\n| errorCode | HTTP | \uc758\ubbf8 |\n|---|---|---|\n| NOT_FOUND | 404 | \uc694\uccad\ud55c \uc804\uc2dc\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c |\n| EXTERNAL_API_UNAVAILABLE | 503 | \uc678\ubd80 \uc804\uc2dc \uc815\ubcf4(\ubb38\ud654\ud3ec\ud138 \ub4f1)\ub97c \ubd88\ub7ec\uc62c \uc218 \uc5c6\uc74c |\n",
+            "name": "Exhibition"
+        }
+    ]
+}

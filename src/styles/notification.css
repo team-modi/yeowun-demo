@@ -1,0 +1,113 @@
+/* ============================================================
+   알림 목록 (/notifications)
+   ============================================================ */
+
+.noti-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.noti-item {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border);
+  color: inherit;
+}
+
+.noti-item:hover {
+  background: var(--color-scrim);
+}
+
+.noti-item.is-unread {
+  background: color-mix(in srgb, var(--color-accent-soft) 55%, transparent);
+}
+
+/* 왼쪽 미읽음 점 자리(읽음이면 빈 칸 유지로 정렬 맞춤) */
+.noti-item__dot {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  margin-top: 7px;
+  border-radius: var(--radius-full);
+  background: transparent;
+}
+
+.noti-item.is-unread .noti-item__dot {
+  background: var(--color-accent);
+}
+
+.noti-item__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.noti-item__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.noti-item__title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: var(--line-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noti-item__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  line-height: var(--line-normal);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.noti-item__time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 타입 배지 */
+.noti-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  line-height: 1.4;
+}
+
+.noti-badge--remind {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.noti-badge--notice {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+}
+
+.noti-more {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) 0;
+}
+
+/* IntersectionObserver 감지용 센티넬 */
+.noti-sentinel {
+  height: 1px;
+}

@@ -1,0 +1,49 @@
+name: Frontend E2E
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+
+    # E2E용 카카오 env (실제 시크릿 아님 — 스모크 테스트 결정성 확보).
+    # Vite가 VITE_ 접두 셸 env를 import.meta.env로 노출하므로, redirectUri/authorize URL이
+    # undefined 되지 않고 테스트가 재현 가능해진다.
+    env:
+      VITE_KAKAO_CLIENT_ID: test-kakao-client-id
+      VITE_KAKAO_REDIRECT_URI: http://127.0.0.1:5173/login
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Run Playwright E2E
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
