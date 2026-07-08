@@ -82,7 +82,7 @@ export default function LoginPage() {
 
       {status === "error" && (
         <p className="login-page__error" role="alert">
-          시작하지 못했어요. 잠시 후 다시 시도해 주세요.
+          로그인에 실패했어요. 다시 시도해 주세요.
         </p>
       )}
 
@@ -98,7 +98,7 @@ export default function LoginPage() {
             border: "none",
           }}
         >
-          카카오로 시작하기
+          카카오로 로그인
         </button>
         <Button block variant="secondary" onClick={handleGuest} disabled={busy}>
           {busy ? "시작하는 중…" : "게스트로 둘러보기"}
