@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * useInfiniteCursor — 커서 페이지네이션 헬퍼 훅.
+ * useInfiniteCursor — 무한 스크롤 페이지네이션 헬퍼 훅.
  *
- * @param {(params:{cursor?:string, ...extra}) => Promise<{content, nextCursor, hasNext}>} fetchPage
- *        cursor 를 포함한 params 를 받아 CursorResponse.data 를 반환하는 함수.
+ * 백엔드는 오프셋 페이징(page/size, 응답 {content, page, size, totalElements, totalPages, hasNext})을
+ * 쓰므로 이 훅도 page 를 증가시키며 요청한다(과거 cursor 방식은 백엔드가 cursor 를 무시해 같은 페이지를
+ * 반복 로드하는 버그가 있었음 → offset 으로 정정).
+ *
+ * @param {(params:{page:number, size:number, ...extra}) => Promise<{content, hasNext, ...}>} fetchPage
+ *        page 를 포함한 params 를 받아 응답 data 를 반환하는 함수.
  *        (예: (params) => getList({ ...filters, ...params }).then(r => r.data))
  * @param {object}  [options]
  * @param {object}  [options.params]   — 매 요청에 병합할 추가 파라미터(필터 등). 값이 바뀌면 자동 리셋.
@@ -21,7 +25,7 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
   const [error, setError] = useState(null);
   const [hasNext, setHasNext] = useState(true);
 
-  const cursorRef = useRef(undefined);
+  const pageRef = useRef(0);
   const loadingRef = useRef(false);
   const paramsKey = JSON.stringify(params ?? {});
 
@@ -34,15 +38,12 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
       setLoading(true);
       setError(null);
 
+      const page = fresh ? 0 : pageRef.current;
       try {
-        const reqParams = {
-          ...(params ?? {}),
-          size,
-          ...(fresh ? {} : { cursor: cursorRef.current }),
-        };
+        const reqParams = { ...(params ?? {}), page, size };
         const res = await fetchPage(reqParams);
         const content = res?.content ?? [];
-        cursorRef.current = res?.nextCursor ?? undefined;
+        pageRef.current = page + 1; // 다음에 불러올 페이지
         setHasNext(!!res?.hasNext);
         setItems((prev) => (fresh ? content : [...prev, ...content]));
       } catch (err) {
@@ -59,7 +60,7 @@ export default function useInfiniteCursor(fetchPage, options = {}) {
   const loadMore = useCallback(() => load(false), [load]);
 
   const reset = useCallback(() => {
-    cursorRef.current = undefined;
+    pageRef.current = 0;
     setHasNext(true);
     load(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -38,7 +38,7 @@ export default function ExhibitionSelectStep({ onSelect, initialId }) {
       const { data } = await getList(params);
       const content = data?.content ?? [];
       setItems(content);
-      setTotal(data?.totalCount ?? content.length);
+      setTotal(data?.totalElements ?? data?.totalCount ?? content.length);
       // 프리셋 id가 목록에 있으면 최초 1회 선택 표시.
       if (initialId && !preselDone.current) {
         const hit = content.find((it) => it.exhibitionId === initialId);
