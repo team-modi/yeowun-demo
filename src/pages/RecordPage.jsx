@@ -10,6 +10,7 @@ import ExhibitionSelectStep from "@components/record/ExhibitionSelectStep";
 import EmotionMediaStep from "@components/record/EmotionMediaStep";
 import WriteStep from "@components/record/WriteStep";
 import { errMessage, todayISO } from "@components/record/constants";
+import "@styles/record.css";
 
 /**
  * RecordPage — [04] 전시 관람 기록 작성 플로우.

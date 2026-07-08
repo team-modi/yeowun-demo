@@ -18,6 +18,7 @@ export default function ExhibitionCard({
   onToggleBookmark,
   to,
   variant = "grid",
+  showOpenDate = false,
 }) {
   if (!item) return null;
   const {
@@ -49,6 +50,14 @@ export default function ExhibitionCard({
     startDate && endDate
       ? `${fmtDate(startDate)} ~ ${fmtDate(endDate)}`
       : fmtDate(startDate) || fmtDate(endDate);
+
+  // "이번 달 새로 열리는 전시" 그리드 카드 전용 오픈일 배지("7.12 오픈").
+  const openDateLabel = (() => {
+    if (!showOpenDate || !startDate) return null;
+    const parts = String(startDate).slice(0, 10).split("-");
+    if (parts.length < 3) return null;
+    return `${Number(parts[1])}.${Number(parts[2])} 오픈`;
+  })();
 
   const bookmarkBtn = onToggleBookmark && (
     <button
@@ -127,6 +136,9 @@ export default function ExhibitionCard({
         <div className="exh-card__body">
           <p className="exh-card__title">{title}</p>
           {place && <p className="exh-card__place">{place}</p>}
+          {openDateLabel && (
+            <span className="exh-card__open">{openDateLabel}</span>
+          )}
         </div>
       </>
     );

@@ -14,8 +14,13 @@ import "@styles/home.css";
  * 카드 북마크는 낙관적 토글(실패 시 롤백 + 토스트).
  */
 const SECTIONS = [
-  { key: "ending-soon", title: "곧 종료되는 전시", variant: "list" },
-  { key: "opening-this-month", title: "이번 달 새로 열리는 전시", variant: "grid" },
+  { key: "ending-soon", title: "곧 끝나기 전에 봐야 할 전시", variant: "list" },
+  {
+    key: "opening-this-month",
+    title: "이번 달 새로 열리는 전시",
+    variant: "grid",
+    showOpenDate: true,
+  },
   { key: "free", title: "무료로 볼 수 있는 전시", variant: "list" },
 ];
 
@@ -107,6 +112,7 @@ export default function HomePage() {
           title={s.title}
           section={s.key}
           variant={s.variant}
+          showOpenDate={s.showOpenDate}
           items={sections[s.key] ?? []}
           onToggleBookmark={handleToggleBookmark}
         />
