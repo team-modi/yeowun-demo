@@ -1,4 +1,5 @@
 import axiosInstance from "@utils/axiosInstance";
+import { kakaoRedirectUri } from "@utils/oauth";
 import axios from "axios";
 
 /**
@@ -8,11 +9,12 @@ import axios from "axios";
  * (axios response 객체가 아니라 response.data 를 반환하므로 호출부는 res.meta / res.data 로 접근)
  */
 
-// 소셜 로그인 (가입 겸용) — 데모에서는 미사용(게스트만)
+// 소셜 로그인 (가입 겸용). 베타 데모는 카카오 + 게스트 두 경로를 제공한다.
+// redirectUri 는 카카오 콘솔·백엔드 화이트리스트와 일치해야 하므로 oauth 헬퍼(현재 오리진 기반)로 통일.
 export const login = async (provider, code) => {
   const res = await axiosInstance.post(`/auth/login/${provider}`, {
     code,
-    redirectUri: import.meta.env.VITE_KAKAO_REDIRECT_URI,
+    redirectUri: kakaoRedirectUri(),
   });
   return res.data;
 };
