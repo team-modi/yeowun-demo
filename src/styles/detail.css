@@ -2,12 +2,16 @@
    [03] 전시 상세 (/exhibition/:exhibitionId)
    ============================================================ */
 
-.detail-page {
+/* .page 와 함께 쓰이므로(class="page detail-page") specificity 를 올려 .page 의 padding 을 확실히 이긴다.
+   (동일 specificity면 dev 스타일 주입 순서에 따라 .page 가 이겨 좌우/하단 패딩이 깨졌다) */
+.page.detail-page {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  /* 상단 포스터를 화면 폭에 꽉 채우기 위해 .page 좌우 패딩을 상쇄 */
-  padding: 0 0 calc(var(--space-10) + 72px);
+  /* 상단 포스터를 화면 폭에 꽉 채우기 위해 좌우 패딩을 상쇄.
+     하단은 고정 '기록하기' 바(높이 ~73px, 하단탭 위에 위치)에 카드 마지막 행(관람료 등)이
+     가리지 않도록 넉넉히 확보한다. */
+  padding: 0 0 calc(var(--bottomnav-height) + 120px);
 }
 
 /* ---------- 포스터 헤더 ---------- */
