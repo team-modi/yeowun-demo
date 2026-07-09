@@ -24,7 +24,16 @@
 .banner-track {
   display: flex;
   transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* 세로 스크롤은 브라우저에, 가로 제스처는 JS(포인터 이벤트)로 */
   touch-action: pan-y;
+  /* 마우스 드래그 시 이미지/텍스트 선택 방지 */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.banner-track:active {
+  cursor: grabbing;
 }
 
 .banner-slide {
