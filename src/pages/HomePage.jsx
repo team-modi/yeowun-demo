@@ -13,12 +13,16 @@ import "@styles/home.css";
  * 진입 시 병렬 4콜: 배너 + 섹션 3개(ending-soon / opening-this-month / free, size=2).
  * 카드 북마크는 낙관적 토글(실패 시 롤백 + 토스트).
  */
+// size: 섹션별 조회 개수(기본 2). limit(=size)만큼 노출.
+// layout "scroll": 포스터 타일을 가로 스크롤로 노출(이번 달 새로 열리는 전시 — 5개).
 const SECTIONS = [
   { key: "ending-soon", title: "곧 끝나기 전에 봐야 할 전시", variant: "list" },
   {
     key: "opening-this-month",
     title: "이번 달 새로 열리는 전시",
     variant: "grid",
+    layout: "scroll",
+    size: 5,
     showOpenDate: true,
   },
   { key: "free", title: "무료로 볼 수 있는 전시", variant: "list" },
@@ -40,7 +44,7 @@ export default function HomePage() {
     // 성공한 것만 보여주는 graceful degrade. 전체(배너+모든 섹션)가 실패했을 때만 전체 에러 화면.
     const [bannerRes, ...sectionRes] = await Promise.allSettled([
       getBanners(),
-      ...SECTIONS.map((s) => getList({ section: s.key, size: 2 })),
+      ...SECTIONS.map((s) => getList({ section: s.key, size: s.size ?? 2 })),
     ]);
     setBanners(
       bannerRes.status === "fulfilled" ? (bannerRes.value?.data?.banners ?? []) : [],
@@ -112,6 +116,8 @@ export default function HomePage() {
           title={s.title}
           section={s.key}
           variant={s.variant}
+          layout={s.layout}
+          limit={s.size ?? 2}
           showOpenDate={s.showOpenDate}
           items={sections[s.key] ?? []}
           onToggleBookmark={handleToggleBookmark}

@@ -215,3 +215,27 @@
   font-weight: 700;
   margin-bottom: 2px;
 }
+
+/* 가로 스크롤 섹션 — "이번 달 새로 열리는 전시"(5개). 포스터 타일을 옆으로 넘겨 본다.
+   .home 좌우 패딩(space-4)을 상쇄해 화면 가장자리까지 스크롤되고, 첫/마지막 카드는 콘텐츠 라인에 맞춘다. */
+.home-section__scroller {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0 calc(-1 * var(--space-4));
+  padding: var(--space-1) var(--space-4);
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.home-section__scroller::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.home-section__scroller > .exh-card {
+  flex: 0 0 auto;
+  width: 140px;
+  scroll-snap-align: start;
+}

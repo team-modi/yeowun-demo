@@ -75,11 +75,13 @@ export default function ExhibitionCard({
     </button>
   );
 
-  const badges = (ddayLabel || free) && (
+  // "이번 달 새로 열리는 전시"(showOpenDate) 카드는 오픈일 배지만 쓰고 D-day 배지는 숨긴다(와이어프레임 미포함).
+  const showDday = ddayLabel && !showOpenDate;
+  const badges = (showDday || free) && (
     <div
       className={`exh-card__badges ${variant === "list" ? "exh-card__badges--inline" : ""}`}
     >
-      {ddayLabel && <span className="badge badge--dday">{ddayLabel}</span>}
+      {showDday && <span className="badge badge--dday">{ddayLabel}</span>}
       {free && <span className="badge badge--free">무료</span>}
     </div>
   );

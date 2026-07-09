@@ -17,8 +17,17 @@ export default function SectionPreview({
   onToggleBookmark,
   variant = "list",
   showOpenDate = false,
+  layout,
+  limit = 2,
 }) {
-  const shown = items.slice(0, 2);
+  const shown = items.slice(0, limit);
+  // 컨테이너: scroll(가로 스크롤) / grid(2열) / list(세로 행)
+  const containerClass =
+    layout === "scroll"
+      ? "home-section__scroller"
+      : variant === "grid"
+        ? "grid-2"
+        : "home-section__list";
 
   return (
     <section className="home-section">
@@ -32,7 +41,7 @@ export default function SectionPreview({
       {shown.length === 0 ? (
         <p className="home-section__empty">아직 표시할 전시가 없어요.</p>
       ) : (
-        <div className={variant === "grid" ? "grid-2" : "home-section__list"}>
+        <div className={containerClass}>
           {shown.map((item) => (
             <ExhibitionCard
               key={item.exhibitionId}
