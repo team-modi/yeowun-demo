@@ -6,26 +6,6 @@
   padding-bottom: var(--space-10);
 }
 
-/* ---------- 헤더(우측 상단 북마크) ---------- */
-.exh-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--space-1);
-}
-
-.exh-header__bookmark {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-full);
-  color: var(--color-ink);
-}
-
-.exh-header__bookmark:hover {
-  background: var(--color-surface);
-}
-
 /* ---------- 검색바 ---------- */
 .exh-search {
   display: flex;
