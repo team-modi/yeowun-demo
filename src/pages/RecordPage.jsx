@@ -248,7 +248,6 @@ export default function RecordPage() {
         <WriteStep
           exhibitionId={exhibition?.exhibitionId}
           initialContent={initialContent}
-          onBack={() => navigate(-1)}
           onSubmit={handleSubmit}
           submitting={submitting}
         />
