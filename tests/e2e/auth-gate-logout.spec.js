@@ -13,8 +13,9 @@ const ME_OK = {
   meta: { result: "SUCCESS" },
   data: {
     userId: 1,
-    provider: "GUEST",
-    nickname: "게스트",
+    provider: "kakao",
+    nickname: "테스트",
+    profileCompleted: true,
     profileImageUrl: null,
     tasteKeywords: [],
     stats: { recordCount: 0, exhibitionCount: 0, bookmarkCount: 0 },
@@ -22,7 +23,7 @@ const ME_OK = {
 };
 
 test.describe("로그아웃/죽은 세션 후 개인화 라우트 게이트", () => {
-  test("로그인 게스트는 인앱 이동으로 /record 를 쓸 수 있다(과잉 게이트 금지)", async ({
+  test("로그인 사용자는 인앱 이동으로 /record 를 쓸 수 있다(과잉 게이트 금지)", async ({
     page,
   }) => {
     await page.route("**/api/v1/users/me", (route) =>
