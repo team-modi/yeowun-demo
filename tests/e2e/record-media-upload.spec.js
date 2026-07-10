@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-import { loginAsTestUser } from "./_helpers";
-
 /**
  * 기록 작성 — 실제 이미지 업로드(프리사인 R2) 플로우 스모크.
  *
@@ -30,7 +28,9 @@ test.describe("기록 미디어 업로드 — 프리사인 R2", () => {
     page,
   }) => {
     // 로그인 세션(getMe 성공) — /record 는 RequireAuth 가드 뒤.
-    await loginAsTestUser(page);
+    await page.route("**/api/v1/users/me", (route) =>
+      route.fulfill(envelope({ userId: 1, provider: "GUEST", nickname: "게스트" })),
+    );
 
     // 전시 상세 프리셋(?exhibitionId=1).
     await page.route("**/api/v1/exhibitions/1", (route) =>
