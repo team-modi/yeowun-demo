@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-import { loginAsTestUser } from "./_helpers";
-
 /**
  * 기록 "질문으로 작성"(AI) 플로우의 클라이언트 회복력 스모크.
  * compose 엔드포인트(/records/ai/compose)가 일시적 502 를 한 번 반환한 뒤 200 을 주면,
@@ -19,7 +17,9 @@ const envelope = (data) => ({
 test.describe("기록 AI 작성 — 일시적 502 재시도", () => {
   test("compose 502→200: 사용자 재시도 없이 초안 단계 도달", async ({ page }) => {
     // 로그인 세션(getMe 성공) — /record 는 RequireAuth 가드 뒤에 있다.
-    await loginAsTestUser(page);
+    await page.route("**/api/v1/users/me", (route) =>
+      route.fulfill(envelope({ id: 1, nickname: "게스트" })),
+    );
 
     // 전시 상세 프리셋(?exhibitionId=1 진입 시 getDetail).
     await page.route("**/api/v1/exhibitions/1", (route) =>

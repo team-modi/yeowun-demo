@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { login } from "@api/auth";
+import { guestLogin, login } from "@api/auth";
 import { getMe } from "@api/user";
-import { startKakaoLogin, takeProvider } from "@utils/oauth";
+import {
+  startKakaoLogin,
+  startGoogleLogin,
+  takeProvider,
+  isGoogleConfigured,
+} from "@utils/oauth";
 import { useAuthStore } from "@store/authStore";
 import { BackIcon } from "@components/common/icons";
 
 /**
- * LoginPage — 카카오 소셜 로그인 진입(랜딩 플로우 B의 로그인 지점).
+ * LoginPage — 소셜 로그인 진입(랜딩 플로우 B의 로그인 지점).
  * 랜딩·전시 탐색은 로그인 없이 가능하고, 기록 작성·프로필·북마크 등 개인화 시점에만 이 화면으로 온다.
- * - 카카오: startKakaoLogin() → 카카오 인가 → /login?code= 복귀 → login(provider, code)
+ * - 카카오/구글: start{Kakao,Google}Login() → 소셜 인가 → /login?code= 복귀 → login(provider, code)
+ * - 게스트: guestLogin() 으로 소셜 없이 임시 세션(데모 편의)
  * 성공 시 쿠키(access/refresh) 세팅 → getMe() 로 사용자 로드 → redirect(원래 위치) 또는 /yeowun 이동.
  */
 export default function LoginPage() {
@@ -34,7 +40,7 @@ export default function LoginPage() {
     navigate(dest, { replace: true });
   };
 
-  // 소셜 리다이렉트 콜백: ?code= 로 돌아오면 저장해 둔 provider(kakao)로 로그인 요청
+  // 소셜 리다이렉트 콜백: ?code= 로 돌아오면 저장해 둔 provider(kakao|google)로 로그인 요청
   useEffect(() => {
     const code = searchParams.get("code");
     if (!code) return;
@@ -61,12 +67,28 @@ export default function LoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleGuest = async () => {
+    setStatus("loading");
+    try {
+      const res = await guestLogin();
+      if (res?.meta?.result !== "SUCCESS") {
+        setStatus("error");
+        return;
+      }
+      await finishLogin();
+    } catch (err) {
+      console.error("게스트 로그인 실패:", err);
+      setStatus("error");
+    }
+  };
+
   const goBack = () => {
     if (window.history.length > 1) navigate(-1);
     else navigate("/yeowun", { replace: true });
   };
 
   const busy = status === "loading";
+  const googleReady = isGoogleConfigured();
 
   return (
     <main className="login-page">
@@ -103,6 +125,24 @@ export default function LoginPage() {
             disabled={busy}
           >
             카카오로 계속하기
+          </button>
+          <button
+            type="button"
+            className="login-social login-social--google"
+            onClick={googleReady ? startGoogleLogin : () => setStatus("error")}
+            disabled={busy || !googleReady}
+            title={googleReady ? undefined : "구글 로그인은 준비 중이에요"}
+          >
+            구글로 계속하기
+          </button>
+
+          <button
+            type="button"
+            className="login-page__guest"
+            onClick={handleGuest}
+            disabled={busy}
+          >
+            {busy ? "시작하는 중…" : "게스트로 둘러보기"}
           </button>
         </div>
       </div>
