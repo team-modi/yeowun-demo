@@ -36,7 +36,7 @@ const SUBVIEWS = {
 export default function UserPage() {
   const navigate = useNavigate();
   const toast = useUiStore((st) => st.toast);
-  const clear = useAuthStore((st) => st.clear);
+  const reset = useAuthStore((st) => st.reset);
   const setUser = useAuthStore((st) => st.setUser);
 
   const [me, setMe] = useState(null);
@@ -86,7 +86,7 @@ export default function UserPage() {
     } catch {
       // 서버 실패해도 클라 세션은 정리
     } finally {
-      clear();
+      reset();
       navigate("/login", { replace: true });
     }
   };
@@ -102,7 +102,7 @@ export default function UserPage() {
     try {
       const res = await withdraw();
       if (res?.meta?.result === "SUCCESS") {
-        clear();
+        reset();
         navigate("/login", { replace: true });
       } else {
         toast(res?.meta?.message || "탈퇴에 실패했어요.", "error");

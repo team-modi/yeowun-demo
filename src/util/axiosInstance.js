@@ -1,5 +1,6 @@
 import axios from "axios";
 import { refresh } from "@api/auth";
+import { useAuthStore } from "@store/authStore";
 
 const axiosInstance = axios.create({
   baseURL: "/api/v1",
@@ -43,6 +44,10 @@ axiosInstance.interceptors.response.use(
       processQueue(null);
       return axiosInstance(originalRequest);
     } catch (refreshError) {
+      // 재발급까지 실패 = 세션이 죽었다(만료·타탭 로그아웃·강제만료).
+      // 클라 인증 상태를 비워 RequireAuth 가 개인화 라우트를 즉시 게이트하도록 전파한다.
+      // (checked 는 유지 — 이미 "확인 끝, 비로그인" 이므로 스피너 없이 바로 /login 리다이렉트)
+      useAuthStore.getState().clear();
       processQueue(refreshError);
       return Promise.reject(refreshError);
     } finally {
