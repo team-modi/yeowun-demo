@@ -13,5 +13,9 @@ export const useAuthStore = create((set) => ({
   setAuthed: (authed) => set({ authed }),
   setUser: (user) => set({ user }),
   setChecked: (checked) => set({ checked }),
+  // clear: 세션 확인은 끝난 상태(checked 유지)로 로그인만 해제 — 죽은 세션이 즉시 게이트로 전파된다.
   clear: () => set({ authed: false, user: null }),
+  // reset: 인증 상태를 완전 초기화(checked 까지 리셋) — 다음 개인화 진입 시 getMe 부트스트랩을
+  // 다시 돌려 서버 기준으로 재확정한다. 명시적 로그아웃/탈퇴에 사용.
+  reset: () => set({ authed: false, user: null, checked: false }),
 }));
