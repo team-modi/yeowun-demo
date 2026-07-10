@@ -108,7 +108,7 @@ export default function RecordPage() {
         setMedia(
           (Array.isArray(data.media) ? data.media : [])
             .filter((m) => m?.url)
-            .map((m) => ({ type: m.type, url: m.url })),
+            .map((m) => ({ type: m.type, url: m.url, sizeBytes: m.sizeBytes ?? 0 })),
         );
         setInitialContent(data.content || "");
         goStep(2, { replace: true }); // 수정 진입 → 뒤로가기 시 아카이브로(단계 1 거치지 않음)
@@ -162,7 +162,7 @@ export default function RecordPage() {
           type: m.type,
           url: m.url.trim(),
           sortOrder: i,
-          sizeBytes: 0,
+          sizeBytes: m.sizeBytes ?? 0,
         })),
     };
     setSubmitting(true);

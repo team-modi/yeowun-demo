@@ -470,6 +470,11 @@
   background: var(--color-surface-alt);
 }
 
+/* 업로드 중 플레이스홀더 타일(스피너 오버레이) */
+.rec-media-tile--uploading {
+  pointer-events: none;
+}
+
 .rec-media-tile__img {
   width: 100%;
   height: 100%;

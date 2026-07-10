@@ -293,6 +293,7 @@ export default function RecordDetail({
                             className="rec-detail__media-el"
                             src={m.url}
                             controls
+                            playsInline
                             preload="metadata"
                           />
                         ) : (
