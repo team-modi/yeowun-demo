@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useUiStore } from "@store/uiStore";
+import { uploadRecordMedia, validateMediaFile } from "@api/media";
 import Button from "@components/common/Button";
+import Spinner from "@components/common/Spinner";
 import FilterChip from "@components/common/FilterChip";
 import {
   EMOTION_PRESETS,
@@ -44,6 +46,8 @@ export default function EmotionMediaStep({
   const [tmpDate, setTmpDate] = useState(viewedAt);
   const [emotionOpen, setEmotionOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const toggleEmotion = (label) =>
     setEmotions((prev) =>
@@ -77,17 +81,43 @@ export default function EmotionMediaStep({
     }
     setMediaOpen(true);
   };
+  // "사진선택"/"영상선택" → accept 필터를 지정하고 네이티브 파일 선택창을 연다
+  // (모바일은 카메라/갤러리로 연결). 실제 업로드는 onFileSelected 에서 처리.
   const pickMedia = (type) => {
-    const label = type === "PHOTO" ? "사진" : "영상";
-    const url = window.prompt(`${label} URL을 입력해 주세요`);
-    if (url == null) return;
-    const trimmed = url.trim();
-    if (!trimmed) {
-      toast("미디어 URL을 입력해 주세요.", "error");
+    if (uploading) return;
+    const input = fileInputRef.current;
+    if (!input) return;
+    input.accept = type === "VIDEO" ? "video/*" : "image/*";
+    input.click();
+  };
+
+  // 파일 선택 → 클라 검증 → 프리사인·R2 업로드 → media 에 { type, url, sizeBytes } 추가.
+  const onFileSelected = async (e) => {
+    const file = e.target.files?.[0];
+    // 같은 파일을 다시 고를 수 있도록 항상 input 값을 비운다.
+    e.target.value = "";
+    if (!file) return;
+    if (media.length >= MAX_MEDIA) {
+      toast(`미디어는 최대 ${MAX_MEDIA}개까지 추가할 수 있어요.`, "error");
       return;
     }
-    setMedia((prev) => [...prev, { type, url: trimmed }]);
-    setMediaOpen(false);
+    const invalid = validateMediaFile(file);
+    if (invalid) {
+      toast(invalid, "error");
+      return;
+    }
+    setUploading(true);
+    try {
+      const item = await uploadRecordMedia(file);
+      setMedia((prev) =>
+        prev.length >= MAX_MEDIA ? prev : [...prev, item],
+      );
+      setMediaOpen(false);
+    } catch (err) {
+      toast(err?.message || "업로드에 실패했어요. 다시 시도해 주세요.", "error");
+    } finally {
+      setUploading(false);
+    }
   };
   const removeMedia = (idx) => setMedia((prev) => prev.filter((_, i) => i !== idx));
 
@@ -141,9 +171,21 @@ export default function EmotionMediaStep({
       <div className="rec-field">
         <span className="rec-field__label">내가 바라본 전시</span>
         <p className="rec-field__desc">전시를 떠올릴 수 있는 장면이 있다면 추가해 주세요</p>
+        {/* 네이티브 파일 선택 — 사진/영상 옵션이 accept 를 바꿔가며 트리거한다(숨김). */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          hidden
+          onChange={onFileSelected}
+        />
         <div className="rec-media-grid">
           {media.length < MAX_MEDIA && (
-            <button type="button" className="rec-media-tile rec-media-tile--add" onClick={openMedia}>
+            <button
+              type="button"
+              className="rec-media-tile rec-media-tile--add"
+              onClick={openMedia}
+              disabled={uploading}
+            >
               <span className="rec-media-tile__icon" aria-hidden>
                 <ImagePlusIcon size={26} />
               </span>
@@ -151,6 +193,11 @@ export default function EmotionMediaStep({
                 {media.length}/{MAX_MEDIA}
               </span>
             </button>
+          )}
+          {uploading && (
+            <div className="rec-media-tile rec-media-tile--filled rec-media-tile--uploading">
+              <Spinner />
+            </div>
           )}
           {media.map((m, idx) => (
             <div className="rec-media-tile rec-media-tile--filled" key={idx}>

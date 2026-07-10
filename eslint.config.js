@@ -13,6 +13,13 @@ export default defineConfig([
     },
   },
   {
+    // e2e 스펙은 Node 런타임(Buffer 등)에서 실행된다.
+    files: ["tests/**/*.{js,jsx}"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
     files: ["**/*.{js,jsx}"],
     extends: [js.configs.recommended, reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
     languageOptions: {
