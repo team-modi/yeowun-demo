@@ -33,6 +33,22 @@ export default function WriteStep({
 
   const over = content.length > MAX_CONTENT;
 
+  // AI 엔드포인트가 일시적 서버 오류(500/502/504)로 실패하면 짧은 지연 뒤 1회만 재시도한다.
+  // 503(AI_DISABLED)·429(AI_RATE_LIMITED)는 성격이 달라 재시도하지 않고 호출부에서 분기한다.
+  const isTransient = (err) => {
+    const status = err?.response?.status;
+    return status === 500 || status === 502 || status === 504;
+  };
+  const withRetryOnce = async (fn) => {
+    try {
+      return await fn();
+    } catch (err) {
+      if (!isTransient(err)) throw err;
+      await new Promise((r) => setTimeout(r, 600)); // 서버 회복 여유를 두고 1회 재시도
+      return fn();
+    }
+  };
+
   const degradeToDirect = (msg) => {
     toast(msg, "info");
     setChoice("DIRECT");
@@ -42,9 +58,11 @@ export default function WriteStep({
   };
 
   const loadQuestions = async () => {
+    // 이미 질문이 있으면 "다른 질문 보기"(재생성), 없으면 최초 로드. 실패 시 처리 방식이 다르다.
+    const regenerating = questions.length > 0;
     setAiLoading(true);
     try {
-      const { data } = await getAiQuestions({ exhibitionId });
+      const { data } = await withRetryOnce(() => getAiQuestions({ exhibitionId }));
       const qs = data?.questions ?? [];
       if (qs.length === 0) {
         degradeToDirect("AI 질문을 만들지 못했어요. 직접 작성으로 진행할게요.");
@@ -55,9 +73,18 @@ export default function WriteStep({
       setQi(0);
       return true;
     } catch (err) {
-      if (err?.response?.status === 503) {
+      const status = err?.response?.status;
+      if (status === 503) {
         degradeToDirect("AI 기능이 아직 준비되지 않았어요. 직접 작성으로 진행할게요.");
+      } else if (regenerating) {
+        // 재생성 실패는 직접 작성으로 내리지 않고 현재 질문을 유지해 다시 시도할 수 있게 한다.
+        if (status === 429) {
+          toast("AI 사용이 잠시 많아요. 잠시 후 다시 시도해 주세요.", "error");
+        } else {
+          toast("질문을 다시 만들지 못했어요. 잠시 후 다시 시도해 주세요.", "error");
+        }
       } else {
+        // 최초 로드 실패는 기존대로 직접 작성으로 graceful degrade.
         degradeToDirect(errMessage(err, "AI 질문 생성에 실패했어요. 직접 작성으로 진행할게요."));
       }
       return false;
@@ -86,15 +113,19 @@ export default function WriteStep({
         exhibitionId,
         answers: questions.map((q, i) => ({ question: q, answer: answers[i].trim() })),
       };
-      const { data } = await composeAiRecord(body);
+      const { data } = await withRetryOnce(() => composeAiRecord(body));
       setContent((data?.content ?? "").slice(0, MAX_CONTENT));
       setPhase("ai-review");
       toast("AI가 감상문 초안을 만들었어요. 자유롭게 다듬어 보세요.", "success");
     } catch (err) {
-      if (err?.response?.status === 503) {
+      const status = err?.response?.status;
+      if (status === 503) {
         degradeToDirect("AI 기능이 아직 준비되지 않았어요. 직접 작성으로 진행할게요.");
+      } else if (status === 429) {
+        // 서버 쿨다운이 있으므로 즉시 자동 재시도하지 않고 안내만 한다.
+        toast("AI 사용이 잠시 많아요. 잠시 후 다시 시도해 주세요.", "error");
       } else {
-        toast(errMessage(err, "감상문 생성에 실패했어요."), "error");
+        toast("감상문 생성에 실패했어요. 다시 시도해 주세요.", "error");
       }
     } finally {
       setAiLoading(false);
