@@ -1,14 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getDetailRecord,
   addRecordBookmark,
   removeRecordBookmark,
+  deleteRecord,
 } from "@api/record";
 import { useUiStore } from "@store/uiStore";
+import Button from "@components/common/Button";
 import Spinner from "@components/common/Spinner";
 import ErrorState from "@components/common/ErrorState";
 import { BackIcon, BookmarkIcon } from "@components/common/icons";
 import { formatDate } from "@components/archive/format";
+
+/** 더보기(⋯) — 수정/삭제 메뉴 토글 아이콘. */
+function MoreIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="5" r="1.8" />
+      <circle cx="12" cy="12" r="1.8" />
+      <circle cx="12" cy="19" r="1.8" />
+    </svg>
+  );
+}
 
 /**
  * RecordDetail — 기록 상세 (wf-13: 큰 포스터 · 제목/장소/관람일 ·
@@ -22,13 +36,22 @@ import { formatDate } from "@components/archive/format";
  *   representativeEmotion, cardPhrase, emotionCodes[], media[], exhibition* 등.
  *   artistSummary 필드는 없어 장소(exhibitionPlace)를 부제로 사용.
  */
-export default function RecordDetail({ recordId, onClose, onBookmarkChange }) {
+export default function RecordDetail({
+  recordId,
+  onClose,
+  onBookmarkChange,
+  onDeleted,
+}) {
   const toast = useUiStore((s) => s.toast);
+  const navigate = useNavigate();
 
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookmarking, setBookmarking] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,6 +99,28 @@ export default function RecordDetail({ recordId, onClose, onBookmarkChange }) {
     }
   }, [record, bookmarking, onBookmarkChange, toast]);
 
+  // 수정 — 작성 플로우를 편집 모드로 재사용한다(전시는 고정, 관람일·감정·미디어·본문 프리셋).
+  const goEdit = useCallback(() => {
+    setMenuOpen(false);
+    onClose?.();
+    navigate(`/record?editId=${recordId}`);
+  }, [navigate, recordId, onClose]);
+
+  // 삭제 — 확인 후 soft delete. 성공 시 목록에서 제거하고 상세를 닫는다.
+  const doDelete = useCallback(async () => {
+    if (deleting) return;
+    setDeleting(true);
+    try {
+      await deleteRecord(recordId);
+      toast("기록을 삭제했어요", "success");
+      onDeleted?.(recordId);
+      onClose?.();
+    } catch {
+      toast("잠시 후 다시 시도해 주세요", "error");
+      setDeleting(false);
+    }
+  }, [deleting, recordId, onDeleted, onClose, toast]);
+
   const poster = record?.exhibitionPosterUrl || null;
   // 감정 키워드: 대표 감정 + 나머지 감정 코드(중복 제거).
   const emotionCodes = Array.isArray(record?.emotionCodes)
@@ -115,16 +160,64 @@ export default function RecordDetail({ recordId, onClose, onBookmarkChange }) {
           </button>
           <span className="rec-detail__bar-spacer" />
           {record ? (
-            <button
-              type="button"
-              className={`rec-detail__icon-btn ${record.bookmarked ? "is-on" : ""}`}
-              aria-pressed={!!record.bookmarked}
-              aria-label={record.bookmarked ? "저장 해제" : "저장"}
-              disabled={bookmarking}
-              onClick={toggleBookmark}
-            >
-              <BookmarkIcon size={20} filled={!!record.bookmarked} />
-            </button>
+            <>
+              <button
+                type="button"
+                className={`rec-detail__icon-btn ${record.bookmarked ? "is-on" : ""}`}
+                aria-pressed={!!record.bookmarked}
+                aria-label={record.bookmarked ? "저장 해제" : "저장"}
+                disabled={bookmarking}
+                onClick={toggleBookmark}
+              >
+                <BookmarkIcon size={20} filled={!!record.bookmarked} />
+              </button>
+              <div className="rec-detail__menu-wrap">
+                <button
+                  type="button"
+                  className="rec-detail__icon-btn"
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  aria-label="더보기"
+                  onClick={() => setMenuOpen((v) => !v)}
+                >
+                  <MoreIcon size={20} />
+                </button>
+                {menuOpen && (
+                  <>
+                    <div
+                      className="rec-detail__menu-scrim"
+                      aria-hidden="true"
+                      onClick={() => setMenuOpen(false)}
+                    />
+                    <ul className="rec-detail__menu" role="menu">
+                      <li role="none">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className="rec-detail__menu-item"
+                          onClick={goEdit}
+                        >
+                          수정
+                        </button>
+                      </li>
+                      <li role="none">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className="rec-detail__menu-item rec-detail__menu-item--danger"
+                          onClick={() => {
+                            setMenuOpen(false);
+                            setConfirmDelete(true);
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </li>
+                    </ul>
+                  </>
+                )}
+              </div>
+            </>
           ) : (
             <span className="rec-detail__icon-btn" aria-hidden="true" />
           )}
@@ -218,6 +311,36 @@ export default function RecordDetail({ recordId, onClose, onBookmarkChange }) {
             </>
           )}
         </div>
+
+        {confirmDelete && (
+          <div
+            className="rec-confirm"
+            role="alertdialog"
+            aria-modal="true"
+            aria-label="기록 삭제 확인"
+            onClick={(e) => {
+              if (e.target === e.currentTarget && !deleting) setConfirmDelete(false);
+            }}
+          >
+            <div className="rec-confirm__box">
+              <h3 className="rec-confirm__title">기록을 삭제할까요?</h3>
+              <p className="rec-confirm__desc">삭제한 기록은 다시 볼 수 없어요.</p>
+              <div className="rec-confirm__actions">
+                <Button
+                  variant="secondary"
+                  block
+                  disabled={deleting}
+                  onClick={() => setConfirmDelete(false)}
+                >
+                  취소
+                </Button>
+                <Button block disabled={deleting} onClick={doDelete}>
+                  {deleting ? "삭제 중…" : "삭제"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

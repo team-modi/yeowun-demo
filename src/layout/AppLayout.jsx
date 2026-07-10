@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { getMe } from "@api/user";
+import { useAuthStore } from "@store/authStore";
 import TopBar from "@components/common/TopBar";
 import BottomNav from "@components/common/BottomNav";
 import ToastHost from "@components/common/ToastHost";
@@ -27,6 +30,34 @@ function resolveMeta(pathname) {
 export default function AppLayout() {
   const { pathname } = useLocation();
   const meta = resolveMeta(pathname);
+
+  // 세션 부트스트랩(1회): 익명 탐색은 그대로 두되, 유효한 쿠키가 있으면 조용히 로그인 상태로 인식한다.
+  // 실패(비로그인)해도 리다이렉트하지 않는다 — 강제 로그인은 RequireAuth(개인화 라우트)에서만.
+  const checked = useAuthStore((s) => s.checked);
+  const setAuthed = useAuthStore((s) => s.setAuthed);
+  const setUser = useAuthStore((s) => s.setUser);
+  const setChecked = useAuthStore((s) => s.setChecked);
+
+  useEffect(() => {
+    if (checked) return;
+    let alive = true;
+    (async () => {
+      try {
+        const me = await getMe();
+        if (alive && me?.meta?.result === "SUCCESS") {
+          setUser(me.data);
+          setAuthed(true);
+        }
+      } catch {
+        // 비로그인 — 익명으로 진행
+      } finally {
+        if (alive) setChecked(true);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [checked, setAuthed, setUser, setChecked]);
 
   return (
     <div className="app-layout">

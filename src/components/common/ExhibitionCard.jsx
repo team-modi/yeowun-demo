@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@store/authStore";
 import { BookmarkIcon } from "@components/common/icons";
 
 /**
@@ -20,6 +21,10 @@ export default function ExhibitionCard({
   variant = "grid",
   showOpenDate = false,
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const authed = useAuthStore((s) => s.authed);
+
   if (!item) return null;
   const {
     exhibitionId,
@@ -68,6 +73,12 @@ export default function ExhibitionCard({
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        // 관심 등록은 로그인 필요 — 비로그인은 로그인 화면으로 보내고 이후 원래 위치로 복귀.
+        if (!authed) {
+          const redirect = encodeURIComponent(location.pathname + location.search);
+          navigate(`/login?redirect=${redirect}`);
+          return;
+        }
         onToggleBookmark(item);
       }}
     >
