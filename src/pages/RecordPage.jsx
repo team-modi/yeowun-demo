@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { createRecord, getDetailRecord, updateRecord } from "@api/record";
@@ -7,6 +7,7 @@ import { useUiStore } from "@store/uiStore";
 import Button from "@components/common/Button";
 import Spinner from "@components/common/Spinner";
 import ExhibitionSelectStep from "@components/record/ExhibitionSelectStep";
+import CustomExhibitionForm from "@components/record/CustomExhibitionForm";
 import EmotionMediaStep from "@components/record/EmotionMediaStep";
 import WriteStep from "@components/record/WriteStep";
 import { errMessage, todayISO } from "@components/record/constants";
@@ -22,14 +23,41 @@ import "@styles/record.css";
 export default function RecordPage() {
   const navigate = useNavigate();
   const toast = useUiStore((s) => s.toast);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const preselectedId = searchParams.get("exhibitionId");
   const editId = searchParams.get("editId");
   const isEdit = !!editId;
 
-  const [step, setStep] = useState(1); // 1 | 2 | 3 | "done"
   const [exhibition, setExhibition] = useState(null);
   const [preloading, setPreloading] = useState(!!preselectedId || !!editId);
+
+  // step 을 URL(?step=)로 관리 → 상단 뒤로가기·브라우저 뒤로가기 모두 히스토리 pop 으로 단계별 이동.
+  const stepParam = searchParams.get("step");
+  const step =
+    stepParam === "done"
+      ? "done"
+      : stepParam === "add" // 전시 직접 추가 폼(1단계 위의 서브 단계)
+        ? "add"
+        : stepParam === "3"
+          ? 3
+          : stepParam === "2"
+            ? 2
+            : 1;
+
+  // 다음 단계로 진행. 기본은 push(새 히스토리 항목 → 뒤로가기로 이 단계 복귀), replace 는 현재 항목 교체.
+  const goStep = useCallback(
+    (s, opts = {}) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.set("step", String(s));
+          return next;
+        },
+        { replace: !!opts.replace },
+      );
+    },
+    [setSearchParams],
+  );
 
   const [viewedAt, setViewedAt] = useState(todayISO());
   const [emotions, setEmotions] = useState([]);
@@ -46,7 +74,7 @@ export default function RecordPage() {
         const { data } = await getDetail(preselectedId);
         if (!alive) return;
         setExhibition(data);
-        setStep(2);
+        goStep(2, { replace: true }); // 상세 "기록하기" 진입 → 뒤로가기 시 상세로(단계 1 거치지 않음)
       } catch (err) {
         if (!alive) return;
         toast(errMessage(err, "전시 정보를 불러오지 못했어요."), "error");
@@ -83,7 +111,7 @@ export default function RecordPage() {
             .map((m) => ({ type: m.type, url: m.url })),
         );
         setInitialContent(data.content || "");
-        setStep(2);
+        goStep(2, { replace: true }); // 수정 진입 → 뒤로가기 시 아카이브로(단계 1 거치지 않음)
       } catch (err) {
         if (!alive) return;
         toast(errMessage(err, "기록을 불러오지 못했어요."), "error");
@@ -97,9 +125,24 @@ export default function RecordPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
+  // 새로고침 등으로 전시 정보 없이 2·3단계 URL 로 들어오면 1단계로 되돌린다(빈 화면/오류 방지).
+  useEffect(() => {
+    if (preloading) return;
+    if ((step === 2 || step === 3) && !exhibition) {
+      goStep(1, { replace: true });
+    }
+  }, [step, exhibition, preloading, goStep]);
+
+  // 리스트에서 선택 → 2단계(push, 뒤로가기 시 리스트 복귀).
   const handleSelect = (exh) => {
     setExhibition(exh);
-    setStep(2);
+    goStep(2);
+  };
+
+  // 직접 추가 폼에서 생성 → 2단계로 이동하되 add 항목을 replace → 뒤로가기 시 폼이 아니라 리스트로 복귀.
+  const handleCustomCreated = (exh) => {
+    setExhibition(exh);
+    goStep(2, { replace: true });
   };
 
   const handleSubmit = async (content, writeMode) => {
@@ -131,7 +174,7 @@ export default function RecordPage() {
         toast(res?.meta?.message || "기록 저장에 실패했어요.", "error");
         return;
       }
-      setStep("done");
+      goStep("done", { replace: true }); // 저장 완료 화면은 현재 항목 교체(뒤로가기로 재제출 방지)
     } catch (err) {
       toast(errMessage(err, "기록 저장에 실패했어요."), "error");
     } finally {
@@ -174,7 +217,18 @@ export default function RecordPage() {
   return (
     <div className="page">
       {step === 1 && (
-        <ExhibitionSelectStep onSelect={handleSelect} initialId={preselectedId} />
+        <ExhibitionSelectStep
+          onSelect={handleSelect}
+          onAddCustom={() => goStep("add")}
+          initialId={preselectedId}
+        />
+      )}
+
+      {step === "add" && (
+        <CustomExhibitionForm
+          onCreated={handleCustomCreated}
+          onCancel={() => navigate(-1)}
+        />
       )}
 
       {step === 2 && (
@@ -186,7 +240,7 @@ export default function RecordPage() {
           setEmotions={setEmotions}
           media={media}
           setMedia={setMedia}
-          onNext={() => setStep(3)}
+          onNext={() => goStep(3)}
         />
       )}
 
@@ -194,7 +248,7 @@ export default function RecordPage() {
         <WriteStep
           exhibitionId={exhibition?.exhibitionId}
           initialContent={initialContent}
-          onBack={() => setStep(2)}
+          onBack={() => navigate(-1)}
           onSubmit={handleSubmit}
           submitting={submitting}
         />

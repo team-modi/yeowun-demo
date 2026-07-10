@@ -74,41 +74,56 @@ export default function BannerCarousel({ banners = [] }) {
   const active = count > 0 ? ((index % count) + count) % count : 0;
 
   // 5초 자동 전환 (배너 2개 이상일 때만).
+  // active 를 의존성에 포함 → 슬라이드가 바뀔 때마다(자동/수동 무관) 인터벌을 걷어내고 새로 건다.
+  // 덕분에 "수동으로 넘기면 5초 카운트다운이 처음부터" 가 자연히 만족된다(예: 4초에 넘겨도 다음 전환은 5초 뒤).
   useEffect(() => {
     if (count <= 1) return undefined;
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % count);
     }, AUTO_MS);
     return () => clearInterval(id);
-  }, [count]);
+  }, [count, active]);
 
-  // 수동 스와이프.
+  // 수동 스와이프 — 포인터 이벤트로 마우스·터치·펜을 한 경로로 처리.
   const startX = useRef(null);
   const draggedRef = useRef(false);
 
-  const onTouchStart = useCallback((e) => {
-    startX.current = e.touches[0].clientX;
+  const onPointerDown = useCallback((e) => {
+    // 마우스는 좌클릭(0)만. 터치·펜은 button===0 이라 통과.
+    if (e.button != null && e.button !== 0) return;
+    startX.current = e.clientX;
     draggedRef.current = false;
+    // 포인터가 요소 밖으로 나가도 move/up 을 계속 받도록 캡처.
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* 캡처 미지원 브라우저는 무시 */
+    }
   }, []);
 
-  const onTouchMove = useCallback((e) => {
+  const onPointerMove = useCallback((e) => {
     if (startX.current == null) return;
-    if (Math.abs(e.touches[0].clientX - startX.current) > 10) {
+    if (Math.abs(e.clientX - startX.current) > 10) {
       draggedRef.current = true;
     }
   }, []);
 
-  const onTouchEnd = useCallback(
+  const onPointerEnd = useCallback(
     (e) => {
-      if (startX.current == null || count <= 1) return;
-      const dx = e.changedTouches[0].clientX - startX.current;
+      if (startX.current == null) return;
+      const dx = e.clientX - startX.current;
+      startX.current = null;
+      if (count <= 1) return;
       const threshold = 40;
       if (dx > threshold) setIndex((i) => (i - 1 + count) % count);
       else if (dx < -threshold) setIndex((i) => (i + 1) % count);
-      startX.current = null;
     },
     [count],
   );
+
+  const onPointerCancel = useCallback(() => {
+    startX.current = null;
+  }, []);
 
   // 스와이프 후 발생하는 유령 클릭이 이동을 트리거하지 않도록 캡처 단계에서 차단.
   const onClickCapture = useCallback((e) => {
@@ -126,9 +141,10 @@ export default function BannerCarousel({ banners = [] }) {
       <div
         className="banner-track"
         style={{ transform: `translateX(-${active * 100}%)` }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerCancel}
         onClickCapture={onClickCapture}
       >
         {list.map((b, i) => {

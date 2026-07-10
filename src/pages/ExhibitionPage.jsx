@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import { getList } from "@api/exhibition";
 import { addBookmark, removeBookmark } from "@api/bookmark";
@@ -11,7 +11,6 @@ import ErrorState from "@components/common/ErrorState";
 import Spinner from "@components/common/Spinner";
 import Button from "@components/common/Button";
 import useInfiniteCursor from "@components/common/useInfiniteCursor";
-import { BookmarkIcon } from "@components/common/icons";
 
 import { MIN_KEYWORD } from "@components/exhibition/constants";
 import { SearchIcon, FilterIcon } from "@components/exhibition/icons";
@@ -141,13 +140,6 @@ export default function ExhibitionPage() {
 
   return (
     <div className="page exh-page">
-      {/* 헤더: 우측 상단 북마크(관심 전시) */}
-      <div className="exh-header">
-        <Link to="/user" className="exh-header__bookmark" aria-label="관심 전시">
-          <BookmarkIcon size={22} />
-        </Link>
-      </div>
-
       {/* 검색바 (Q 아이콘 · 2글자 이상) */}
       <form className="exh-search" onSubmit={onSubmit} role="search">
         <button

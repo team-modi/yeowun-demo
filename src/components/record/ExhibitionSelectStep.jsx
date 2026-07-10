@@ -5,7 +5,6 @@ import Button from "@components/common/Button";
 import Spinner from "@components/common/Spinner";
 import EmptyState from "@components/common/EmptyState";
 import ExhibitionCard from "@components/common/ExhibitionCard";
-import CustomExhibitionForm from "./CustomExhibitionForm";
 
 const SORTS = [
   { code: "latest", label: "최신순" },
@@ -14,10 +13,11 @@ const SORTS = [
 
 /**
  * ExhibitionSelectStep — 관람한 전시 선택(04-01, wf-07).
- * 리스트에서 전시를 고른 뒤 "다음"으로 확정. "전시 직접 추가하기" → CustomExhibitionForm.
- * props: { onSelect(exhibition), initialId? }
+ * 리스트에서 전시를 고른 뒤 "다음"으로 확정. "전시 직접 추가하기"는 상위(RecordPage)가
+ * URL 단계로 열도록 onAddCustom 을 위임한다(뒤로가기가 리스트로 복귀하도록 히스토리에 반영).
+ * props: { onSelect(exhibition), onAddCustom(), initialId? }
  */
-export default function ExhibitionSelectStep({ onSelect, initialId }) {
+export default function ExhibitionSelectStep({ onSelect, onAddCustom, initialId }) {
   const [keyword, setKeyword] = useState("");
   const [sort, setSort] = useState("latest");
   const [items, setItems] = useState([]);
@@ -25,7 +25,6 @@ export default function ExhibitionSelectStep({ onSelect, initialId }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [picked, setPicked] = useState(null);
-  const [adding, setAdding] = useState(false);
   const debounceRef = useRef(null);
   const preselDone = useRef(false);
 
@@ -65,12 +64,6 @@ export default function ExhibitionSelectStep({ onSelect, initialId }) {
     return () => clearTimeout(debounceRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, sort]);
-
-  if (adding) {
-    return (
-      <CustomExhibitionForm onCreated={(exh) => onSelect(exh)} onCancel={() => setAdding(false)} />
-    );
-  }
 
   return (
     <div className="rec-step">
@@ -137,7 +130,7 @@ export default function ExhibitionSelectStep({ onSelect, initialId }) {
       )}
 
       <div className="rec-select-footer">
-        <button type="button" className="rec-add-banner" onClick={() => setAdding(true)}>
+        <button type="button" className="rec-add-banner" onClick={onAddCustom}>
           <span className="rec-add-banner__text">
             <strong>전시 직접 추가하기</strong>
             <small>찾으시는 전시가 없거나 종료 되었나요?</small>

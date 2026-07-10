@@ -13,62 +13,93 @@ import "@styles/home.css";
  * 진입 시 병렬 4콜: 배너 + 섹션 3개(ending-soon / opening-this-month / free, size=2).
  * 카드 북마크는 낙관적 토글(실패 시 롤백 + 토스트).
  */
+// size: 섹션별 조회 개수(기본 2). limit(=size)만큼 노출.
+// layout "scroll": 포스터 타일을 가로 스크롤로 노출(이번 달 새로 열리는 전시 — 5개).
 const SECTIONS = [
   { key: "ending-soon", title: "곧 끝나기 전에 봐야 할 전시", variant: "list" },
   {
     key: "opening-this-month",
     title: "이번 달 새로 열리는 전시",
     variant: "grid",
+    layout: "scroll",
+    size: 5,
     showOpenDate: true,
   },
   { key: "free", title: "무료로 볼 수 있는 전시", variant: "list" },
 ];
 
+// 홈 데이터 세션 캐시(모듈 싱글턴) — 탭 전환으로 재진입 시 스피너 없이 즉시 표시.
+// 전체 새로고침 시 초기화. TTL 이내 재진입은 재요청도 생략(백엔드 부담·rate limit↓).
+let homeCache = null; // { banners, sections, at }
+const HOME_TTL = 30_000; // 30초
+
 export default function HomePage() {
   const toast = useUiStore((s) => s.toast);
 
-  const [banners, setBanners] = useState([]);
+  // 캐시가 있으면 그걸로 즉시 초기화 → 재진입 시 스피너 없이 바로 표시.
+  const [banners, setBanners] = useState(() => homeCache?.banners ?? []);
   // { "ending-soon": [...], "opening-this-month": [...], "free": [...] }
-  const [sections, setSections] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [sections, setSections] = useState(() => homeCache?.sections ?? {});
+  const [loading, setLoading] = useState(() => !homeCache);
   const [error, setError] = useState(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  // silent=true(캐시 있는 백그라운드 갱신)면 스피너를 띄우지 않는다.
+  const load = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
     setError(null);
     // 배너/섹션을 독립적으로 처리(allSettled) — 일부(예: 배너)가 실패해도 홈을 통째로 막지 않고
     // 성공한 것만 보여주는 graceful degrade. 전체(배너+모든 섹션)가 실패했을 때만 전체 에러 화면.
     const [bannerRes, ...sectionRes] = await Promise.allSettled([
       getBanners(),
-      ...SECTIONS.map((s) => getList({ section: s.key, size: 2 })),
+      ...SECTIONS.map((s) => getList({ section: s.key, size: s.size ?? 2 })),
     ]);
-    setBanners(
-      bannerRes.status === "fulfilled" ? (bannerRes.value?.data?.banners ?? []) : [],
-    );
-    const next = {};
+
+    // 실패한 부분은 이전(캐시) 값을 유지 — 조용한 갱신 중 일부 실패로 화면이 비지 않게.
+    const prevBanners = homeCache?.banners ?? [];
+    const prevSections = homeCache?.sections ?? {};
+    const nextBanners =
+      bannerRes.status === "fulfilled" ? (bannerRes.value?.data?.banners ?? []) : prevBanners;
+    const nextSections = { ...prevSections };
     SECTIONS.forEach((s, i) => {
       const r = sectionRes[i];
-      next[s.key] = r.status === "fulfilled" ? (r.value?.data?.content ?? []) : [];
+      if (r.status === "fulfilled") nextSections[s.key] = r.value?.data?.content ?? [];
     });
-    setSections(next);
 
-    const allFailed =
-      bannerRes.status === "rejected" &&
-      sectionRes.every((r) => r.status === "rejected");
-    setError(allFailed ? (bannerRes.reason ?? new Error("홈을 불러오지 못했습니다")) : null);
+    const anySuccess =
+      bannerRes.status === "fulfilled" || sectionRes.some((r) => r.status === "fulfilled");
+    if (!anySuccess && !homeCache) {
+      // 캐시도 없고 전부 실패 → 전체 에러 화면
+      setError(bannerRes.reason ?? new Error("홈을 불러오지 못했습니다"));
+      setLoading(false);
+      return;
+    }
+
+    setBanners(nextBanners);
+    setSections(nextSections);
+    homeCache = { banners: nextBanners, sections: nextSections, at: Date.now() };
+    setError(null);
     setLoading(false);
   }, []);
 
-  // 마이크로태스크로 지연시켜 effect 내 동기 setState 를 피한다.
+  // 마운트 시: 캐시가 신선(TTL 이내)하면 재요청 없이 캐시 그대로. 오래됐으면 조용히 갱신,
+  // 캐시가 없으면 일반 로드(스피너). 마이크로태스크 지연으로 effect 내 동기 setState 를 피한다.
   useEffect(() => {
     let cancelled = false;
     Promise.resolve().then(() => {
-      if (!cancelled) load();
+      if (cancelled) return;
+      const fresh = homeCache && Date.now() - homeCache.at < HOME_TTL;
+      if (fresh) return;
+      load({ silent: !!homeCache });
     });
     return () => {
       cancelled = true;
     };
   }, [load]);
+
+  // 상태 변경(로드·북마크 토글)을 캐시에 반영. 신선도(at)는 load 에서만 갱신.
+  useEffect(() => {
+    if (homeCache) homeCache = { ...homeCache, banners, sections };
+  }, [banners, sections]);
 
   // 여러 섹션에 같은 전시가 있을 수 있어 exhibitionId 로 전체 반영.
   const applyBookmark = useCallback((exhibitionId, bookmarked) => {
@@ -112,6 +143,8 @@ export default function HomePage() {
           title={s.title}
           section={s.key}
           variant={s.variant}
+          layout={s.layout}
+          limit={s.size ?? 2}
           showOpenDate={s.showOpenDate}
           items={sections[s.key] ?? []}
           onToggleBookmark={handleToggleBookmark}
