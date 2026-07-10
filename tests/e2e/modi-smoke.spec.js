@@ -3,10 +3,11 @@ import { test, expect } from "@playwright/test";
 const API = "**/api/v1/auth/login/kakao";
 
 test.describe("카카오 로그인 스모크", () => {
-  test("로그인 페이지 → 소셜 버튼 노출", async ({ page }) => {
+  test("로그인 페이지 → 카카오·게스트 버튼 노출(구글 제거)", async ({ page }) => {
     await page.goto("/login");
     await expect(page.getByRole("button", { name: "카카오로 계속하기" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "구글로 계속하기" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "게스트로 둘러보기" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "구글로 계속하기" })).toHaveCount(0);
   });
 
   test("루트(/) 접속 → 익명 홈(/yeowun) 노출(로그인 강제 X)", async ({ page }) => {
