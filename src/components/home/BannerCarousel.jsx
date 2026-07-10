@@ -87,6 +87,8 @@ export default function BannerCarousel({ banners = [] }) {
   // 수동 스와이프 — 포인터 이벤트로 마우스·터치·펜을 한 경로로 처리.
   const startX = useRef(null);
   const draggedRef = useRef(false);
+  // pointerup 에서 탭 이동을 처리한 뒤 뒤따르는 합성 click 이 같은 곳으로 또 이동하는 것을 막는 플래그.
+  const suppressClickRef = useRef(false);
 
   const onPointerDown = useCallback((e) => {
     // 마우스는 좌클릭(0)만. 터치·펜은 button===0 이라 통과.
@@ -113,24 +115,40 @@ export default function BannerCarousel({ banners = [] }) {
       if (startX.current == null) return;
       const dx = e.clientX - startX.current;
       startX.current = null;
-      if (count <= 1) return;
-      const threshold = 40;
-      if (dx > threshold) setIndex((i) => (i - 1 + count) % count);
-      else if (dx < -threshold) setIndex((i) => (i + 1) % count);
+
+      if (draggedRef.current) {
+        // 스와이프 — 좌우 이동. (배너 1개면 넘길 곳이 없음)
+        if (count <= 1) return;
+        const threshold = 40;
+        if (dx > threshold) setIndex((i) => (i - 1 + count) % count);
+        else if (dx < -threshold) setIndex((i) => (i + 1) % count);
+        return;
+      }
+
+      // 탭(드래그 아님) → 활성 배너 상세로 이동.
+      // 트랙이 pointerdown 에서 setPointerCapture 를 걸어, 뒤따르는 click 이 내부 <button> 이 아니라
+      // 트랙으로 리타깃되는 브라우저(Chrome 등)에선 버튼 onClick 이 뜨지 않는다 → 여기 pointerup 에서 직접 이동한다.
+      const target = list[active];
+      if (target) {
+        suppressClickRef.current = true; // 뒤이어 오는 합성 click 의 중복 이동 방지
+        navigate(`/exhibition/${target.exhibitionId}`);
+      }
     },
-    [count],
+    [count, active, list, navigate],
   );
 
   const onPointerCancel = useCallback(() => {
     startX.current = null;
   }, []);
 
-  // 스와이프 후 발생하는 유령 클릭이 이동을 트리거하지 않도록 캡처 단계에서 차단.
+  // 스와이프 후의 유령 클릭, 또는 pointerup 에서 이미 이동을 처리한 탭의 합성 클릭을 캡처 단계에서 차단.
+  // (키보드 Enter/Space 로 인한 click 은 pointer 이벤트가 없어 두 플래그 모두 false → 버튼 onClick 정상 동작 = 접근성 유지)
   const onClickCapture = useCallback((e) => {
-    if (draggedRef.current) {
+    if (draggedRef.current || suppressClickRef.current) {
       e.preventDefault();
       e.stopPropagation();
       draggedRef.current = false;
+      suppressClickRef.current = false;
     }
   }, []);
 
