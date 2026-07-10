@@ -3,19 +3,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { guestLogin, login } from "@api/auth";
 import { getMe } from "@api/user";
-import {
-  startKakaoLogin,
-  startGoogleLogin,
-  takeProvider,
-  isGoogleConfigured,
-} from "@utils/oauth";
+import { startKakaoLogin, takeProvider } from "@utils/oauth";
 import { useAuthStore } from "@store/authStore";
 import { BackIcon } from "@components/common/icons";
 
 /**
  * LoginPage — 소셜 로그인 진입(랜딩 플로우 B의 로그인 지점).
  * 랜딩·전시 탐색은 로그인 없이 가능하고, 기록 작성·프로필·북마크 등 개인화 시점에만 이 화면으로 온다.
- * - 카카오/구글: start{Kakao,Google}Login() → 소셜 인가 → /login?code= 복귀 → login(provider, code)
+ * - 카카오: startKakaoLogin() → 소셜 인가 → /login?code= 복귀 → login(provider, code)
  * - 게스트: guestLogin() 으로 소셜 없이 임시 세션(데모 편의)
  * 성공 시 쿠키(access/refresh) 세팅 → getMe() 로 사용자 로드 → redirect(원래 위치) 또는 /yeowun 이동.
  */
@@ -88,7 +83,6 @@ export default function LoginPage() {
   };
 
   const busy = status === "loading";
-  const googleReady = isGoogleConfigured();
 
   return (
     <main className="login-page">
@@ -126,16 +120,6 @@ export default function LoginPage() {
           >
             카카오로 계속하기
           </button>
-          <button
-            type="button"
-            className="login-social login-social--google"
-            onClick={googleReady ? startGoogleLogin : () => setStatus("error")}
-            disabled={busy || !googleReady}
-            title={googleReady ? undefined : "구글 로그인은 준비 중이에요"}
-          >
-            구글로 계속하기
-          </button>
-
           <button
             type="button"
             className="login-page__guest"
