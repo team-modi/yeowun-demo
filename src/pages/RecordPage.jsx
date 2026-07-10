@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { createRecord } from "@api/record";
+import { createRecord, getDetailRecord, updateRecord } from "@api/record";
 import { getDetail } from "@api/exhibition";
 import { useUiStore } from "@store/uiStore";
 import Button from "@components/common/Button";
@@ -14,19 +14,22 @@ import { errMessage, todayISO } from "@components/record/constants";
 import "@styles/record.css";
 
 /**
- * RecordPage — [04] 전시 관람 기록 작성 플로우.
+ * RecordPage — [04] 전시 관람 기록 작성/수정 플로우.
  *  1) 전시 선택(리스트·직접추가)  2) 관람일·감정·미디어  3) 작성 방식(직접/AI) → 저장완료
  * ?exhibitionId= 진입 시 전시 프리셋 후 2단계로 시작(전시 상세 "기록하기").
- * 저장 성공 → "기록이 저장되었어요" 화면(기록 보러가기 /archive · 홈으로 가기 /yeowun).
+ * ?editId= 진입 시 기존 기록을 불러와 프리셋 후 2단계로 시작(아카이브 상세 "수정"). 저장은 PUT.
+ * 저장 성공 → "기록이 저장/수정되었어요" 화면(기록 보러가기 /archive · 홈으로 가기 /yeowun).
  */
 export default function RecordPage() {
   const navigate = useNavigate();
   const toast = useUiStore((s) => s.toast);
   const [searchParams, setSearchParams] = useSearchParams();
   const preselectedId = searchParams.get("exhibitionId");
+  const editId = searchParams.get("editId");
+  const isEdit = !!editId;
 
   const [exhibition, setExhibition] = useState(null);
-  const [preloading, setPreloading] = useState(!!preselectedId);
+  const [preloading, setPreloading] = useState(!!preselectedId || !!editId);
 
   // step 을 URL(?step=)로 관리 → 상단 뒤로가기·브라우저 뒤로가기 모두 히스토리 pop 으로 단계별 이동.
   const stepParam = searchParams.get("step");
@@ -59,6 +62,7 @@ export default function RecordPage() {
   const [viewedAt, setViewedAt] = useState(todayISO());
   const [emotions, setEmotions] = useState([]);
   const [media, setMedia] = useState([]);
+  const [initialContent, setInitialContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   // ?exhibitionId= → 전시 상세 프리셋 후 2단계로.
@@ -83,6 +87,43 @@ export default function RecordPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preselectedId]);
+
+  // ?editId= → 기존 기록을 불러와 관람일·감정·미디어·본문을 프리셋 후 2단계로.
+  // 전시는 변경할 수 없으므로 기록에 박제된 전시 스냅샷으로 요약 카드만 구성한다.
+  useEffect(() => {
+    if (!editId) return undefined;
+    let alive = true;
+    (async () => {
+      try {
+        const { data } = await getDetailRecord(editId);
+        if (!alive) return;
+        setExhibition({
+          exhibitionId: data.exhibitionId,
+          title: data.exhibitionTitle,
+          posterUrl: data.exhibitionPosterUrl,
+          place: data.exhibitionPlace,
+        });
+        setViewedAt(data.viewedAt || todayISO());
+        setEmotions(Array.isArray(data.emotionCodes) ? data.emotionCodes : []);
+        setMedia(
+          (Array.isArray(data.media) ? data.media : [])
+            .filter((m) => m?.url)
+            .map((m) => ({ type: m.type, url: m.url })),
+        );
+        setInitialContent(data.content || "");
+        goStep(2, { replace: true }); // 수정 진입 → 뒤로가기 시 아카이브로(단계 1 거치지 않음)
+      } catch (err) {
+        if (!alive) return;
+        toast(errMessage(err, "기록을 불러오지 못했어요."), "error");
+      } finally {
+        if (alive) setPreloading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editId]);
 
   // 새로고침 등으로 전시 정보 없이 2·3단계 URL 로 들어오면 1단계로 되돌린다(빈 화면/오류 방지).
   useEffect(() => {
@@ -126,7 +167,9 @@ export default function RecordPage() {
     };
     setSubmitting(true);
     try {
-      const res = await createRecord(body);
+      const res = isEdit
+        ? await updateRecord(editId, body)
+        : await createRecord(body);
       if (res?.meta?.result !== "SUCCESS") {
         toast(res?.meta?.message || "기록 저장에 실패했어요.", "error");
         return;
@@ -154,7 +197,9 @@ export default function RecordPage() {
           <span className="rec-done__mark" aria-hidden>
             ✓
           </span>
-          <h2 className="rec-done__title">기록이 저장되었어요</h2>
+          <h2 className="rec-done__title">
+            {isEdit ? "기록이 수정되었어요" : "기록이 저장되었어요"}
+          </h2>
           <p className="rec-done__sub">아카이브에서 언제든 다시 꺼내볼 수 있어요</p>
           <div className="rec-done__actions">
             <Button block onClick={() => navigate("/archive", { replace: true })}>
@@ -202,6 +247,7 @@ export default function RecordPage() {
       {step === 3 && (
         <WriteStep
           exhibitionId={exhibition?.exhibitionId}
+          initialContent={initialContent}
           onBack={() => navigate(-1)}
           onSubmit={handleSubmit}
           submitting={submitting}

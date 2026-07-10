@@ -3,16 +3,35 @@ import { test, expect } from "@playwright/test";
 const API = "**/api/v1/auth/login/kakao";
 
 test.describe("카카오 로그인 스모크", () => {
-  test("초기 진입 → 로그인 버튼 노출", async ({ page }) => {
+  test("로그인 페이지 → 소셜 버튼 노출", async ({ page }) => {
     await page.goto("/login");
-    await expect(page.getByRole("heading", { name: "여운" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "카카오로 로그인" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "카카오로 계속하기" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "구글로 계속하기" })).toBeVisible();
   });
 
-  test("루트(/) 접속 → /login으로 리다이렉트", async ({ page }) => {
+  test("루트(/) 접속 → 익명 홈(/yeowun) 노출(로그인 강제 X)", async ({ page }) => {
+    // 랜딩 플로우 B: 로그인 없이 홈을 둘러볼 수 있어야 한다(예전처럼 /login 으로 튕기지 않는다).
     await page.goto("/");
-    await expect(page).toHaveURL(/\/login$/);
-    await expect(page.getByRole("button", { name: "카카오로 로그인" })).toBeVisible();
+    await expect(page).toHaveURL(/\/yeowun$/);
+    await expect(
+      page.getByRole("button", { name: "카카오로 계속하기" }),
+    ).toHaveCount(0);
+  });
+
+  test("개인화 라우트(/user) 접속 → 로그인으로 유도", async ({ page }) => {
+    // 비로그인 상태로 개인화 라우트에 들어가면 로그인 화면으로 보내고 원래 위치를 redirect 로 보존한다.
+    // 세션 부트스트랩(getMe)·재발급을 401 로 목킹해 "비로그인 확정"을 결정적으로 만든다.
+    await page.route("**/api/v1/users/me", (route) =>
+      route.fulfill({ status: 401, contentType: "application/json", body: "{}" }),
+    );
+    await page.route("**/api/v1/auth/refresh", (route) =>
+      route.fulfill({ status: 401, contentType: "application/json", body: "{}" }),
+    );
+    await page.goto("/user");
+    await expect(page).toHaveURL(/\/login\?redirect=%2Fuser$/);
+    await expect(
+      page.getByRole("button", { name: "카카오로 계속하기" }),
+    ).toBeVisible();
   });
 
   test("콜백 성공 → /yeowun 이동 + 올바른 body 전송", async ({ page }) => {
@@ -60,7 +79,7 @@ test.describe("카카오 로그인 스모크", () => {
 
     const [request] = await Promise.all([
       page.waitForRequest("https://kauth.kakao.com/oauth/authorize**"),
-      page.getByRole("button", { name: "카카오로 로그인" }).click(),
+      page.getByRole("button", { name: "카카오로 계속하기" }).click(),
     ]);
 
     expect(request.url()).toContain("response_type=code");

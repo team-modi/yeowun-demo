@@ -1,44 +1,22 @@
-import { useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { getMe } from "@api/user";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "@store/authStore";
 import Spinner from "@components/common/Spinner";
 
 /**
- * RequireAuth — 라우트 가드.
- * 마운트 시 getMe() 로 세션 검증(쿠키 기반). 성공 → authStore 세팅 후 자식 렌더,
- * 실패(401 등) → /login 리다이렉트. 이미 authed 면 재검증 없이 통과(자식이 사용).
+ * RequireAuth — 개인화 라우트 가드(기록·아카이브·프로필·리마인드·알림).
+ * 세션 확인은 AppLayout 의 부트스트랩(getMe 1회)이 담당하고 authStore(checked/authed)에 반영한다.
+ * - authed → 자식 렌더
+ * - 아직 확인 전(checked=false) → 스피너
+ * - 확인됐고 비로그인 → /login 으로 이동(로그인 후 원래 위치로 복귀하도록 redirect 전달)
  */
 export default function RequireAuth() {
-  const { authed, setAuthed, setUser } = useAuthStore();
-  const [status, setStatus] = useState(authed ? "ok" : "checking");
+  const authed = useAuthStore((s) => s.authed);
+  const checked = useAuthStore((s) => s.checked);
+  const location = useLocation();
 
-  useEffect(() => {
-    // authed 면 초기 status 가 이미 "ok" 이므로 재검증 생략
-    if (authed) return;
-    let alive = true;
-    (async () => {
-      try {
-        const res = await getMe();
-        if (!alive) return;
-        if (res?.meta?.result === "SUCCESS") {
-          setUser(res.data);
-          setAuthed(true);
-          setStatus("ok");
-        } else {
-          setStatus("fail");
-        }
-      } catch {
-        if (alive) setStatus("fail");
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  if (authed) return <Outlet />;
+  if (!checked) return <Spinner full />;
 
-  if (status === "checking") return <Spinner full />;
-  if (status === "fail") return <Navigate to="/login" replace />;
-  return <Outlet />;
+  const redirect = encodeURIComponent(location.pathname + location.search);
+  return <Navigate to={`/login?redirect=${redirect}`} replace />;
 }

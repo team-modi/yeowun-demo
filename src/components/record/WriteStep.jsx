@@ -10,14 +10,21 @@ import { MAX_CONTENT, errMessage } from "./constants";
  * WriteStep — 작성 방식 선택 + 감상 작성(04-08 직접 / 04-09 AI, wf-12).
  * DIRECT: textarea(0/300). AI: 질문 1개씩 → compose 초안(수정 가능) → 저장.
  * AI 미설정(503 AI_DISABLED)·실패 시 직접 작성으로 graceful degrade.
- * props: { exhibitionId, onBack, onSubmit(content, writeMode), submitting }
+ * props: { exhibitionId, initialContent, onBack, onSubmit(content, writeMode), submitting }
+ * initialContent 있으면(수정 진입) 본문을 채우고 직접 작성 단계에서 시작한다.
  */
-export default function WriteStep({ exhibitionId, onBack, onSubmit, submitting }) {
+export default function WriteStep({
+  exhibitionId,
+  initialContent = "",
+  onBack,
+  onSubmit,
+  submitting,
+}) {
   const toast = useUiStore((s) => s.toast);
 
-  const [phase, setPhase] = useState("choose"); // choose | direct | ai-q | ai-review
-  const [choice, setChoice] = useState(null); // "DIRECT" | "AI"
-  const [content, setContent] = useState("");
+  const [phase, setPhase] = useState(initialContent ? "direct" : "choose"); // choose | direct | ai-q | ai-review
+  const [choice, setChoice] = useState(initialContent ? "DIRECT" : null); // "DIRECT" | "AI"
+  const [content, setContent] = useState(initialContent);
 
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);

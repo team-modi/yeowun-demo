@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { getDetail } from "@api/exhibition";
 import { addBookmark, removeBookmark } from "@api/bookmark";
 import { useUiStore } from "@store/uiStore";
+import { useAuthStore } from "@store/authStore";
 
 import Button from "@components/common/Button";
 import Spinner from "@components/common/Spinner";
@@ -63,7 +64,9 @@ function extractDescriptionText(raw) {
 export default function DetailExhibitionPage() {
   const { exhibitionId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const toast = useUiStore((s) => s.toast);
+  const authed = useAuthStore((s) => s.authed);
 
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -101,6 +104,12 @@ export default function DetailExhibitionPage() {
 
   const onToggleBookmark = async () => {
     if (!detail || bmPending) return;
+    // 관심 등록은 로그인 필요 — 비로그인은 로그인 화면으로 보내고 이후 이 전시로 복귀.
+    if (!authed) {
+      const redirect = encodeURIComponent(location.pathname + location.search);
+      navigate(`/login?redirect=${redirect}`);
+      return;
+    }
     const next = !detail.bookmarked;
     setBmPending(true);
     setDetail((d) => ({ ...d, bookmarked: next }));

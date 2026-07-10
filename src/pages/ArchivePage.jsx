@@ -146,6 +146,12 @@ export default function ArchivePage() {
     );
   }, []);
 
+  // 상세에서 삭제 시 목록에서 제거하고 상세를 닫는다.
+  const handleDeleted = useCallback((recordId) => {
+    setRecords((prev) => prev.filter((r) => r.recordId !== recordId));
+    setSelectedId(null);
+  }, []);
+
   const currentSort = SORTS.find((s) => s.key === sortKey) ?? SORTS[0];
 
   return (
@@ -238,6 +244,7 @@ export default function ArchivePage() {
           recordId={selectedId}
           onClose={() => setSelectedId(null)}
           onBookmarkChange={handleBookmarkChange}
+          onDeleted={handleDeleted}
         />
       )}
     </div>
