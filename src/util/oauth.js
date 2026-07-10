@@ -17,16 +17,66 @@
 const KAKAO_CLIENT_ID =
   import.meta.env.VITE_KAKAO_CLIENT_ID || "bba3e1d954ec548062bc3c13fd9f72bc";
 
-/** 백엔드/카카오 콘솔에 등록된 값과 일치해야 하는 redirect_uri. 기본은 현재 오리진 + /login. */
-export const kakaoRedirectUri = () =>
-  import.meta.env.VITE_KAKAO_REDIRECT_URI || `${window.location.origin}/login`;
+// 구글 OAuth 클라이언트 ID — 배포 시 env(VITE_GOOGLE_CLIENT_ID)로 주입한다(카카오와 달리 코드 기본값 없음).
+// 실제 동작하려면 구글 콘솔의 승인된 리디렉션 URI(= 현재 오리진 + /login)와 백엔드 google 클라이언트 설정이 필요하다.
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+
+const PROVIDER_KEY = "yeowun.oauth.provider";
+
+/**
+ * 백엔드/소셜 콘솔에 등록된 값과 일치해야 하는 redirect_uri. 카카오·구글 모두 현재 오리진 + /login 으로 통일한다.
+ * (콜백에서 어떤 provider 인지는 sessionStorage 에 저장한 값으로 구분한다.)
+ */
+export const oauthRedirectUri = () =>
+  import.meta.env.VITE_OAUTH_REDIRECT_URI ||
+  import.meta.env.VITE_KAKAO_REDIRECT_URI ||
+  `${window.location.origin}/login`;
+
+/** 하위호환 별칭(기존 호출부 유지). */
+export const kakaoRedirectUri = oauthRedirectUri;
+
+/** 콜백에서 읽을 로그인 provider 를 저장/조회/정리한다(kakao | google). */
+export const rememberProvider = (provider) => {
+  try {
+    sessionStorage.setItem(PROVIDER_KEY, provider);
+  } catch {
+    // sessionStorage 불가 환경은 무시(기본 kakao 로 폴백)
+  }
+};
+export const takeProvider = () => {
+  try {
+    const p = sessionStorage.getItem(PROVIDER_KEY);
+    sessionStorage.removeItem(PROVIDER_KEY);
+    return p;
+  } catch {
+    return null;
+  }
+};
 
 /** 카카오 인가 페이지로 이동한다. 성공 시 redirect_uri 로 ?code= 를 달고 돌아온다. */
 export const startKakaoLogin = () => {
+  rememberProvider("kakao");
   const params = new URLSearchParams({
     client_id: KAKAO_CLIENT_ID,
-    redirect_uri: kakaoRedirectUri(),
+    redirect_uri: oauthRedirectUri(),
     response_type: "code",
   });
   window.location.href = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
 };
+
+/** 구글 인가 페이지로 이동한다. 성공 시 redirect_uri 로 ?code= 를 달고 돌아온다. */
+export const startGoogleLogin = () => {
+  rememberProvider("google");
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: oauthRedirectUri(),
+    response_type: "code",
+    scope: "openid email profile",
+    access_type: "offline",
+    prompt: "select_account",
+  });
+  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+};
+
+/** 구글 로그인 사용 가능 여부(클라이언트 ID 설정 시에만 버튼 활성). */
+export const isGoogleConfigured = () => !!GOOGLE_CLIENT_ID;

@@ -501,6 +501,32 @@
 
 /* ---------- Login ---------- */
 .login-page {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  padding: calc(var(--space-4) + env(safe-area-inset-top, 0px)) var(--space-6)
+    calc(var(--space-8) + env(safe-area-inset-bottom, 0px));
+}
+
+.login-page__back {
+  position: absolute;
+  top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
+  left: var(--space-3);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--color-ink);
+}
+.login-page__back:hover {
+  background: var(--color-scrim);
+}
+
+.login-page__center {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -508,24 +534,67 @@
   justify-content: center;
   text-align: center;
   gap: var(--space-4);
-  padding: var(--space-8) var(--space-6)
-    calc(var(--space-10) + env(safe-area-inset-bottom, 0px));
 }
 
-.login-page__brand {
-  font-size: var(--font-size-2xl);
+.login-page__logo {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  background: var(--color-scrim);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
   letter-spacing: 0.02em;
 }
 
 .login-page__tagline {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-md);
-  max-width: 22ch;
+  color: var(--color-ink);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .login-page__actions {
   width: 100%;
+  max-width: var(--app-max-width);
   margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.login-social {
+  width: 100%;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+.login-social:disabled {
+  opacity: 0.5;
+}
+.login-social--kakao {
+  background: #fee500;
+  color: rgba(0, 0, 0, 0.85);
+  border-color: #fee500;
+}
+.login-social--google {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.login-page__guest {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .login-page__error {
