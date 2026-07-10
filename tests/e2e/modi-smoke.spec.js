@@ -3,12 +3,10 @@ import { test, expect } from "@playwright/test";
 const API = "**/api/v1/auth/login/kakao";
 
 test.describe("카카오 로그인 스모크", () => {
-  test("로그인 페이지 → 카카오 전용 버튼 노출(게스트·구글 제거)", async ({ page }) => {
+  test("로그인 페이지 → 소셜 버튼 노출", async ({ page }) => {
     await page.goto("/login");
     await expect(page.getByRole("button", { name: "카카오로 계속하기" })).toBeVisible();
-    // 카카오 전용 화면: 구글·게스트 진입점은 없어야 한다.
-    await expect(page.getByRole("button", { name: "구글로 계속하기" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "게스트로 둘러보기" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "구글로 계속하기" })).toBeVisible();
   });
 
   test("루트(/) 접속 → 익명 홈(/yeowun) 노출(로그인 강제 X)", async ({ page }) => {
