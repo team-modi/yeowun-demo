@@ -1,46 +1,71 @@
 /* ============================================================
-   알림 목록 (/notifications)
+   알림 목록 (/notifications) — wf 07_리마인드_알림 탭 진입
+   상단 타입 탭(오늘의 여운/전시) + 라운드 카드 리스트
    ============================================================ */
 
+/* ---------- 타입 탭 (각 50% 너비, 활성 탭 밑줄) ---------- */
+.noti-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.noti-tabs__btn {
+  flex: 1 1 50%;
+  padding: var(--space-3) 0;
+  text-align: center;
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.noti-tabs__btn.is-active {
+  color: var(--color-ink);
+  font-weight: 700;
+  border-bottom-color: var(--color-ink);
+}
+
+/* ---------- 카드 리스트 ---------- */
 .noti-list {
   list-style: none;
   display: flex;
   flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
 }
 
-.noti-item {
+/* 카드: 라운드 보더 박스(좌 썸네일 + 우 본문) */
+.noti-card {
   display: flex;
   gap: var(--space-3);
   width: 100%;
   text-align: left;
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
   color: inherit;
 }
 
-.noti-item:hover {
-  background: var(--color-scrim);
+.noti-card:hover {
+  background: var(--color-surface-alt);
 }
 
-.noti-item.is-unread {
-  background: color-mix(in srgb, var(--color-accent-soft) 55%, transparent);
+/* 미읽음 — 과하지 않게 배경 틴트만 */
+.noti-card.is-unread {
+  background: color-mix(in srgb, var(--color-accent-soft) 55%, var(--color-surface));
 }
 
-/* 왼쪽 미읽음 점 자리(읽음이면 빈 칸 유지로 정렬 맞춤) */
-.noti-item__dot {
-  flex: 0 0 8px;
-  width: 8px;
-  height: 8px;
-  margin-top: 7px;
-  border-radius: var(--radius-full);
-  background: transparent;
+/* 좌측 정사각 썸네일 플레이스홀더(연회색 박스) */
+.noti-card__thumb {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
 }
 
-.noti-item.is-unread .noti-item__dot {
-  background: var(--color-accent);
-}
-
-.noti-item__body {
+.noti-card__main {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
@@ -48,23 +73,28 @@
   gap: var(--space-1);
 }
 
-.noti-item__head {
+/* 1행: 타입 라벨(좌) + 상대시간(우상단) */
+.noti-card__head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  justify-content: space-between;
   gap: var(--space-2);
 }
 
-.noti-item__title {
-  font-size: var(--font-size-md);
-  font-weight: 600;
+.noti-card__label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
   color: var(--color-ink);
-  line-height: var(--line-tight);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.noti-item__text {
+.noti-card__time {
+  flex: 0 0 auto;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 2행: body 본문 1~2줄 */
+.noti-card__text {
   font-size: var(--font-size-sm);
   color: var(--color-text);
   line-height: var(--line-normal);
@@ -72,33 +102,6 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.noti-item__time {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-}
-
-/* 타입 배지 */
-.noti-badge {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  line-height: 1.4;
-}
-
-.noti-badge--remind {
-  background: var(--color-accent-soft);
-  color: var(--color-accent-strong);
-}
-
-.noti-badge--notice {
-  background: var(--color-surface-alt);
-  color: var(--color-text-muted);
 }
 
 .noti-more {

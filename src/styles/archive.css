@@ -11,6 +11,29 @@
   margin-bottom: 0;
 }
 
+/* ---------- 세그먼트 탭 [기록 | 리마인드] — 알림 탭과 톤 통일(50% 언더라인) ---------- */
+.archive__tabs {
+  display: flex;
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.archive__tabs-btn {
+  flex: 1 1 50%;
+  padding: var(--space-3) 0;
+  text-align: center;
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.archive__tabs-btn.is-active {
+  color: var(--color-ink);
+  font-weight: 700;
+  border-bottom-color: var(--color-ink);
+}
+
 /* ---------- Toolbar (정렬 드롭다운) ---------- */
 .archive__toolbar {
   display: flex;

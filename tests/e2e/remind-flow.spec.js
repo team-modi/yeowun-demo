@@ -72,6 +72,17 @@ async function mockCommon(page, { authed = true, candidate = CANDIDATE } = {}) {
     }
   });
 
+  // 아카이브(완료 화면 → ?tab=remind 딥링크 검증용): 리마인드 목록(쿼리 포함)·기록 목록.
+  await page.route("**/api/v1/reminds?**", (route) => route.fulfill(json(EMPTY_LIST)));
+  await page.route("**/api/v1/records?**", (route) =>
+    route.fulfill(
+      json({
+        meta: { result: "SUCCESS" },
+        data: { content: [], page: 0, size: 20, totalElements: 0, totalPages: 0, hasNext: false },
+      }),
+    ),
+  );
+
   // 홈 배너/섹션·탐색 목록(빈 값) — 실백엔드 프록시로 새지 않게.
   await page.route("**/api/v1/exhibitions/banners", (route) =>
     route.fulfill(json({ meta: { result: "SUCCESS" }, data: { banners: [] } })),
@@ -144,6 +155,16 @@ test.describe("오늘의 여운 도착 노출 + 리마인드 플로우", () => {
       emotionCodes: ["평화로운"],
       reflection: "지금 보니 반전되는 분위기가 더 생생하다",
     });
+
+    // ── 완료 화면 → 아카이브 '리마인드' 탭 딥링크(기획서 9절) ──
+    await page.getByRole("button", { name: "아카이브 보러가기" }).click();
+    await expect(page).toHaveURL(/\/archive\?tab=remind$/);
+    await expect(page.getByRole("tab", { name: "리마인드" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    // 저장본이 없는 계정이므로 온보딩 빈 상태 문구(기획서 8절)가 보인다.
+    await expect(page.getByText(/나만의 여운을 남기고/)).toBeVisible();
   });
 
   test("홈 바텀시트 X 닫기 → 같은 세션에서 재노출되지 않는다", async ({ page }) => {
