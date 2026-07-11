@@ -83,7 +83,8 @@ export default function TodayRemind({ candidate, onSaved }) {
           </p>
         </div>
 
-        <Button block onClick={() => navigate("/archive")}>
+        {/* 기획서 9절: '아카이브 보러가기' → 아카이브 '리마인드' 섹션(?tab=remind)으로 */}
+        <Button block onClick={() => navigate("/archive?tab=remind")}>
           아카이브 보러가기
         </Button>
       </div>

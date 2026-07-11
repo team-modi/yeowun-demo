@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getRecordList } from "@api/record";
 import Spinner from "@components/common/Spinner";
 import ErrorState from "@components/common/ErrorState";
@@ -6,18 +7,27 @@ import EmptyState from "@components/common/EmptyState";
 import { ArchiveIcon } from "@components/common/icons";
 import RecordCard from "@components/archive/RecordCard";
 import RecordDetail from "@components/archive/RecordDetail";
+import ArchiveRemindTab from "@components/archive/ArchiveRemindTab";
 import "@styles/archive.css";
 
 /**
  * ArchivePage — [05] 아카이브 (/archive)
- * 내 기록 그리드(GET /records, PageResponse=오프셋 페이징) + 정렬(최신/오래된순)
- * + 무한 스크롤(page++) + 카드 클릭 상세(오버레이 패널).
+ * 타이틀 아래 세그먼트 탭 [기록 | 리마인드]. ?tab=remind 딥링크(useSearchParams),
+ * 기본은 기록 탭(기존 동작·디자인 무변경).
+ * - 기록: 내 기록 그리드(GET /records, PageResponse=오프셋 페이징) + 정렬(최신/오래된순)
+ *   + 무한 스크롤(page++) + 카드 클릭 상세(오버레이 패널).
+ * - 리마인드: ArchiveRemindTab (Remind-01 기획서 — 정렬/주기·감정변화 필터/상세 시트).
  *
  * ※ 백엔드 GET /records 는 커서가 아닌 PageResponse(content,page,size,
  *   totalElements,totalPages,hasNext) 오프셋 페이징. 정렬은 Spring Pageable
  *   sort 파라미터(viewedAt,desc | viewedAt,asc)로 전달.
  */
 const PAGE_SIZE = 20;
+
+const TABS = [
+  { key: "record", label: "기록" },
+  { key: "remind", label: "리마인드" },
+];
 const SORTS = [
   { key: "latest", label: "최신순", sort: "viewedAt,desc" },
   { key: "oldest", label: "오래된순", sort: "viewedAt,asc" },
@@ -42,6 +52,19 @@ function ChevronDown({ size = 16 }) {
 }
 
 export default function ArchivePage() {
+  // 탭 상태는 URL(?tab=remind)로 관리 — 완료 화면 "아카이브 보러가기" 등 딥링크 대상.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") === "remind" ? "remind" : "record";
+  const onTab = useCallback(
+    (key) => {
+      const next = new URLSearchParams(searchParams);
+      if (key === "remind") next.set("tab", "remind");
+      else next.delete("tab"); // 기본(기록)은 파라미터 없이
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
+
   const [sortKey, setSortKey] = useState("latest");
   const [records, setRecords] = useState([]);
   const [page, setPage] = useState(0);
@@ -160,6 +183,28 @@ export default function ArchivePage() {
         <h2 className="page__title archive__title">아카이브</h2>
       </div>
 
+      {/* 세그먼트 탭 [기록 | 리마인드] — 알림 탭과 톤 통일(50% 언더라인) */}
+      <div className="archive__tabs" role="tablist" aria-label="아카이브 탭">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.key}
+            className={`archive__tabs-btn ${tab === t.key ? "is-active" : ""}`}
+            onClick={() => onTab(t.key)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "remind" && <ArchiveRemindTab />}
+
+      {/* ── 기록 탭(기존 동작·디자인 무변경). 기록 데이터는 마운트 시 1회 로드라
+             remind 탭으로 들어와도 백그라운드에서 준비된다(베타 규모 — 허용). ── */}
+      {tab === "record" && (
+        <>
       <div className="archive__toolbar">
         <div className="archive__sort" ref={sortRef}>
           <button
@@ -246,6 +291,8 @@ export default function ArchivePage() {
           onBookmarkChange={handleBookmarkChange}
           onDeleted={handleDeleted}
         />
+      )}
+        </>
       )}
     </div>
   );

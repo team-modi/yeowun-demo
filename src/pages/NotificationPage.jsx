@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getNotifications, markRead } from "@api/notification";
 import useInfiniteCursor from "@components/common/useInfiniteCursor";
@@ -9,9 +9,12 @@ import Button from "@components/common/Button";
 import "@styles/notification.css";
 
 /**
- * NotificationPage — 알림 목록 (/notifications)
- * 무한 스크롤(cursor, size=20). 미읽음 탭 시 markRead 후 로컬 반영.
- * REMIND + targetId 는 /remind 로 이동.
+ * NotificationPage — 알림 목록 (/notifications) · 와이어프레임 07_리마인드_알림 탭 진입 정합.
+ * 헤더("알림"·뒤로가기)는 AppLayout TopBar 가 제공 — 페이지 안에 중복 헤더를 두지 않는다.
+ * 상단 탭 2개 [오늘의 여운(REMIND) | 전시(EXHIBITION)] — 탭 전환 시 해당 type 으로
+ * 커서 페이징을 새로 시작한다(useInfiniteCursor 가 params 변경을 감지해 fresh 로드).
+ * 카드: 좌측 정사각 썸네일 플레이스홀더 + 타입 라벨/상대시간 + body 1~2줄.
+ * 미읽음 탭 시 markRead 낙관 반영. REMIND → /remind, EXHIBITION → /exhibition/{targetId}.
  */
 function relativeTime(iso) {
   if (!iso) return "";
@@ -30,14 +33,26 @@ function relativeTime(iso) {
   return String(iso).slice(0, 10).replace(/-/g, ".");
 }
 
-const TYPE_LABEL = { REMIND: "리마인드", NOTICE: "공지" };
+const TABS = [
+  { type: "REMIND", label: "오늘의 여운" },
+  { type: "EXHIBITION", label: "전시" },
+];
+
+// 카드 1행의 타입 라벨(작은 굵은 글씨). 서버 lazy 생성 계약과 동일한 표기.
+const TYPE_LABEL = { REMIND: "오늘의 여운", EXHIBITION: "전시", NOTICE: "공지" };
+
+const fetchNotifications = (params) => getNotifications(params).then((r) => r.data);
 
 export default function NotificationPage() {
   const navigate = useNavigate();
-  const { items, loading, error, hasNext, loadMore, reset, setItems } =
-    useInfiniteCursor((params) => getNotifications(params).then((r) => r.data), {
-      size: 20,
-    });
+  const [tab, setTab] = useState("REMIND"); // 와이어프레임 기본 탭: 오늘의 여운
+
+  // params 가 바뀌면 useInfiniteCursor 가 커서를 버리고 첫 페이지부터 다시 받는다.
+  const params = useMemo(() => ({ type: tab }), [tab]);
+  const { items, loading, error, hasNext, loadMore, reset, setItems } = useInfiniteCursor(
+    fetchNotifications,
+    { size: 20, params, getKey: (n) => n.notificationId },
+  );
 
   const markLocalRead = useCallback(
     (id) => {
@@ -58,8 +73,11 @@ export default function NotificationPage() {
           // 읽음 처리 실패는 조용히 무시(다음 진입 때 재시도됨)
         }
       }
-      if (n.type === "REMIND" && n.targetId != null) {
+      if (n.type === "REMIND") {
         navigate("/remind");
+      } else if (n.type === "EXHIBITION" && n.targetId != null) {
+        // targetId(=exhibitionId)가 없으면 무동작
+        navigate(`/exhibition/${n.targetId}`);
       }
     },
     [markLocalRead, navigate],
@@ -80,57 +98,66 @@ export default function NotificationPage() {
     return () => io.disconnect();
   }, [hasNext, loadMore, items.length]);
 
-  // 첫 로딩
-  if (loading && items.length === 0) return <Spinner full />;
-  if (error && items.length === 0) return <ErrorState onRetry={reset} />;
-
-  if (!loading && items.length === 0) {
-    return (
-      <div className="page">
-        <EmptyState
-          title="새로운 알림이 없어요"
-          description="리마인드와 공지가 도착하면 여기에 표시돼요."
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="page">
-      <ul className="noti-list">
-        {items.map((n) => {
-          const isRemind = n.type === "REMIND";
-          return (
+    <div className="page noti">
+      {/* 타입 탭 — 각 50% 너비, 활성 탭 밑줄 */}
+      <div className="noti-tabs" role="tablist" aria-label="알림 유형">
+        {TABS.map((t) => (
+          <button
+            key={t.type}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.type}
+            className={`noti-tabs__btn ${tab === t.type ? "is-active" : ""}`}
+            onClick={() => setTab(t.type)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {loading && items.length === 0 && <Spinner full />}
+
+      {!loading && error && items.length === 0 && <ErrorState onRetry={reset} />}
+
+      {!loading && !error && items.length === 0 && (
+        <EmptyState
+          title="도착한 알림이 없어요"
+          description="새 알림이 도착하면 여기에 표시돼요."
+        />
+      )}
+
+      {items.length > 0 && (
+        <ul className="noti-list">
+          {items.map((n) => (
             <li key={n.notificationId}>
               <button
                 type="button"
-                className={`noti-item ${n.read ? "" : "is-unread"}`}
+                className={`noti-card ${n.read ? "" : "is-unread"}`}
                 onClick={() => handleClick(n)}
               >
-                <span className="noti-item__dot" aria-hidden="true" />
-                <span className="noti-item__body">
-                  <span className="noti-item__head">
-                    <span
-                      className={`noti-badge ${isRemind ? "noti-badge--remind" : "noti-badge--notice"}`}
-                    >
+                {/* 좌측 정사각 썸네일 플레이스홀더(연회색 박스) */}
+                <span className="noti-card__thumb" aria-hidden="true" />
+                <span className="noti-card__main">
+                  <span className="noti-card__head">
+                    <span className="noti-card__label">
                       {TYPE_LABEL[n.type] ?? n.type}
                     </span>
-                    <span className="noti-item__title">{n.title}</span>
+                    <span className="noti-card__time">{relativeTime(n.createdAt)}</span>
                   </span>
-                  {n.body && <span className="noti-item__text">{n.body}</span>}
-                  <span className="noti-item__time">{relativeTime(n.createdAt)}</span>
+                  {n.body && <span className="noti-card__text">{n.body}</span>}
                 </span>
               </button>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      )}
 
       <div ref={sentinelRef} className="noti-sentinel" aria-hidden="true" />
 
       {loading && items.length > 0 && <Spinner />}
 
-      {!loading && hasNext && (
+      {!loading && items.length > 0 && hasNext && (
         <div className="noti-more">
           <Button variant="secondary" size="sm" onClick={loadMore}>
             더 보기
