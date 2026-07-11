@@ -5,7 +5,8 @@ import { fmtDate } from "@components/remind/utils";
  * RemindListItem — 저장된 리마인드 목록 항목(ListItemResponse).
  * item: {
  *   remindId, recordId, createdAt, exhibitionTitle, posterUrl, place, viewedAt,
- *   reflectionPreview, emotionCodes[], aiStatus, hasAiSummary
+ *   reflectionPreview, emotionCodes[](=after), beforeEmotionCodes[](원본 기록 감정 —
+ *   아카이브 리마인드 탭의 감정 변화 필터 판별용, 여기선 미표시), aiStatus, hasAiSummary
  * }
  * props: { item, onOpen: (remindId) => void }
  */

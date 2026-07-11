@@ -72,8 +72,4 @@ test("아카이브 상세 — 사진/영상 섹션이 사진(img)·영상(video)
   await expect(page.locator(".rec-detail__media img")).toHaveCount(1);
   await expect(page.locator(".rec-detail__media video")).toHaveCount(1);
   await expect(page.getByText("마음에 잔잔한 호숫가")).toBeVisible();
-
-  await page.screenshot({
-    path: "/private/tmp/claude-501/-Users-jins/d1e56b9f-8c94-47bd-81dd-7f8f47df09a1/scratchpad/archive-detail.png",
-  });
 });
