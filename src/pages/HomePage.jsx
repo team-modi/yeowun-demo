@@ -38,22 +38,25 @@ const SECTIONS = [
 let homeCache = null; // { banners, sections, at }
 const HOME_TTL = 30_000; // 30초
 
-// 오늘의 여운 도착 바텀시트(wf-07) — X 로 닫으면 세션 동안 재노출하지 않는다.
-const REMIND_SHEET_KEY = "yeowun.remindSheet.dismissed";
-
-const isRemindSheetDismissed = () => {
+// 오늘의 여운 도착 바텀시트(wf-07) — X 로 닫으면 "그 후보(기록)"만 세션 동안 재노출하지 않는다.
+// (전역 억제가 아니라 recordId 단위 — 다른 전시 후보는 계속 뜬다.) 인메모리 셋을 진실로 두고
+// sessionStorage 로 새로고침 생존을 best-effort 미러링한다(불가 환경도 세션 동안은 인메모리로 억제 유지).
+const REMIND_DISMISS_KEY = "yeowun.remindSheet.dismissed";
+const dismissedRecordIds = (() => {
   try {
-    return sessionStorage.getItem(REMIND_SHEET_KEY) === "1";
+    return new Set(JSON.parse(sessionStorage.getItem(REMIND_DISMISS_KEY) || "[]"));
   } catch {
-    return true; // sessionStorage 불가 환경은 노출 생략(홈 방해 금지)
+    return new Set();
   }
-};
-
-const dismissRemindSheet = () => {
+})();
+const isCandidateDismissed = (recordId) => recordId != null && dismissedRecordIds.has(recordId);
+const dismissCandidate = (recordId) => {
+  if (recordId == null) return;
+  dismissedRecordIds.add(recordId);
   try {
-    sessionStorage.setItem(REMIND_SHEET_KEY, "1");
+    sessionStorage.setItem(REMIND_DISMISS_KEY, JSON.stringify([...dismissedRecordIds]));
   } catch {
-    /* 무시 */
+    /* sessionStorage 불가여도 인메모리 셋으로 세션 동안 억제 유지 */
   }
 };
 
@@ -131,26 +134,48 @@ export default function HomePage() {
     if (homeCache) homeCache = { ...homeCache, banners, sections };
   }, [banners, sections]);
 
-  // 오늘의 여운 후보 조회 — 로그인 확정 후 1회. 비로그인·후보 없음·실패 시 아무것도 하지 않는다
-  // (홈 로딩을 방해하지 않도록 실패는 무시).
+  // 오늘의 여운 후보 조회 — 로그인 상태에서 홈 진입·재포커스 시 + 주기적으로 재확인한다.
+  // (기록 저장 1분 뒤에도 새로고침 없이 자동 도착하도록. 닫은 후보(recordId)는 노출하지 않는다.)
+  // 홈 로딩을 방해하지 않도록 실패는 조용히 무시한다.
   useEffect(() => {
-    if (!authed || isRemindSheetDismissed()) return undefined;
+    if (!authed) return undefined;
     let alive = true;
-    getCandidate()
-      .then((res) => {
-        if (alive && res?.data) setRemindCand(res.data);
-      })
-      .catch(() => {
-        /* 실패 무시 */
-      });
+    const check = () => {
+      if (document.hidden) return; // 백그라운드 탭은 스킵(불필요 호출 방지)
+      getCandidate()
+        .then((res) => {
+          if (!alive) return;
+          const cand = res?.data;
+          setRemindCand((prev) => {
+            if (cand && !isCandidateDismissed(cand.recordId)) {
+              // 이미 같은 후보가 열려 있으면 유지(불필요 리렌더 방지).
+              return prev && prev.recordId === cand.recordId ? prev : cand;
+            }
+            return null; // 후보 없음/닫힘 → 시트 닫힘
+          });
+        })
+        .catch(() => {
+          /* 실패 무시 */
+        });
+    };
+    check(); // 진입 즉시 1회
+    const id = setInterval(check, 20000); // 20초 폴링(소환 조건이 1분이라 충분)
+    window.addEventListener("focus", check);
+    document.addEventListener("visibilitychange", check);
     return () => {
       alive = false;
+      clearInterval(id);
+      window.removeEventListener("focus", check);
+      document.removeEventListener("visibilitychange", check);
     };
   }, [authed]);
 
+  // X 닫기 — 그 후보(기록)만 세션 동안 억제하고 시트를 닫는다(다른 전시 후보는 계속 뜬다).
   const closeRemindSheet = useCallback(() => {
-    dismissRemindSheet();
-    setRemindCand(null);
+    setRemindCand((prev) => {
+      if (prev) dismissCandidate(prev.recordId);
+      return null;
+    });
   }, []);
 
   // 여러 섹션에 같은 전시가 있을 수 있어 exhibitionId 로 전체 반영.

@@ -154,10 +154,37 @@ test.describe("오늘의 여운 도착 노출 + 리마인드 플로우", () => {
     await page.getByRole("button", { name: "닫기" }).click();
     await expect(page.locator(".rm-sheet-overlay")).toHaveCount(0);
 
-    // 새로고침(같은 세션) — sessionStorage 플래그로 재노출 금지.
+    // 새로고침(같은 세션) — 그 후보(recordId)만 억제되어 재노출되지 않는다.
     await page.reload();
     await expect(page.getByText("곧 끝나기 전에 봐야 할 전시")).toBeVisible();
     await expect(page.locator(".rm-sheet-overlay")).toHaveCount(0);
+  });
+
+  test("X 닫기는 그 후보(전시)만 억제 — 다른 전시 후보는 여전히 뜬다", async ({ page }) => {
+    const A = { ...CANDIDATE.data, recordId: 11, exhibitionTitle: "조용한 호숫가" };
+    const B = { ...CANDIDATE.data, recordId: 22, exhibitionTitle: "빛의 속삭임" };
+    let current = A;
+    await page.route("**/api/v1/users/me", (r) => r.fulfill(json(ME_OK)));
+    await page.route("**/api/v1/auth/refresh", (r) => r.fulfill(json({}, 401)));
+    await page.route("**/api/v1/reminds/candidate", (r) =>
+      r.fulfill(json({ meta: { result: "SUCCESS" }, data: current })),
+    );
+    await page.route("**/api/v1/reminds", (r) => r.fulfill(json(EMPTY_LIST)));
+    await page.route("**/api/v1/exhibitions/banners", (r) =>
+      r.fulfill(json({ meta: { result: "SUCCESS" }, data: { banners: [] } })),
+    );
+    await page.route("**/api/v1/exhibitions?**", (r) => r.fulfill(json(EMPTY_LIST)));
+
+    await page.goto("/yeowun");
+    await expect(page.getByText("조용한 호숫가")).toBeVisible();
+    await page.getByRole("button", { name: "닫기" }).click();
+    await expect(page.locator(".rm-sheet-overlay")).toHaveCount(0);
+
+    // 후보가 다른 전시(B, 다른 recordId)로 바뀌면 다시 뜬다(전역 억제가 아님).
+    current = B;
+    await page.reload();
+    await expect(page.locator(".rm-sheet")).toBeVisible();
+    await expect(page.getByText("빛의 속삭임")).toBeVisible();
   });
 
   test("3단계 '나가기'는 플로우 이탈(이전 화면 복귀)", async ({ page }) => {
