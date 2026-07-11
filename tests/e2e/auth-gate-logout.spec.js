@@ -89,7 +89,7 @@ test.describe("로그아웃/죽은 세션 후 개인화 라우트 게이트", ()
     // 게이트 유지: /login 으로 리다이렉트, 아카이브 UI 대신 로그인 화면.
     await expect(page).toHaveURL(/\/login/);
     await expect(
-      page.getByRole("button", { name: "카카오로 계속하기" }),
+      page.getByRole("button", { name: "휴대폰 번호로 시작하기" }),
     ).toBeVisible();
   });
 
@@ -137,7 +137,7 @@ test.describe("로그아웃/죽은 세션 후 개인화 라우트 게이트", ()
     // 게이트 유지: /login 으로 리다이렉트, 기록 UI 미노출.
     await expect(page).toHaveURL(/\/login/);
     await expect(
-      page.getByRole("button", { name: "카카오로 계속하기" }),
+      page.getByRole("button", { name: "휴대폰 번호로 시작하기" }),
     ).toBeVisible();
   });
 });

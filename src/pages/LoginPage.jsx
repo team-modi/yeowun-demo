@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { guestLogin, guestPhoneLogin, login } from "@api/auth";
+import { guestPhoneLogin, login } from "@api/auth";
 import { getMe } from "@api/user";
-import { startKakaoLogin, takeProvider } from "@utils/oauth";
+import { takeProvider } from "@utils/oauth";
 import { useAuthStore } from "@store/authStore";
 import { BackIcon } from "@components/common/icons";
 
@@ -63,22 +63,7 @@ export default function LoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleGuest = async () => {
-    setStatus("loading");
-    try {
-      const res = await guestLogin();
-      if (res?.meta?.result !== "SUCCESS") {
-        setStatus("error");
-        return;
-      }
-      await finishLogin();
-    } catch (err) {
-      console.error("게스트 로그인 실패:", err);
-      setStatus("error");
-    }
-  };
-
-  // 휴대폰 식별 로그인(베타 주 경로) — 같은 번호는 재방문 시 같은 계정으로 이어진다.
+  // 휴대폰 식별 로그인(베타 유일 경로) — 같은 번호는 재방문 시 같은 계정으로 이어진다.
   const phoneDigits = phone.replace(/[^0-9]/g, "");
   const phoneValid = /^01[0-9]{8,9}$/.test(phoneDigits);
   const handlePhoneLogin = async () => {
@@ -132,8 +117,8 @@ export default function LoginPage() {
         )}
 
         <div className="login-page__actions">
-          {/* 베타 주 경로: 휴대폰 번호 식별 로그인 — 같은 번호로 다시 오면 같은 계정으로 이어진다.
-              (카카오는 테스트 앱 테스터 계정만 허용되는 베타 제약으로 보조 경로) */}
+          {/* 베타 유일 로그인 경로: 휴대폰 번호 식별 — 같은 번호로 다시 오면 같은 계정으로 이어진다.
+              (카카오는 테스트 앱 테스터 계정만 허용되는 베타 제약으로 이번엔 노출하지 않는다. 콜백 처리는 유지) */}
           <input
             type="tel"
             className="login-page__phone"
@@ -152,22 +137,6 @@ export default function LoginPage() {
             disabled={busy || !phoneValid}
           >
             {busy ? "시작하는 중…" : "휴대폰 번호로 시작하기"}
-          </button>
-          <button
-            type="button"
-            className="login-social login-social--kakao"
-            onClick={startKakaoLogin}
-            disabled={busy}
-          >
-            카카오로 계속하기
-          </button>
-          <button
-            type="button"
-            className="login-page__guest"
-            onClick={handleGuest}
-            disabled={busy}
-          >
-            게스트로 둘러보기
           </button>
         </div>
       </div>

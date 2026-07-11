@@ -476,6 +476,27 @@
   width: 100%;
 }
 
+/* 전시 직접 추가(04-02) — 와이어프레임: 좌상단 정사각 업로드 박스 */
+.rec-poster-wrap--left {
+  align-items: flex-start;
+}
+
+.rec-poster--square {
+  width: 120px;
+  height: 120px;
+}
+
+.rec-poster.is-uploading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.rec-poster--square .rec-poster__icon {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+}
+
 /* ---------- 선택된 전시 요약 카드 ---------- */
 .rec-selected {
   display: flex;

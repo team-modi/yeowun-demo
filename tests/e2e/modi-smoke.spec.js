@@ -2,11 +2,12 @@ import { test, expect } from "@playwright/test";
 
 const API = "**/api/v1/auth/login/kakao";
 
-test.describe("카카오 로그인 스모크", () => {
-  test("로그인 페이지 → 카카오·게스트 버튼 노출(구글 제거)", async ({ page }) => {
+test.describe("로그인 스모크(휴대폰 전용 + 카카오 콜백 유지)", () => {
+  test("로그인 페이지 → 휴대폰 버튼만 노출(카카오·게스트 버튼 제거, 베타)", async ({ page }) => {
     await page.goto("/login");
-    await expect(page.getByRole("button", { name: "카카오로 계속하기" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "게스트로 둘러보기" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "휴대폰 번호로 시작하기" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "카카오로 계속하기" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "게스트로 둘러보기" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "구글로 계속하기" })).toHaveCount(0);
   });
 
@@ -15,7 +16,7 @@ test.describe("카카오 로그인 스모크", () => {
     await page.goto("/");
     await expect(page).toHaveURL(/\/yeowun$/);
     await expect(
-      page.getByRole("button", { name: "카카오로 계속하기" }),
+      page.getByRole("button", { name: "휴대폰 번호로 시작하기" }),
     ).toHaveCount(0);
   });
 
@@ -31,7 +32,7 @@ test.describe("카카오 로그인 스모크", () => {
     await page.goto("/user");
     await expect(page).toHaveURL(/\/login\?redirect=%2Fuser$/);
     await expect(
-      page.getByRole("button", { name: "카카오로 계속하기" }),
+      page.getByRole("button", { name: "휴대폰 번호로 시작하기" }),
     ).toBeVisible();
   });
 
@@ -74,16 +75,6 @@ test.describe("카카오 로그인 스모크", () => {
     await expect(page.getByText("로그인에 실패했어요. 다시 시도해 주세요.")).toBeVisible();
   });
 
-  test("버튼 클릭 → 카카오 authorize로 이동", async ({ page }) => {
-    await page.goto("/login");
-    await page.route("https://kauth.kakao.com/**", (route) => route.abort());
-
-    const [request] = await Promise.all([
-      page.waitForRequest("https://kauth.kakao.com/oauth/authorize**"),
-      page.getByRole("button", { name: "카카오로 계속하기" }).click(),
-    ]);
-
-    expect(request.url()).toContain("response_type=code");
-    expect(request.url()).toContain("redirect_uri=");
-  });
+  // (베타: 카카오 로그인 "시작" 버튼은 제거됨 — authorize 이동 테스트는 보류.
+  //  `?code=` 콜백 처리 자체는 위 두 콜백 테스트로 계속 검증한다.)
 });

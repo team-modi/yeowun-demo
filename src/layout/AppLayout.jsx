@@ -11,9 +11,13 @@ import ToastHost from "@components/common/ToastHost";
  * 상단바 제목/뒤로가기/종은 현재 경로 기준으로 결정한다(아래 resolveMeta).
  * 페이지는 컨텐츠만 렌더하면 되고, 필요 시 자체 TopBar 를 쓰려면 이 레이아웃 밖에서 구성.
  */
-function resolveMeta(pathname) {
+function resolveMeta(pathname, search) {
   if (pathname.startsWith("/exhibition/") && pathname !== "/exhibition") {
     return { title: "전시 상세", showBack: true, showBell: false };
+  }
+  // 기록 플로우의 "전시 직접 추가" 서브 단계(?step=add)는 와이어프레임 헤더 "전시 추가"를 쓴다.
+  if (pathname === "/record" && new URLSearchParams(search).get("step") === "add") {
+    return { title: "전시 추가", showBack: true, showBell: false, hideNav: true };
   }
   const map = {
     "/yeowun": { brand: "여운", title: "", showBack: false, showBell: true },
@@ -28,8 +32,8 @@ function resolveMeta(pathname) {
 }
 
 export default function AppLayout() {
-  const { pathname } = useLocation();
-  const meta = resolveMeta(pathname);
+  const { pathname, search } = useLocation();
+  const meta = resolveMeta(pathname, search);
 
   // 세션 부트스트랩(1회): 익명 탐색은 그대로 두되, 유효한 쿠키가 있으면 조용히 로그인 상태로 인식한다.
   // 실패(비로그인)해도 리다이렉트하지 않는다 — 강제 로그인은 RequireAuth(개인화 라우트)에서만.

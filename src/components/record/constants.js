@@ -30,17 +30,19 @@ export const FORMAT_OPTIONS = [
   { code: "ART_FAIR", label: "아트페어" },
 ];
 
-// 장르(매체) — 와이어프레임 칩 라벨. "전체"는 선택 해제(빈 값).
-export const CATEGORY_OPTIONS = [
-  { code: "PAINTING", label: "회화·드로잉" },
-  { code: "PHOTO", label: "사진" },
-  { code: "SCULPTURE", label: "조각·설치" },
-  { code: "MEDIA", label: "미디어아트" },
-  { code: "DESIGN", label: "디자인" },
-  { code: "CRAFT", label: "공예" },
-  { code: "ARCHITECTURE", label: "건축" },
-  { code: "PERFORMANCE", label: "퍼포먼스" },
-  { code: "ETC", label: "기타" },
+// 장르 키워드 마스터 10종 — 백엔드 GenreKeyword(단일 진실 원천)와 1:1.
+// 장르 시트에서 선택 시 createCustom body 의 genreKeyword 로 전송, 미선택이면 미전송(서버 AI 자동 분류).
+export const GENRE_KEYWORDS = [
+  "회화·드로잉",
+  "사진",
+  "미디어아트",
+  "조각·설치",
+  "디자인",
+  "공예",
+  "건축",
+  "공연",
+  "현대미술",
+  "일러스트레이션",
 ];
 
 export const MEDIA_TYPE_OPTIONS = [
@@ -54,7 +56,6 @@ export const MAX_EMOTION_LEN = 10;
 
 const codeLabel = (opts, code) => opts.find((o) => o.code === code)?.label ?? "";
 export const formatLabel = (code) => codeLabel(FORMAT_OPTIONS, code);
-export const categoryLabel = (code) => codeLabel(CATEGORY_OPTIONS, code);
 
 /** 백엔드 에러 봉투에서 사용자용 메시지 추출. */
 export function errMessage(err, fallback = "요청을 처리하지 못했어요.") {

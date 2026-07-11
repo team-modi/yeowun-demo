@@ -224,12 +224,7 @@ export default function RecordPage() {
         />
       )}
 
-      {step === "add" && (
-        <CustomExhibitionForm
-          onCreated={handleCustomCreated}
-          onCancel={() => navigate(-1)}
-        />
-      )}
+      {step === "add" && <CustomExhibitionForm onCreated={handleCustomCreated} />}
 
       {step === 2 && (
         <EmotionMediaStep

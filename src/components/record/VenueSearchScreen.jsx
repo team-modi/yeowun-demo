@@ -45,7 +45,7 @@ export default function VenueSearchScreen({ onPick, onUsePlace, onClose }) {
         <button type="button" className="rec-screen__back" onClick={onClose} aria-label="닫기">
           <BackIcon />
         </button>
-        <span className="rec-screen__title">전시관 검색</span>
+        <h2 className="rec-screen__title">전시관 검색</h2>
       </div>
       <div className="rec-screen__body">
         <input

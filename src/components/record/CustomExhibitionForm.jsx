@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { createCustom } from "@api/exhibition";
+import { IMAGE_MAX_BYTES, presignMedia, uploadToR2 } from "@api/media";
 import { useUiStore } from "@store/uiStore";
 import Button from "@components/common/Button";
 import FilterChip from "@components/common/FilterChip";
 import {
-  CATEGORY_OPTIONS,
   FORMAT_OPTIONS,
-  categoryLabel,
+  GENRE_KEYWORDS,
   errMessage,
   formatLabel,
   isoToDot,
@@ -15,6 +15,7 @@ import {
 import BottomSheet from "./BottomSheet";
 import Calendar from "./Calendar";
 import VenueSearchScreen from "./VenueSearchScreen";
+import { ImagePlusIcon } from "./icons";
 
 /** 선택 필드(셀렉트처럼 보이는 버튼) — 값 없으면 placeholder. */
 function SelectField({ label, value, placeholder, onClick, required }) {
@@ -39,17 +40,19 @@ function SelectField({ label, value, placeholder, onClick, required }) {
 }
 
 /**
- * CustomExhibitionForm — 전시 직접 추가(04-02~04, wf-08/09).
- * 포스터(placeholder·URL), 전시명, 전시관(검색화면), 전시기간(캘린더 range 시트),
- * 전시형태(바텀시트→개인전 작가명), 장르(바텀시트) → createCustom → onCreated(exhibition).
- * props: { onCreated(exhibition), onCancel }
+ * CustomExhibitionForm — 전시 직접 추가(04-02~04, wf "01_전시탐색홈_검색 탭 클릭").
+ * 포스터(파일 선택 → R2 프리사인 업로드), 전시명(필수), 전시관(검색화면),
+ * 전시기간(캘린더 range 시트), 전시형태(바텀시트→개인전 작가명), 장르(마스터 10종 칩 시트)
+ * → createCustom(genreKeyword 선택 전송) → onCreated(exhibition).
+ * 뒤로가기는 상단바(TopBar)가 담당한다. props: { onCreated(exhibition) }
  */
-export default function CustomExhibitionForm({ onCreated, onCancel }) {
+export default function CustomExhibitionForm({ onCreated }) {
   const toast = useUiStore((s) => s.toast);
 
   const [title, setTitle] = useState("");
   const [posterUrl, setPosterUrl] = useState("");
-  const [posterOpen, setPosterOpen] = useState(false);
+  const [posterUploading, setPosterUploading] = useState(false);
+  const posterFileRef = useRef(null);
 
   const [venueId, setVenueId] = useState(null);
   const [venueName, setVenueName] = useState(""); // 표시용(전시관명 또는 직접입력 장소)
@@ -60,7 +63,7 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
   const [endDate, setEndDate] = useState("");
   const [format, setFormat] = useState("");
   const [artist, setArtist] = useState("");
-  const [category, setCategory] = useState("");
+  const [genre, setGenre] = useState(""); // 장르 키워드(마스터 10종). 빈 값 = 서버 AI 자동 분류.
 
   const [submitting, setSubmitting] = useState(false);
   const [sheet, setSheet] = useState(null); // null | "date" | "format" | "genre"
@@ -71,7 +74,38 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
   const [tmpEnd, setTmpEnd] = useState("");
   const [tmpFormat, setTmpFormat] = useState("");
   const [tmpArtist, setTmpArtist] = useState("");
-  const [tmpCategory, setTmpCategory] = useState("");
+  const [tmpGenre, setTmpGenre] = useState("");
+
+  // ── 포스터 업로드(프리사인 → R2 PUT → 영구 fileUrl) ──
+  const pickPoster = () => {
+    if (!posterUploading) posterFileRef.current?.click();
+  };
+  const onPosterFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // 같은 파일 재선택 허용
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast("이미지 파일만 올릴 수 있어요.", "error");
+      return;
+    }
+    if (file.size > IMAGE_MAX_BYTES) {
+      toast(`포스터는 ${Math.round(IMAGE_MAX_BYTES / (1024 * 1024))}MB 이하만 올릴 수 있어요.`, "error");
+      return;
+    }
+    setPosterUploading(true);
+    try {
+      const { uploadUrl, fileUrl } = await presignMedia({
+        contentType: file.type,
+        size: file.size,
+      });
+      await uploadToR2(uploadUrl, file);
+      setPosterUrl(fileUrl);
+    } catch (err) {
+      toast(err?.message || "포스터 업로드에 실패했어요. 다시 시도해 주세요.", "error");
+    } finally {
+      setPosterUploading(false);
+    }
+  };
 
   // ── 전시관 검색화면 ──
   const pickVenue = (v) => {
@@ -126,13 +160,13 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
     setSheet(null);
   };
 
-  // ── 장르 시트 ──
+  // ── 장르 시트(마스터 10종 단일 선택 · 재탭으로 해제) ──
   const openGenre = () => {
-    setTmpCategory(category);
+    setTmpGenre(genre);
     setSheet("genre");
   };
   const confirmGenre = () => {
-    setCategory(tmpCategory);
+    setGenre(tmpGenre);
     setSheet(null);
   };
 
@@ -147,7 +181,7 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
     }
     const body = {
       title: title.trim(),
-      posterUrl: posterUrl.trim() || null,
+      posterUrl: posterUrl || null,
       venueId: venueId ?? null,
       place: venueId == null ? place.trim() || null : null,
       startDate: startDate || null,
@@ -155,7 +189,9 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
       format: format || null,
       artist: artist.trim() || null,
       region: region || null,
-      category: category || null,
+      category: null, // 장르 시트는 genreKeyword 로 대체 — 카테고리 코드는 미수집
+      // 장르 키워드(마스터 10종). 미선택이면 미전송 → 서버 AI 자동 분류.
+      ...(genre ? { genreKeyword: genre } : {}),
     };
     setSubmitting(true);
     try {
@@ -189,33 +225,33 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
       <h2 className="rec-heading">전시 정보를 입력해 주세요</h2>
 
       <div className="rec-form">
-        {/* 포스터 */}
-        <div className="rec-poster-wrap">
+        {/* 포스터 — 파일 선택 → 프리사인 R2 업로드 → 썸네일 */}
+        <div className="rec-poster-wrap rec-poster-wrap--left">
+          <input
+            ref={posterFileRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={onPosterFile}
+          />
           <button
             type="button"
-            className="rec-poster"
-            onClick={() => setPosterOpen((o) => !o)}
+            className={`rec-poster rec-poster--square ${posterUploading ? "is-uploading" : ""}`}
+            onClick={pickPoster}
+            disabled={posterUploading}
             aria-label="전시 포스터 추가"
           >
-            {posterUrl.trim() ? (
-              <img className="rec-poster__img" src={posterUrl.trim()} alt="" />
+            {posterUrl ? (
+              <img className="rec-poster__img" src={posterUrl} alt="전시 포스터" />
             ) : (
               <span className="rec-poster__ph">
                 <span className="rec-poster__icon" aria-hidden>
-                  ⊞
+                  <ImagePlusIcon size={26} />
                 </span>
-                전시 포스터 추가
+                {posterUploading ? "업로드 중…" : "전시 포스터 추가"}
               </span>
             )}
           </button>
-          {posterOpen && (
-            <input
-              className="rec-input"
-              value={posterUrl}
-              placeholder="포스터 이미지 URL (선택)"
-              onChange={(e) => setPosterUrl(e.target.value)}
-            />
-          )}
         </div>
 
         {/* 전시명 */}
@@ -260,16 +296,14 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
         {/* 장르 */}
         <SelectField
           label="장르"
-          value={category ? categoryLabel(category) : ""}
+          value={genre}
           placeholder="장르를 선택해 주세요"
           onClick={openGenre}
         />
 
-        <div className="rec-actions">
-          <Button variant="secondary" onClick={onCancel} disabled={submitting}>
-            취소
-          </Button>
-          <Button onClick={submit} disabled={submitting}>
+        {/* 하단 풀폭 "다음" — 전시명 입력 시 활성 */}
+        <div className="rec-actions rec-actions--single">
+          <Button block onClick={submit} disabled={submitting || !title.trim()}>
             {submitting ? "추가 중…" : "다음"}
           </Button>
         </div>
@@ -329,14 +363,14 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
               style={{ marginTop: "var(--space-3)" }}
               value={tmpArtist}
               maxLength={100}
-              placeholder="작가 이름을 입력해주세요"
+              placeholder="작가이름을 입력해주세요"
               onChange={(e) => setTmpArtist(e.target.value)}
             />
           )}
         </BottomSheet>
       )}
 
-      {/* 장르 시트 */}
+      {/* 장르 시트 — 마스터 10종 칩(단일 선택, 재탭 해제) */}
       {sheet === "genre" && (
         <BottomSheet
           title="장르"
@@ -348,16 +382,13 @@ export default function CustomExhibitionForm({ onCreated, onCancel }) {
           }
         >
           <div className="rec-chips">
-            <FilterChip active={!tmpCategory} onClick={() => setTmpCategory("")}>
-              전체
-            </FilterChip>
-            {CATEGORY_OPTIONS.map((c) => (
+            {GENRE_KEYWORDS.map((k) => (
               <FilterChip
-                key={c.code}
-                active={tmpCategory === c.code}
-                onClick={() => setTmpCategory(c.code)}
+                key={k}
+                active={tmpGenre === k}
+                onClick={() => setTmpGenre((cur) => (cur === k ? "" : k))}
               >
-                {c.label}
+                {k}
               </FilterChip>
             ))}
           </div>

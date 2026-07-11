@@ -30,7 +30,9 @@ export const getDetail = async (exhibitionId) => {
 };
 
 // 직접 전시 등록 — body: {title,posterUrl,venueId?,place?,startDate,endDate,
-//   format(SOLO|GROUP|CURATED|ART_FAIR),artist,region,category} → data: {exhibitionId}
+//   format(SOLO|GROUP|CURATED|ART_FAIR),artist,region,category,
+//   genreKeyword?(마스터 10종 중 1 — 회화·드로잉/사진/미디어아트/조각·설치/디자인/공예/건축/공연/현대미술/일러스트레이션.
+//     미전송 시 서버 AI가 자동 분류)} → data: {exhibitionId}
 export const createCustom = async (body) => {
   const res = await axiosInstance.post("/exhibitions/custom", body);
   return res.data;
