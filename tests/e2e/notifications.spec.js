@@ -43,6 +43,7 @@ const REMIND_LIST = {
         title: "오늘의 여운",
         body: "시현님, 1주일 전 기록한 전시가 있어요!",
         targetId: 11, // recordId
+        imageUrl: "https://example.com/poster-remind.jpg",
         read: false,
         createdAt: hoursAgo(4),
       },
@@ -63,6 +64,7 @@ const EXHIBITION_LIST = {
         title: "전시",
         body: "'행복한 인생' 전시가 3일 뒤 종료 돼요",
         targetId: 3, // exhibitionId
+        imageUrl: null, // 포스터 없는 전시 → 플레이스홀더 폴백 확인
         read: false,
         createdAt: hoursAgo(2),
       },
@@ -134,7 +136,11 @@ test.describe("알림 탭(오늘의 여운/전시)", () => {
     await expect(card.locator(".noti-card__label")).toHaveText("오늘의 여운");
     await expect(card.getByText("시현님, 1주일 전 기록한 전시가 있어요!")).toBeVisible();
     await expect(card.locator(".noti-card__time")).toHaveText("4시간 전");
-    await expect(card.locator(".noti-card__thumb")).toHaveCount(1);
+    // 전시 포스터 썸네일(imageUrl) 렌더 — src까지 확인.
+    await expect(card.locator(".noti-card__thumb-img")).toHaveAttribute(
+      "src",
+      "https://example.com/poster-remind.jpg",
+    );
   });
 
   test("전시 탭 전환 → EXHIBITION 목록으로 교체, 카드 클릭 → 전시 상세 + 읽음 처리", async ({

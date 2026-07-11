@@ -136,8 +136,20 @@ export default function NotificationPage() {
                 className={`noti-card ${n.read ? "" : "is-unread"}`}
                 onClick={() => handleClick(n)}
               >
-                {/* 좌측 정사각 썸네일 플레이스홀더(연회색 박스) */}
-                <span className="noti-card__thumb" aria-hidden="true" />
+                {/* 좌측 정사각 썸네일 — 전시 포스터(imageUrl), 없으면 연회색 플레이스홀더 */}
+                <span className="noti-card__thumb" aria-hidden="true">
+                  {n.imageUrl && (
+                    <img
+                      className="noti-card__thumb-img"
+                      src={n.imageUrl}
+                      alt=""
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  )}
+                </span>
                 <span className="noti-card__main">
                   <span className="noti-card__head">
                     <span className="noti-card__label">
