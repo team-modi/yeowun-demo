@@ -28,6 +28,24 @@
   padding: var(--space-4) 0;
 }
 
+/* 플로우 진행 중(완료 포함): 카드 테두리/그림자 없이 풀블리드,
+   4분할 진행바가 TopBar 바로 아래 오도록 페이지 패딩을 걷어낸다. */
+.remind--flow {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - var(--topbar-height) - var(--bottomnav-height) - env(safe-area-inset-bottom, 0px));
+}
+
+.remind--flow .today-flow {
+  flex: 1 1 auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: var(--space-2) var(--space-4) var(--space-6);
+}
+
 /* ---------- Today flow (오늘의 여운 스텝) ---------- */
 .today-flow {
   display: flex;
@@ -82,13 +100,6 @@
   text-align: left;
 }
 
-.flow-prompt--divided {
-  padding: var(--space-3) 0;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-  font-weight: 500;
-}
-
 /* 포스터 */
 .flow-poster {
   width: 100%;
@@ -137,10 +148,33 @@
   color: var(--color-text-muted);
 }
 
+/* 날짜·장소 회색 칩 바 — [달력 2026. 07. 03] [핀 장소/지역] */
 .flow-exh__meta {
-  margin-top: var(--space-1);
-  font-size: var(--font-size-xs);
+  margin-top: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  max-width: 100%;
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+}
+
+.flow-exh__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flow-exh__meta-item svg {
+  flex: 0 0 auto;
 }
 
 /* 원본 감상 카드 */
@@ -182,30 +216,35 @@
   flex: 1 1 0;
 }
 
-/* 저장 완료 화면 */
+/* 저장 완료 화면 — 독립 풀스크린: 중앙 이미지 + 안내, 하단 풀폭 버튼 */
 .today-flow--done {
   align-items: stretch;
   text-align: center;
 }
 
-.flow-done__head {
+.flow-done__body {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
-  padding: var(--space-2) 0 var(--space-1);
+  padding: var(--space-8) 0;
 }
 
-.flow-done__mark {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-full);
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
-  font-size: var(--font-size-lg);
-  font-weight: 700;
+.flow-done__img {
+  width: min(220px, 62%);
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface-alt);
+  margin-bottom: var(--space-4);
+}
+
+.flow-done__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .flow-done__title {
@@ -217,6 +256,7 @@
 .flow-done__sub {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+  line-height: var(--line-normal);
 }
 
 /* ---------- Emotion chips (읽기용) ---------- */
@@ -261,6 +301,53 @@
 .remind-form__label {
   font-size: var(--font-size-sm);
   font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* ---------- Emotion fold (감정 다시 남기기 접힘 구조) ---------- */
+/* 초기: '+' 하나 있는 알약형 버튼. 선택된 감정이 있으면 알약 대신 칩 나열(다시 열기 가능). */
+.emotion-fold {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.emotion-fold:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.emotion-fold--chips {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-1) 0;
+  background: transparent;
+}
+
+.emotion-fold__open {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.emotion-fold__collapse {
+  align-self: flex-end;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  padding: 2px 6px;
+}
+
+.emotion-fold__collapse:hover {
   color: var(--color-ink);
 }
 
@@ -340,16 +427,11 @@
   color: var(--color-text-muted);
 }
 
-/* ---------- Reflection textarea ---------- */
-.reflection-field {
-  position: relative;
-}
-
+/* ---------- Reflection textarea (와이어프레임: 카운터 없이 placeholder만) ---------- */
 .reflection-field textarea {
   width: 100%;
   resize: vertical;
   padding: var(--space-3);
-  padding-bottom: var(--space-6);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
@@ -362,14 +444,6 @@
 .reflection-field textarea:focus {
   outline: none;
   border-color: var(--color-accent);
-}
-
-.reflection-field__count {
-  position: absolute;
-  right: var(--space-3);
-  bottom: var(--space-2);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
 }
 
 /* ---------- Change summary ---------- */

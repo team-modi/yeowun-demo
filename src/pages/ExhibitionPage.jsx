@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { getList } from "@api/exhibition";
 import { addBookmark, removeBookmark } from "@api/bookmark";
+import { getCandidate } from "@api/remind";
+import { useAuthStore } from "@store/authStore";
 import { useUiStore } from "@store/uiStore";
+import { elapsedPhrase } from "@components/remind/utils";
 
 import ExhibitionCard from "@components/common/ExhibitionCard";
 import EmptyState from "@components/common/EmptyState";
@@ -26,6 +29,27 @@ const splitCsv = (v) => (v ? v.split(",").filter(Boolean) : []);
 export default function ExhibitionPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useUiStore((s) => s.toast);
+  const navigate = useNavigate();
+  const authed = useAuthStore((s) => s.authed);
+  const nickname = useAuthStore((s) => s.user?.nickname);
+
+  // 오늘의 여운 후보(도착 배너, wf-07) — 로그인 상태에서만 조회, 실패는 조용히 무시.
+  const [remindCand, setRemindCand] = useState(null);
+
+  useEffect(() => {
+    if (!authed) return undefined;
+    let alive = true;
+    getCandidate()
+      .then((res) => {
+        if (alive && res?.data) setRemindCand(res.data);
+      })
+      .catch(() => {
+        /* 실패 무시 — 목록 로딩을 방해하지 않는다 */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [authed]);
 
   // ---- URL 쿼리에서 초기 필터 읽기 ----
   const [keyword, setKeyword] = useState(searchParams.get("keyword") ?? "");
@@ -169,6 +193,27 @@ export default function ExhibitionPage() {
         )}
       </form>
       {keywordHint && <p className="exh-hint">{keywordHint}</p>}
+
+      {/* 오늘의 여운 도착 배너(wf-07) — "총 N개" 행 위 */}
+      {remindCand && (
+        <button type="button" className="rm-banner" onClick={() => navigate("/remind")}>
+          <span className="rm-banner__thumb">
+            {remindCand.posterUrl && <img src={remindCand.posterUrl} alt="" />}
+          </span>
+          <span className="rm-banner__body">
+            <span className="rm-banner__badge">오늘의 여운</span>
+            <span className="rm-banner__text">
+              {[nickname && `${nickname}님,`, elapsedPhrase(remindCand)]
+                .filter(Boolean)
+                .join(" ")}{" "}
+              기록한 전시가 있어요!
+            </span>
+          </span>
+          <span className="rm-banner__arrow" aria-hidden="true">
+            ›
+          </span>
+        </button>
+      )}
 
       {/* 결과 수 · 정렬 · 필터 */}
       <div className="exh-toolbar">

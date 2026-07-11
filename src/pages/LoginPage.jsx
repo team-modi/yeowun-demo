@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { guestLogin, login } from "@api/auth";
+import { guestLogin, guestPhoneLogin, login } from "@api/auth";
 import { getMe } from "@api/user";
 import { startKakaoLogin, takeProvider } from "@utils/oauth";
 import { useAuthStore } from "@store/authStore";
@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { setAuthed, setUser } = useAuthStore();
   const [status, setStatus] = useState("idle"); // idle | loading | error
+  const [phone, setPhone] = useState(""); // 휴대폰 식별 로그인(베타) 입력값
 
   const redirectTo = searchParams.get("redirect");
 
@@ -77,6 +78,25 @@ export default function LoginPage() {
     }
   };
 
+  // 휴대폰 식별 로그인(베타 주 경로) — 같은 번호는 재방문 시 같은 계정으로 이어진다.
+  const phoneDigits = phone.replace(/[^0-9]/g, "");
+  const phoneValid = /^01[0-9]{8,9}$/.test(phoneDigits);
+  const handlePhoneLogin = async () => {
+    if (!phoneValid || busy) return;
+    setStatus("loading");
+    try {
+      const res = await guestPhoneLogin(phoneDigits);
+      if (res?.meta?.result !== "SUCCESS") {
+        setStatus("error");
+        return;
+      }
+      await finishLogin();
+    } catch (err) {
+      console.error("휴대폰 로그인 실패:", err);
+      setStatus("error");
+    }
+  };
+
   const goBack = () => {
     if (window.history.length > 1) navigate(-1);
     else navigate("/yeowun", { replace: true });
@@ -112,6 +132,27 @@ export default function LoginPage() {
         )}
 
         <div className="login-page__actions">
+          {/* 베타 주 경로: 휴대폰 번호 식별 로그인 — 같은 번호로 다시 오면 같은 계정으로 이어진다.
+              (카카오는 테스트 앱 테스터 계정만 허용되는 베타 제약으로 보조 경로) */}
+          <input
+            type="tel"
+            className="login-page__phone"
+            placeholder="휴대폰 번호 (예: 010-1234-5678)"
+            value={phone}
+            maxLength={13}
+            autoComplete="tel"
+            onChange={(e) => setPhone(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handlePhoneLogin()}
+            disabled={busy}
+          />
+          <button
+            type="button"
+            className="login-social login-social--phone"
+            onClick={handlePhoneLogin}
+            disabled={busy || !phoneValid}
+          >
+            {busy ? "시작하는 중…" : "휴대폰 번호로 시작하기"}
+          </button>
           <button
             type="button"
             className="login-social login-social--kakao"
@@ -126,7 +167,7 @@ export default function LoginPage() {
             onClick={handleGuest}
             disabled={busy}
           >
-            {busy ? "시작하는 중…" : "게스트로 둘러보기"}
+            게스트로 둘러보기
           </button>
         </div>
       </div>

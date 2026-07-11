@@ -21,6 +21,15 @@ const ME_OK = {
   },
 };
 
+// 홈은 로그인 상태에서 오늘의 여운 후보(reminds/candidate)를 조회한다.
+// 미목킹 시 실백엔드 401 → refresh 실패 → 클라 인증이 비워져 게이트 검증이 오염되므로
+// "후보 없음"으로 결정적으로 응답한다(도착 바텀시트도 뜨지 않아 클릭을 막지 않는다).
+const NO_CANDIDATE = {
+  status: 200,
+  contentType: "application/json",
+  body: JSON.stringify({ meta: { result: "SUCCESS" }, data: null }),
+};
+
 test.describe("로그아웃/죽은 세션 후 개인화 라우트 게이트", () => {
   test("로그인 게스트는 인앱 이동으로 /record 를 쓸 수 있다(과잉 게이트 금지)", async ({
     page,
@@ -32,6 +41,7 @@ test.describe("로그아웃/죽은 세션 후 개인화 라우트 게이트", ()
         body: JSON.stringify(ME_OK),
       }),
     );
+    await page.route("**/api/v1/reminds/candidate", (route) => route.fulfill(NO_CANDIDATE));
 
     await page.goto("/yeowun");
     // 하단 탭(기록)으로 인앱 이동 → 게이트를 통과해야 한다.
@@ -64,6 +74,7 @@ test.describe("로그아웃/죽은 세션 후 개인화 라우트 게이트", ()
     await page.route("**/api/v1/auth/refresh", (route) =>
       route.fulfill({ status: 401, contentType: "application/json", body: "{}" }),
     );
+    await page.route("**/api/v1/reminds/candidate", (route) => route.fulfill(NO_CANDIDATE));
 
     // 1) 로그인 상태로 공개 홈 진입(세션 부트스트랩 getMe → authed=true).
     await page.goto("/yeowun");

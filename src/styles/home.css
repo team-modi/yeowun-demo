@@ -239,3 +239,111 @@
   width: 140px;
   scroll-snap-align: start;
 }
+
+/* ---------- 오늘의 여운 도착 바텀시트 (wf-07) ----------
+   기록 플로우 바텀시트(.rec-sheet, record.css) 패턴 재사용 — record.css 는 홈에서
+   로드되지 않을 수 있어 rm- 프리픽스로 홈 스코프에 복제. */
+.rm-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--color-overlay);
+  animation: rm-fade 0.15s ease;
+}
+
+.rm-sheet {
+  width: 100%;
+  max-width: var(--app-max-width);
+  overflow: hidden;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-lg);
+  animation: rm-slide-up 0.2s ease;
+}
+
+/* 상단 포스터 — 시트 상단에 풀블리드, 우상단 X */
+.rm-sheet__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--color-surface-alt);
+}
+
+.rm-sheet__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rm-sheet__close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--color-ink);
+  font-size: 19px;
+  line-height: 1;
+  box-shadow: var(--shadow-sm);
+}
+
+.rm-sheet__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.rm-sheet__badge {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  background: var(--color-bg);
+}
+
+.rm-sheet__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: var(--line-tight);
+}
+
+.rm-sheet__artist {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.rm-sheet__msg {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  line-height: var(--line-normal);
+}
+
+.rm-sheet__body .btn {
+  margin-top: var(--space-3);
+}
+
+@keyframes rm-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rm-slide-up {
+  from {
+    transform: translateY(12%);
+  }
+}

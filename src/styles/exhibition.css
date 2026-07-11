@@ -64,6 +64,75 @@
   margin-bottom: var(--space-2);
 }
 
+/* ---------- 오늘의 여운 도착 배너 (wf-07) — "총 N개" 행 위 ---------- */
+.rm-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  margin: var(--space-2) 0 var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.rm-banner:hover {
+  background: var(--color-surface-alt);
+}
+
+.rm-banner__thumb {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface-alt);
+}
+
+.rm-banner__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rm-banner__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.rm-banner__badge {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  padding: 2px 9px;
+  background: var(--color-bg);
+}
+
+.rm-banner__text {
+  max-width: 100%;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rm-banner__arrow {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+}
+
 /* ---------- 툴바: 총 N개 · 정렬 · 필터 ---------- */
 .exh-toolbar {
   display: flex;

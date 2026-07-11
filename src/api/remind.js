@@ -6,6 +6,11 @@ import axiosInstance from "@utils/axiosInstance";
  */
 
 // 오늘의 리마인드 후보(추천) 조회
+// data: CandidateResponse | null {
+//   recordId, daysAgo, elapsedLabel, exhibitionId, exhibitionTitle, artist,
+//   posterUrl, sceneImageUrl(기록 첫 사진, 없으면 null → 포스터 폴백),
+//   place, region, viewedAt, originalContent, originalEmotionCodes[]
+// }
 export const getCandidate = async () => {
   const res = await axiosInstance.get("/reminds/candidate");
   return res.data;

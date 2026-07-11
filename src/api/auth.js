@@ -25,6 +25,13 @@ export const guestLogin = async () => {
   return res.data;
 };
 
+// 휴대폰 식별 게스트 로그인(베타 전용) — 같은 번호는 재로그인 시 같은 계정으로 이어진다.
+// 하이픈·공백 포함 입력 허용(서버가 숫자만으로 정규화). 형식 오류는 400 INVALID_INPUT.
+export const guestPhoneLogin = async (phoneNumber) => {
+  const res = await axiosInstance.post("/auth/guest/phone", { phoneNumber });
+  return res.data;
+};
+
 // 로그아웃
 export const logout = async () => {
   const res = await axiosInstance.post("/auth/logout");

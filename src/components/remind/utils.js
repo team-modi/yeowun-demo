@@ -13,7 +13,12 @@ export function fmtDate(value) {
   return `${y}.${m}.${day}`;
 }
 
-// 인트로 문구용 짧은 경과 표현("1주일 전" 형태). "…기록" 접미사는 제거.
+// 인트로 날짜·장소 칩용 "2026. 07. 03" 표기(와이어프레임 정합).
+export function fmtDateSpaced(value) {
+  return fmtDate(value).replace(/\./g, ". ").trim();
+}
+
+// 인트로 문구용 짧은 경과 표현("1주일 전"/"오늘" 형태). "…기록" 접미사는 제거.
 export function elapsedPhrase(candidate) {
   if (!candidate) return "";
   if (candidate.elapsedLabel) return candidate.elapsedLabel.replace(/\s*기록했?어?요?$/, "").trim();

@@ -58,18 +58,25 @@ export default function RemindPage() {
   if (loading) return <Spinner full />;
   if (error) return <ErrorState onRetry={load} />;
 
+  // 후보가 있으면(저장 완료 화면 포함) 풀블리드 플로우만 노출 —
+  // TopBar 가 "오늘의 여운" 타이틀을 제공하므로 중복 h2 없이 진행바가 헤더 바로 아래 온다.
+  // "지나온 여운" 목록은 플로우가 없을 때(후보 없음)만 노출.
+  if (candidate) {
+    return (
+      <div className="remind remind--flow">
+        <TodayRemind candidate={candidate} onSaved={handleSaved} />
+      </div>
+    );
+  }
+
   return (
     <div className="remind">
       <section className="remind__section">
         <h2 className="remind__title">오늘의 여운</h2>
-        {candidate ? (
-          <TodayRemind candidate={candidate} onSaved={handleSaved} />
-        ) : (
-          <EmptyState
-            title="오늘의 리마인드가 없어요"
-            description="기록을 남기면 일주일 뒤, 다시 마주할 여운을 준비해 드려요."
-          />
-        )}
+        <EmptyState
+          title="오늘의 리마인드가 없어요"
+          description="기록을 남기면 일주일 뒤, 다시 마주할 여운을 준비해 드려요."
+        />
       </section>
 
       <section className="remind__section">
