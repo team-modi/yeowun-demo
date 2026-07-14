@@ -10,6 +10,7 @@ import ExhibitionSelectStep from "@components/record/ExhibitionSelectStep";
 import CustomExhibitionForm from "@components/record/CustomExhibitionForm";
 import EmotionMediaStep from "@components/record/EmotionMediaStep";
 import WriteStep from "@components/record/WriteStep";
+import AiProcessingOverlay from "@components/common/AiProcessingOverlay";
 import { errMessage, todayISO } from "@components/record/constants";
 import "@styles/record.css";
 
@@ -245,6 +246,14 @@ export default function RecordPage() {
           initialContent={initialContent}
           onSubmit={handleSubmit}
           submitting={submitting}
+        />
+      )}
+
+      {/* 저장 중 서버가 AI 정리(카드 문구·요약)를 함께 수행해 수 초 걸릴 수 있다 — 대기 맥락 제공 */}
+      {submitting && (
+        <AiProcessingOverlay
+          title="AI가 여운을 정리하고 있어요"
+          description="기록을 저장하는 중이에요"
         />
       )}
     </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "@components/common/Button";
+import AiProcessingOverlay from "@components/common/AiProcessingOverlay";
 import EmotionPicker from "@components/remind/EmotionPicker";
 import { PlusIcon } from "@components/remind/icons";
 
@@ -78,6 +79,14 @@ export default function RemindWriteStep({ saving = false, onSave }) {
         <Button block disabled={!canSave} onClick={() => onSave(reflection, emotions)}>
           {saving ? "저장 중…" : "오늘의 여운 저장"}
         </Button>
+
+        {/* 저장 시 서버가 감정 변화 AI 요약을 동기 수행해 수 초 걸릴 수 있다 — 대기 맥락 제공 */}
+        {saving && (
+          <AiProcessingOverlay
+            title="AI가 감정의 변화를 살펴보고 있어요"
+            description="그날의 여운과 오늘의 여운을 비교하는 중이에요"
+          />
+        )}
       </div>
     </div>
   );
