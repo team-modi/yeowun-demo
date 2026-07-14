@@ -104,3 +104,42 @@ export function BookmarkIcon({ filled = false, ...props }) {
     </Svg>
   );
 }
+
+/* 전시 상세 정보 행 아이콘 — 전시 기간·장소·운영시간·관람료. */
+
+export function CalendarIcon(props) {
+  return (
+    <Svg {...props}>
+      <rect x="3.5" y="4.5" width="17" height="16" rx="2.5" />
+      <path d="M3.5 9h17" />
+      <path d="M8 3v3M16 3v3" />
+    </Svg>
+  );
+}
+
+export function MapPinIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M12 21s7-5.686 7-11a7 7 0 1 0-14 0c0 5.314 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </Svg>
+  );
+}
+
+export function ClockIcon(props) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 1.8" />
+    </Svg>
+  );
+}
+
+export function TicketIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2 2 2 0 0 0 0-4z" />
+      <path d="M14 6v12" strokeDasharray="2 2.4" />
+    </Svg>
+  );
+}
