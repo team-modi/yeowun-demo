@@ -5,7 +5,10 @@ import Spinner from "@components/common/Spinner";
 import ErrorState from "@components/common/ErrorState";
 import EmptyState from "@components/common/EmptyState";
 import Button from "@components/common/Button";
-import TodayRemind from "@components/remind/TodayRemind";
+import TodayRemindA from "@components/remind/TodayRemindA";
+import TodayRemindB from "@components/remind/TodayRemindB";
+import { resolveVariant } from "@utils/remindVariant";
+import { useAuthStore } from "@store/authStore";
 import "@styles/remind.css";
 
 /**
@@ -17,6 +20,7 @@ import "@styles/remind.css";
  */
 export default function RemindPage() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const [candidate, setCandidate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,9 +55,15 @@ export default function RemindPage() {
   // 후보가 있으면(저장 완료 화면 포함) 풀블리드 플로우만 노출 —
   // TopBar 가 "오늘의 여운" 타이틀을 제공하므로 중복 h2 없이 진행바가 헤더 바로 아래 온다.
   if (candidate) {
+    // A/B 배정: 핸드폰 끝자리(로그인 시 저장) → A(요약형)/B(순차형). ?rv=A|B 로 QA 강제 전환.
+    const variant = resolveVariant({ userId: user?.userId });
     return (
       <div className="remind remind--flow">
-        <TodayRemind candidate={candidate} />
+        {variant === "A" ? (
+          <TodayRemindA candidate={candidate} />
+        ) : (
+          <TodayRemindB candidate={candidate} />
+        )}
       </div>
     );
   }
