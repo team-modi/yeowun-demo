@@ -113,8 +113,8 @@
   align-items: center;
   padding: 3px 8px;
   border-radius: 6px;
-  background: var(--surface-subtle);
-  color: var(--text-secondary);
+  background: var(--accent-subtle); /* 장르 키워드 = 인디고 칩(아카이브 감정 칩과 동일 언어) */
+  color: var(--text-brand);
   font-size: var(--typo-caption1-size);
   line-height: var(--typo-caption1-line);
   font-weight: 500;
@@ -216,6 +216,7 @@
   color: var(--text-secondary);
   display: flex;
   flex-direction: column;
+  align-items: flex-start; /* flex 기본 stretch가 배지(무료 등)를 행 전체 폭으로 늘리는 것 방지 */
   gap: 2px;
   min-width: 0;
 }
@@ -305,9 +306,28 @@
   white-space: pre-line;
 }
 
+/* 공식 전시 페이지 — 시안: 아웃라인 칩 + 외부링크 아이콘 */
 .detail-source {
   align-self: flex-start;
-  color: var(--text-brand);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--surface-default);
+  color: var(--text-secondary);
+  font-size: var(--typo-label2-size);
+  line-height: var(--typo-label2-line);
+  font-weight: 500;
+}
+
+.detail-source:hover {
+  background: var(--surface-subtle);
+}
+
+.detail-source__icon {
+  color: var(--icon-secondary);
 }
 
 /* ---------- 하단 고정 액션 ---------- */
