@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { saveRemind } from "@api/remind";
+import { trackClarityEvent } from "@utils/clarity";
 import { useUiStore } from "@store/uiStore";
 
 /**
@@ -25,6 +26,7 @@ export default function useRemindSave(candidate) {
         reflection: text,
       };
       const { data } = await saveRemind(body);
+      trackClarityEvent("reminder_reentry_saved"); // Clarity: 저장 API 성공 후
       setSummary(data);
       toast("오늘의 여운을 남겼어요", "success");
     } catch (err) {
