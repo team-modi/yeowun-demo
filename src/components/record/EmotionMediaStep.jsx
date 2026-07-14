@@ -91,27 +91,35 @@ export default function EmotionMediaStep({
     input.click();
   };
 
-  // 파일 선택 → 클라 검증 → 프리사인·R2 업로드 → media 에 { type, url, sizeBytes } 추가.
+  // 파일 선택(다중 지원) → 클라 검증 → 프리사인·R2 순차 업로드 → media 에 { type, url, sizeBytes } 추가.
   const onFileSelected = async (e) => {
-    const file = e.target.files?.[0];
+    const files = Array.from(e.target.files ?? []);
     // 같은 파일을 다시 고를 수 있도록 항상 input 값을 비운다.
     e.target.value = "";
-    if (!file) return;
-    if (media.length >= MAX_MEDIA) {
+    if (files.length === 0) return;
+
+    const room = MAX_MEDIA - media.length;
+    if (room <= 0) {
       toast(`미디어는 최대 ${MAX_MEDIA}개까지 추가할 수 있어요.`, "error");
       return;
     }
-    const invalid = validateMediaFile(file);
+    if (files.length > room) {
+      toast(`미디어는 최대 ${MAX_MEDIA}개까지 — ${room}개만 추가돼요.`, "error");
+    }
+    const picked = files.slice(0, room);
+    const invalid = picked.map(validateMediaFile).find(Boolean);
     if (invalid) {
       toast(invalid, "error");
       return;
     }
     setUploading(true);
     try {
-      const item = await uploadRecordMedia(file);
-      setMedia((prev) =>
-        prev.length >= MAX_MEDIA ? prev : [...prev, item],
-      );
+      for (const file of picked) {
+        const item = await uploadRecordMedia(file);
+        setMedia((prev) =>
+          prev.length >= MAX_MEDIA ? prev : [...prev, item],
+        );
+      }
       setMediaOpen(false);
     } catch (err) {
       toast(err?.message || "업로드에 실패했어요. 다시 시도해 주세요.", "error");
@@ -175,6 +183,7 @@ export default function EmotionMediaStep({
         <input
           ref={fileInputRef}
           type="file"
+          multiple
           hidden
           onChange={onFileSelected}
         />
