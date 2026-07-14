@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { getDetail } from "@api/exhibition";
@@ -9,7 +9,13 @@ import { useAuthStore } from "@store/authStore";
 import Button from "@components/common/Button";
 import Spinner from "@components/common/Spinner";
 import ErrorState from "@components/common/ErrorState";
-import { BookmarkIcon } from "@components/common/icons";
+import {
+  BookmarkIcon,
+  CalendarIcon,
+  ClockIcon,
+  MapPinIcon,
+  TicketIcon,
+} from "@components/common/icons";
 
 import { categoryLabel } from "@components/exhibition/constants";
 import { ddayLabel } from "@components/exhibition/dates";
@@ -21,6 +27,28 @@ const dot = (d) => (d ? String(d).replaceAll("-", ".") : "");
 const periodDots = (start, end) => {
   if (!start && !end) return null;
   return `${dot(start)} ~ ${dot(end)}`.trim();
+};
+
+/**
+ * 운영시간 문자열(백엔드가 우리 규칙으로 만든 표시값, 줄바꿈 구분)을 요일/시간 행으로 분리한다.
+ * 예) "월 / 화 / 수 10:00 ~ 18:00\n목 / 금 10:00 ~ 19:00\n토 / 일 휴무"
+ *   → [{days:"월 / 화 / 수", value:"10:00 ~ 18:00"}, ..., {days:"토 / 일", closed:true}]
+ * HTML이 \n을 공백으로 뭉개 한 줄로 보이는 문제를, 프론트에서 행/열로 나눠 렌더한다.
+ */
+const parseHoursRows = (text) => {
+  if (!text) return [];
+  return text
+    .split("\n")
+    .map((raw) => raw.trim())
+    .filter(Boolean)
+    .map((line) => {
+      if (line.endsWith("휴무")) {
+        return { days: line.slice(0, -2).trim(), value: "휴무", closed: true };
+      }
+      const m = line.match(/^(.*?)\s+(\d{1,2}:\d{2}.*)$/);
+      if (m) return { days: m[1].trim(), value: m[2].trim(), closed: false };
+      return { days: line, value: "", closed: false };
+    });
 };
 
 /**
@@ -236,7 +264,10 @@ export default function DetailExhibitionPage() {
         <dl className="detail-info">
           {period && (
             <div className="detail-info__row">
-              <dt>전시 기간</dt>
+              <dt className="detail-info__icon">
+                <CalendarIcon size={19} />
+                <span className="sr-only">전시 기간</span>
+              </dt>
               <dd>
                 {period}
                 {dday && <span className="detail-dday"> · {dday}</span>}
@@ -246,7 +277,10 @@ export default function DetailExhibitionPage() {
 
           {place && (
             <div className="detail-info__row">
-              <dt>장소</dt>
+              <dt className="detail-info__icon">
+                <MapPinIcon size={19} />
+                <span className="sr-only">장소</span>
+              </dt>
               <dd>
                 <button
                   type="button"
@@ -270,13 +304,32 @@ export default function DetailExhibitionPage() {
 
           {operatingHours && (
             <div className="detail-info__row">
-              <dt>운영 시간</dt>
-              <dd className="detail-hours">{operatingHours}</dd>
+              <dt className="detail-info__icon">
+                <ClockIcon size={19} />
+                <span className="sr-only">운영 시간</span>
+              </dt>
+              <dd className="detail-hours">
+                {parseHoursRows(operatingHours).map((row, i) =>
+                  row.closed ? (
+                    <span key={i} className="detail-hours__closed">
+                      {row.days} 휴무
+                    </span>
+                  ) : (
+                    <Fragment key={i}>
+                      <span className="detail-hours__days">{row.days}</span>
+                      <span className="detail-hours__time">{row.value}</span>
+                    </Fragment>
+                  ),
+                )}
+              </dd>
             </div>
           )}
 
           <div className="detail-info__row">
-            <dt>관람료</dt>
+            <dt className="detail-info__icon">
+              <TicketIcon size={19} />
+              <span className="sr-only">관람료</span>
+            </dt>
             <dd>
               {free ? (
                 <span className="badge badge--free">무료</span>
@@ -287,7 +340,7 @@ export default function DetailExhibitionPage() {
           </div>
 
           {descriptionText && (
-            <div className="detail-info__row">
+            <div className="detail-info__row detail-info__row--block">
               <dt>전시 소개</dt>
               <dd className="detail-desc">{descriptionText}</dd>
             </div>
