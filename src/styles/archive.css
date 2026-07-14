@@ -520,3 +520,20 @@
   line-height: var(--typo-caption1-line);
   color: var(--text-tertiary);
 }
+
+/* ---------- 기록 상세: 여운 남기기 CTA (네이비 풀폭 + 보조 문구) ---------- */
+.rec-detail__remind-cta {
+  margin-top: var(--space-8);
+  padding-bottom: var(--space-4); /* 스크롤 컨테이너가 좌우 패딩 제공 */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.rec-detail__remind-hint {
+  font-size: var(--typo-caption1-size);
+  line-height: var(--typo-caption1-line);
+  letter-spacing: var(--typo-ls-none);
+  color: var(--text-tertiary);
+}

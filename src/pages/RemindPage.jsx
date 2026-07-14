@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getCandidate } from "@api/remind";
 import Spinner from "@components/common/Spinner";
 import ErrorState from "@components/common/ErrorState";
@@ -20,12 +20,16 @@ import "@styles/remind.css";
  */
 export default function RemindPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useAuthStore((s) => s.user);
-  const [candidate, setCandidate] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // 기록 상세 "여운 남기기"로 진입하면 그 기록을 후보로 사용(서버 후보 조회 생략).
+  const forcedCandidate = location.state?.candidate ?? null;
+  const [candidate, setCandidate] = useState(forcedCandidate);
+  const [loading, setLoading] = useState(!forcedCandidate);
   const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
+    if (forcedCandidate) return;
     setLoading(true);
     setError(null);
     try {
@@ -36,7 +40,7 @@ export default function RemindPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [forcedCandidate]);
 
   // 마이크로태스크로 지연시켜 effect 내 동기 setState 를 피한다.
   useEffect(() => {

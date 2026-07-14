@@ -21,6 +21,13 @@ export const getList = async (params) => {
   return res.data;
 };
 
+// 지역 필터 그룹(필터 시트 칩, 서버가 단일 소스) — data: {groups:[{code,label,regions[]}]}
+//   검색 시 선택 그룹들의 regions를 콤마로 이어 region 파라미터에 넣는다.
+export const getRegionGroups = async () => {
+  const res = await axiosInstance.get("/exhibitions/region-groups");
+  return res.data;
+};
+
 // 전시 상세 — data: {…,description,operatingHours,price,artists[],keywords[],serviceName,
 //   detailUrl,gpsX,gpsY,address,imgUrl,phone,viewCount,sigungu,placeUrl,artistSummary,
 //   free,bookmarked,recorded}
