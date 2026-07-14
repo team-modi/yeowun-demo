@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { guestPhoneLogin, login } from "@api/auth";
 import { getMe } from "@api/user";
 import { takeProvider } from "@utils/oauth";
+import { variantFromPhone, setVariant } from "@utils/remindVariant";
 import { useAuthStore } from "@store/authStore";
 import { BackIcon } from "@components/common/icons";
 
@@ -75,6 +76,9 @@ export default function LoginPage() {
         setStatus("error");
         return;
       }
+      // 리마인드 A/B 배정: 번호 끝자리 짝수→A(요약형)/홀수→B(순차형). 로그인 시 고정.
+      const v = variantFromPhone(phoneDigits);
+      if (v) setVariant(v);
       await finishLogin();
     } catch (err) {
       console.error("휴대폰 로그인 실패:", err);
