@@ -12,6 +12,7 @@ import Spinner from "@components/common/Spinner";
 import ErrorState from "@components/common/ErrorState";
 import { BackIcon, BookmarkIcon } from "@components/common/icons";
 import { formatDate } from "@components/archive/format";
+import { trackClarityEvent } from "@utils/clarity";
 
 /** 기록의 감정 코드 배열(대표 감정 우선, 중복 제거). */
 const emotionCodesOf = (record) => {
@@ -66,6 +67,7 @@ export default function RecordDetail({
     try {
       const { data } = await getDetailRecord(recordId);
       setRecord(data);
+      trackClarityEvent("archive_record_opened"); // Clarity: 상세가 정상 표시된 후
     } catch (err) {
       setError(err);
     } finally {

@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { getMe } from "@api/user";
 import { useAuthStore } from "@store/authStore";
+import { setClarityTag } from "@utils/clarity";
+import { resolveVariant } from "@utils/remindVariant";
 import TopBar from "@components/common/TopBar";
 import BottomNav from "@components/common/BottomNav";
 import ToastHost from "@components/common/ToastHost";
@@ -51,6 +53,9 @@ export default function AppLayout() {
         if (alive && me?.meta?.result === "SUCCESS") {
           setUser(me.data);
           setAuthed(true);
+          // Clarity A/B 필터 태그 — 전화번호가 아닌 그룹 값만 전송(개인정보 미포함).
+          setClarityTag("reminder_variant", resolveVariant({ userId: me.data?.userId }));
+          setClarityTag("beta_test", "yeoun_beta_v1");
         }
       } catch {
         // 비로그인 — 익명으로 진행

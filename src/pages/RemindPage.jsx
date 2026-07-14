@@ -8,6 +8,7 @@ import Button from "@components/common/Button";
 import TodayRemindA from "@components/remind/TodayRemindA";
 import TodayRemindB from "@components/remind/TodayRemindB";
 import { resolveVariant } from "@utils/remindVariant";
+import { setClarityTag, trackClarityEventOnce } from "@utils/clarity";
 import { useAuthStore } from "@store/authStore";
 import "@styles/remind.css";
 
@@ -52,6 +53,13 @@ export default function RemindPage() {
       cancelled = true;
     };
   }, [load]);
+
+  // Clarity: 리마인드 첫 화면 노출(세션당 1회) + A/B 필터 태그(QA 강제 전환 ?rv= 반영)
+  useEffect(() => {
+    if (loading || error || !candidate) return;
+    setClarityTag("reminder_variant", resolveVariant({ userId: user?.userId }));
+    trackClarityEventOnce("reminder_opened");
+  }, [loading, error, candidate, user?.userId]);
 
   if (loading) return <Spinner full />;
   if (error) return <ErrorState onRetry={load} />;
