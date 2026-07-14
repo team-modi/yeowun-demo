@@ -208,7 +208,7 @@ test.describe("오늘의 여운 도착 노출 + 리마인드 플로우", () => {
     await expect(page.getByText("빛의 속삭임")).toBeVisible();
   });
 
-  test("3단계 '나가기'는 플로우 이탈(이전 화면 복귀)", async ({ page }) => {
+  test("3단계 '원본 기록 보기'는 아카이브로 이동(PR#33 플로우)", async ({ page }) => {
     await mockCommon(page);
 
     await page.goto("/yeowun");
@@ -217,9 +217,9 @@ test.describe("오늘의 여운 도착 노출 + 리마인드 플로우", () => {
 
     await page.getByRole("button", { name: "다음" }).click();
     await page.getByRole("button", { name: "다음" }).click();
-    await page.getByRole("button", { name: "나가기" }).click();
+    await page.getByRole("button", { name: "원본 기록 보기" }).click();
 
-    await expect(page).toHaveURL(/\/yeowun$/);
+    await expect(page).toHaveURL(/\/archive$/);
   });
 
   test("전시탐색 상단 배너 노출 → 탭하면 /remind", async ({ page }) => {
@@ -239,7 +239,8 @@ test.describe("오늘의 여운 도착 노출 + 리마인드 플로우", () => {
     await mockCommon(page, { authed: false });
 
     await page.goto("/exhibition");
-    await expect(page.getByText("총 0개")).toBeVisible();
+    // 카운트 행(신규 디자인: "전시 N")이 렌더될 때까지 대기 후 배너 부재 확인.
+    await expect(page.locator(".exh-total")).toContainText("전시");
     await expect(page.locator(".rm-banner")).toHaveCount(0);
 
     await page.goto("/yeowun");

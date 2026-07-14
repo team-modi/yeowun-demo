@@ -19,10 +19,11 @@ html {
 body {
   min-height: 100svh;
   font-family: var(--font-sans);
-  font-size: var(--font-size-md);
+  font-size: var(--typo-body2-size);
   line-height: var(--line-normal);
-  color: var(--color-text);
-  background: var(--color-bg);
+  letter-spacing: var(--typo-ls-none);
+  color: var(--text-secondary);
+  background: var(--bg-default);
   color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -66,13 +67,14 @@ h1,
 h2,
 h3,
 h4 {
-  color: var(--color-ink);
+  color: var(--text-primary);
   line-height: var(--line-tight);
+  letter-spacing: var(--typo-ls-heading1);
   font-weight: 600;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--accent-default);
   outline-offset: 2px;
 }
 
@@ -84,5 +86,5 @@ h4 {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
+  background: var(--bg-default);
 }

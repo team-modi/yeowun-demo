@@ -1,70 +1,161 @@
 /* ============================================================
    [02] 전시 탐색 (/exhibition) — wf-05
+   디자이너 확정 시안(02_전시탐색*) 반영: 페이지 자체 헤더 ·
+   서피스 검색 필드 · "전시 N" 카운트 행 · 세로 썸네일 리스트 ·
+   필터 바텀시트(사각 칩 + 초기화/CTA 푸터).
    ============================================================ */
 
 .exh-page {
   padding-bottom: var(--space-10);
 }
 
-/* ---------- 검색바 ---------- */
+/* ---------- 헤더 (시안: 좌 "전시탐색" title3 · 우 북마크) ----------
+   전역 TopBar 대신 페이지 자체 헤더를 쓴다 — 이 페이지가 떠 있을 때만 숨김. */
+.app-layout:has(.exh-page) .topbar {
+  display: none;
+}
+
+.exh-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0 var(--space-4);
+}
+
+.exh-head__title {
+  font-size: var(--typo-title3-size);
+  line-height: var(--typo-title3-line);
+  letter-spacing: var(--typo-ls-title3);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.exh-head__bookmark {
+  width: 40px;
+  height: 40px;
+  margin-right: -8px; /* 아이콘을 페이지 우측 패딩 라인에 맞춤 */
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--icon-primary);
+}
+
+.exh-head__bookmark:hover {
+  background: var(--surface-subtle);
+}
+
+/* 섹션 모드 헤더(홈 전체보기 진입, 시안 01_홈_*상세): 뒤로가기 + 중앙 타이틀 */
+.exh-head--section {
+  justify-content: initial;
+}
+
+.exh-head__back,
+.exh-head__spacer {
+  width: 40px;
+  height: 40px;
+  flex: none;
+}
+
+.exh-head__back {
+  margin-left: -8px; /* 아이콘을 페이지 좌측 패딩 라인에 맞춤 */
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--icon-primary);
+}
+
+.exh-head__back:hover {
+  background: var(--surface-subtle);
+}
+
+.exh-head__title--center {
+  flex: 1;
+  text-align: center;
+  font-size: var(--typo-heading1-size);
+  line-height: var(--typo-heading1-line);
+  letter-spacing: var(--typo-ls-heading1);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 오픈 예정 섹션 2열 그리드(시안 01_홈_오픈 전시 상세) */
+.exh-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6) var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+/* ---------- 검색 필드 (서피스 배경 · radius 12 · 포커스 인디고 테두리) ---------- */
 .exh-search {
   display: flex;
   align-items: center;
   position: relative;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .exh-search__icon {
   position: absolute;
-  left: var(--space-3);
+  left: 14px;
   display: grid;
   place-items: center;
-  color: var(--color-text-muted);
+  color: var(--icon-tertiary);
   z-index: 1;
 }
 
 .exh-search__input {
   flex: 1 1 auto;
   min-width: 0;
-  height: 44px;
-  padding: 0 40px 0 42px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-size: var(--font-size-md);
+  height: 48px;
+  padding: 0 44px 0 46px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  font-size: var(--typo-body1-size);
+  line-height: var(--typo-body1-line);
+  letter-spacing: var(--typo-ls-body1);
 }
 
 .exh-search__input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--text-disabled);
 }
 
 .exh-search__input:focus {
   outline: none;
-  border-color: var(--color-accent);
-  background: var(--color-bg);
+  border-color: var(--border-selected);
+}
+
+/* 커스텀 지우기 버튼을 쓰므로 네이티브 취소 버튼 제거 */
+.exh-search__input::-webkit-search-cancel-button,
+.exh-search__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .exh-search__clear {
   position: absolute;
-  right: var(--space-3);
-  width: 24px;
-  height: 24px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
-  color: var(--color-text-muted);
-  font-size: 18px;
+  background: var(--icon-disabled);
+  color: var(--icon-inverse);
+  font-size: 14px;
   line-height: 1;
 }
 
 .exh-hint {
-  color: var(--color-accent);
-  font-size: var(--font-size-sm);
+  color: var(--status-error);
+  font-size: var(--typo-caption1-size);
+  line-height: var(--typo-caption1-line);
   margin-bottom: var(--space-2);
 }
 
-/* ---------- 오늘의 여운 도착 배너 (wf-07) — "총 N개" 행 위 ---------- */
+/* ---------- 오늘의 여운 도착 배너 (wf-07) — "전시 N" 행 위 ---------- */
 .rm-banner {
   display: flex;
   align-items: center;
@@ -73,14 +164,14 @@
   text-align: left;
   margin: var(--space-2) 0 var(--space-1);
   padding: var(--space-3);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: var(--surface-default);
   box-shadow: var(--shadow-sm);
 }
 
 .rm-banner:hover {
-  background: var(--color-surface-alt);
+  background: var(--surface-subtle);
 }
 
 .rm-banner__thumb {
@@ -89,7 +180,7 @@
   height: 44px;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background: var(--color-surface-alt);
+  background: var(--surface-muted);
 }
 
 .rm-banner__thumb img {
@@ -109,19 +200,21 @@
 }
 
 .rm-banner__badge {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border-strong);
+  font-size: var(--typo-caption3-size);
+  line-height: var(--typo-caption3-line);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-full);
   padding: 2px 9px;
-  background: var(--color-bg);
+  background: var(--bg-default);
 }
 
 .rm-banner__text {
   max-width: 100%;
-  font-size: var(--font-size-sm);
+  font-size: var(--typo-caption1-size);
+  line-height: var(--typo-caption1-line);
   font-weight: 600;
-  color: var(--color-ink);
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -129,34 +222,42 @@
 
 .rm-banner__arrow {
   flex: 0 0 auto;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-lg);
+  color: var(--text-tertiary);
+  font-size: var(--typo-heading1-size);
 }
 
-/* ---------- 툴바: 총 N개 · 정렬 · 필터 ---------- */
+/* ---------- 툴바: "전시 N" · 최신순 ⌄ · 네이비 원형 필터 ---------- */
 .exh-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  margin: var(--space-3) 0 var(--space-2);
+  margin: var(--space-4) 0 var(--space-2);
 }
 
 .exh-total {
-  font-size: var(--font-size-sm);
-  color: var(--color-text);
-  font-weight: 500;
+  font-size: var(--typo-heading2-size);
+  line-height: var(--typo-heading2-line);
+  letter-spacing: var(--typo-ls-heading2);
+  font-weight: 600;
+  color: var(--text-primary);
   min-height: 1em;
+}
+
+.exh-total__num {
+  margin-left: 4px;
+  color: var(--text-tertiary);
+  font-weight: 500;
 }
 
 .exh-toolbar__ctrls {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   flex: 0 0 auto;
 }
 
-/* ---------- 정렬 드롭다운 ---------- */
+/* ---------- 정렬 드롭다운 — 시안: 테두리 없는 "최신순 ⌄" 텍스트 ---------- */
 .exh-sort {
   position: relative;
 }
@@ -164,15 +265,21 @@
 .exh-sort__btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  height: 34px;
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-size: var(--font-size-sm);
+  gap: 2px;
+  height: 32px;
+  padding: 0 2px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--typo-label2-size);
+  line-height: var(--typo-label2-line);
+  letter-spacing: var(--typo-ls-none);
+  font-weight: 500;
   white-space: nowrap;
+}
+
+.exh-sort__btn svg {
+  color: var(--icon-secondary);
 }
 
 .exh-sort__menu {
@@ -182,8 +289,8 @@
   min-width: 120px;
   padding: var(--space-1);
   list-style: none;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  background: var(--bg-default);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   z-index: 30;
@@ -194,37 +301,42 @@
   text-align: left;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  color: var(--color-text);
+  font-size: var(--typo-label2-size);
+  line-height: var(--typo-label2-line);
+  letter-spacing: var(--typo-ls-none);
+  color: var(--text-secondary);
 }
 
 .exh-sort__opt:hover {
-  background: var(--color-surface);
+  background: var(--surface-subtle);
 }
 
 .exh-sort__opt.is-active {
-  color: var(--color-ink);
+  color: var(--text-primary);
   font-weight: 600;
-  background: var(--color-surface);
+  background: var(--surface-subtle);
 }
 
-/* ---------- 필터 아이콘 버튼 ---------- */
+/* ---------- 필터 버튼 — 시안: 다크 네이비 원형 + 흰 슬라이더 아이콘 ---------- */
 .exh-filter-btn {
   position: relative;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface);
-  color: var(--color-ink);
+  border: none;
+  background: var(--brand-primary);
+  color: var(--icon-inverse);
+}
+
+.exh-filter-btn:hover {
+  background: var(--brand-pressed);
 }
 
 .exh-filter-btn.is-active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-accent-contrast);
+  background: var(--brand-primary);
+  color: var(--icon-inverse);
 }
 
 .exh-filter-btn__count {
@@ -237,15 +349,15 @@
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
+  background: var(--accent-default);
+  color: var(--text-inverse);
   font-size: 10px;
   font-weight: 700;
   line-height: 1;
-  border: 1.5px solid var(--color-bg);
+  border: 1.5px solid var(--bg-default);
 }
 
-/* ---------- 목록(list variant 카드) ---------- */
+/* ---------- 목록(list variant 카드) — 시안: 세로 썸네일 84×112 · 구분선 없음 ---------- */
 .exh-list {
   display: flex;
   flex-direction: column;
@@ -254,21 +366,54 @@
 .exh-list .exh-card--list {
   border-radius: 0;
   border: none;
-  border-bottom: 1px solid var(--color-border);
   box-shadow: none;
   background: transparent;
-  padding-left: 0;
-  padding-right: 0;
+  padding: 10px 0;
 }
 
-.exh-list .exh-card--list:last-child {
-  border-bottom: none;
+.exh-list .exh-card__thumb {
+  width: 84px;
+  height: 112px;
+  border-radius: var(--radius-md);
+}
+
+.exh-list .exh-card__row-body {
+  justify-content: flex-start;
+  padding-top: 2px;
+  gap: 4px;
 }
 
 .exh-more {
   display: flex;
   justify-content: center;
   padding: var(--space-4) 0;
+}
+
+/* ---------- 검색결과 없음 — 시안: 중앙 플레이스홀더 + 안내 문구 ---------- */
+.exh-page .state {
+  padding: 110px var(--space-6) var(--space-10);
+  gap: var(--space-1);
+}
+
+.exh-empty__img {
+  width: 72px;
+  height: 72px;
+  border-radius: 4px;
+  background: var(--surface-muted);
+  margin-bottom: var(--space-3);
+}
+
+.exh-page .state__title {
+  font-size: var(--typo-heading2-size);
+  line-height: var(--typo-heading2-line);
+  letter-spacing: var(--typo-ls-heading2);
+  color: var(--text-primary);
+}
+
+.exh-page .state__desc {
+  font-size: var(--typo-caption1-size);
+  line-height: var(--typo-caption1-line);
+  color: var(--text-tertiary);
 }
 
 /* ---------- 필터 바텀시트 ---------- */
@@ -287,7 +432,7 @@
 .exh-sheet__scrim {
   position: absolute;
   inset: 0;
-  background: var(--color-overlay);
+  background: var(--overlay-dim);
   opacity: 0;
   transition: opacity 0.24s ease;
 }
@@ -298,7 +443,7 @@
 
 .exh-sheet {
   position: relative;
-  background: var(--color-bg);
+  background: var(--bg-default);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   box-shadow: var(--shadow-lg);
   padding: var(--space-3) var(--space-5)
@@ -318,15 +463,17 @@
   width: 40px;
   height: 4px;
   border-radius: var(--radius-full);
-  background: var(--color-border-strong);
-  margin: 0 auto var(--space-3);
+  background: var(--border-strong);
+  margin: 0 auto var(--space-4);
 }
 
 .exh-sheet__title {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-ink);
-  margin-bottom: var(--space-4);
+  font-size: var(--typo-title3-size);
+  line-height: var(--typo-title3-line);
+  letter-spacing: var(--typo-ls-title3);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-5);
 }
 
 .exh-sheet__body {
@@ -334,15 +481,17 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
   padding-bottom: var(--space-4);
 }
 
 /* ---------- 필터 그룹(지역/장르 칩) ---------- */
 .exh-filter-group__label {
-  font-size: var(--font-size-md);
+  font-size: var(--typo-heading2-size);
+  line-height: var(--typo-heading2-line);
+  letter-spacing: var(--typo-ls-heading2);
   font-weight: 600;
-  color: var(--color-ink);
+  color: var(--text-primary);
   margin-bottom: var(--space-3);
 }
 
@@ -352,19 +501,36 @@
   gap: var(--space-2);
 }
 
-/* ---------- 시트 하단 액션 ---------- */
+/* 시안: 시트 안 칩은 라운드 사각(8px) — 선택=인디고 채움 / 미선택=흰 배경 + 회색 테두리 */
+.exh-sheet .chip {
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+/* ---------- 시트 하단 액션 — 좌 "초기화"(서피스 ghost) + 우 네이비 CTA ---------- */
 .exh-sheet__actions {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
 }
 
 .exh-sheet__reset {
   flex: 0 0 auto;
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  padding: 14px 18px;
+}
+
+.exh-sheet__reset:not(:disabled):hover {
+  background: var(--surface-muted);
+}
+
+.exh-sheet__reset svg {
+  color: var(--icon-secondary);
 }
 
 .exh-sheet__apply {
   flex: 1 1 auto;
+  padding: 14px 18px;
 }

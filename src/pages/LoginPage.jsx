@@ -8,6 +8,8 @@ import { variantFromPhone, setVariant } from "@utils/remindVariant";
 import { useAuthStore } from "@store/authStore";
 import { BackIcon } from "@components/common/icons";
 
+import "@styles/login.css";
+
 /**
  * LoginPage — 소셜 로그인 진입(랜딩 플로우 B의 로그인 지점).
  * 랜딩·전시 탐색은 로그인 없이 가능하고, 기록 작성·프로필·북마크 등 개인화 시점에만 이 화면으로 온다.

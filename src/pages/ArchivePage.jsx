@@ -179,10 +179,7 @@ export default function ArchivePage() {
 
   return (
     <div className="page archive">
-      <div className="archive__head">
-        <h2 className="page__title archive__title">아카이브</h2>
-      </div>
-
+      {/* 페이지 타이틀은 TopBar("아카이브")가 제공 — 중복 헤딩 없이 탭부터 시작 */}
       {/* 세그먼트 탭 [기록 | 리마인드] — 알림 탭과 톤 통일(50% 언더라인) */}
       <div className="archive__tabs" role="tablist" aria-label="아카이브 탭">
         {TABS.map((t) => (

@@ -13,6 +13,13 @@ import ErrorState from "@components/common/ErrorState";
 import { BackIcon, BookmarkIcon } from "@components/common/icons";
 import { formatDate } from "@components/archive/format";
 
+/** 기록의 감정 코드 배열(대표 감정 우선, 중복 제거). */
+const emotionCodesOf = (record) => {
+  const codes = Array.isArray(record?.emotionCodes) ? record.emotionCodes : [];
+  const rep = record?.representativeEmotion;
+  return [...(rep ? [rep] : []), ...codes.filter((e) => e && e !== rep)];
+};
+
 /** 더보기(⋯) — 수정/삭제 메뉴 토글 아이콘. */
 function MoreIcon({ size = 20 }) {
   return (
@@ -105,6 +112,30 @@ export default function RecordDetail({
     onClose?.();
     navigate(`/record?editId=${recordId}`);
   }, [navigate, recordId, onClose]);
+
+  // 여운 남기기 — 이 기록을 후보로 리마인드 작성 플로우 진입.
+  // RemindPage는 서버 후보(getCandidate) 대신 state.candidate가 있으면 그것으로 시작한다.
+  const goRemind = useCallback(() => {
+    if (!record) return;
+    const viewed = Date.parse(record.viewedAt);
+    const daysAgo = Number.isNaN(viewed)
+      ? undefined
+      : Math.max(0, Math.floor((Date.now() - viewed) / 86400000));
+    const candidate = {
+      recordId,
+      daysAgo,
+      exhibitionTitle: record.exhibitionTitle,
+      posterUrl: record.exhibitionPosterUrl ?? null,
+      sceneImageUrl: record.media?.find((m) => m?.type !== "VIDEO" && m?.url)?.url ?? null,
+      place: record.exhibitionPlace ?? null,
+      region: record.exhibitionRegion ?? null,
+      viewedAt: record.viewedAt ?? null,
+      originalContent: record.content ?? null,
+      originalEmotionCodes: emotionCodesOf(record),
+    };
+    onClose?.();
+    navigate("/remind", { state: { candidate } });
+  }, [record, recordId, onClose, navigate]);
 
   // 삭제 — 확인 후 soft delete. 성공 시 목록에서 제거하고 상세를 닫는다.
   const doDelete = useCallback(async () => {
@@ -309,6 +340,16 @@ export default function RecordDetail({
                   </div>
                 </section>
               )}
+
+              {/* 여운 남기기 — 이 기록으로 리마인드 작성 플로우 진입(시안 CTA 톤: 네이비 풀폭) */}
+              <div className="rec-detail__remind-cta">
+                <Button variant="primary" block onClick={goRemind}>
+                  이 기록의 여운 남기기
+                </Button>
+                <p className="rec-detail__remind-hint">
+                  시간이 지난 지금, 다시 떠오르는 감상을 남겨보세요
+                </p>
+              </div>
             </>
           )}
         </div>

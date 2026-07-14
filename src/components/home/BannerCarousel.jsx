@@ -50,17 +50,17 @@ function PinGlyph() {
 }
 
 function formatRange(startDate, endDate) {
-  // "2026-05-28" | ISO → "05.28"
+  // "2026-05-28" | ISO → "26.05.28" (시안 01: "26.06.26 ~ 26.09.30")
   const fmt = (d) => {
     if (!d) return "";
     const s = String(d).slice(0, 10);
     const parts = s.split("-");
     if (parts.length < 3) return s;
-    return `${parts[1]}.${parts[2]}`;
+    return `${parts[0].slice(2)}.${parts[1]}.${parts[2]}`;
   };
   const a = fmt(startDate);
   const b = fmt(endDate);
-  if (a && b) return `${a} - ${b}`;
+  if (a && b) return `${a} ~ ${b}`;
   return a || b || "";
 }
 
@@ -189,16 +189,16 @@ export default function BannerCarousel({ banners = [] }) {
               <div className="banner-slide__overlay">
                 <p className="banner-slide__title">{b.title}</p>
                 <div className="banner-slide__meta">
-                  {range && (
-                    <span className="banner-slide__meta-row">
-                      <CalendarGlyph />
-                      <span className="banner-slide__date">{range}</span>
-                    </span>
-                  )}
                   {b.place && (
                     <span className="banner-slide__meta-row">
                       <PinGlyph />
                       <span className="banner-slide__place">{b.place}</span>
+                    </span>
+                  )}
+                  {range && (
+                    <span className="banner-slide__meta-row">
+                      <CalendarGlyph />
+                      <span className="banner-slide__date">{range}</span>
                     </span>
                   )}
                 </div>

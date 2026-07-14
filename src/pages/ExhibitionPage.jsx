@@ -9,6 +9,7 @@ import { useUiStore } from "@store/uiStore";
 import { elapsedPhrase } from "@components/remind/utils";
 
 import ExhibitionCard from "@components/common/ExhibitionCard";
+import { BackIcon, BookmarkIcon } from "@components/common/icons";
 import EmptyState from "@components/common/EmptyState";
 import ErrorState from "@components/common/ErrorState";
 import Spinner from "@components/common/Spinner";
@@ -22,6 +23,13 @@ import FilterSheet from "@components/exhibition/FilterSheet";
 import "@styles/exhibition.css";
 
 const PAGE_SIZE = 20;
+
+// 홈 "전체보기" 진입(?section=) 시 헤더 타이틀 — 시안 01_홈_*상세
+const SECTION_TITLES = {
+  "ending-soon": "곧 끝나기 전에 봐야 할 전시",
+  "opening-this-month": "이번 달 새로 열리는 전시",
+  free: "무료로 볼 수 있는 전시",
+};
 
 // "SEOUL,GYEONGGI" ↔ ["SEOUL","GYEONGGI"]
 const splitCsv = (v) => (v ? v.split(",").filter(Boolean) : []);
@@ -164,7 +172,38 @@ export default function ExhibitionPage() {
 
   return (
     <div className="page exh-page">
-      {/* 검색바 (Q 아이콘 · 2글자 이상) */}
+      {/* 헤더 — 섹션 모드(시안 01_홈_*상세): 뒤로가기 + 중앙 타이틀 / 기본(시안 02): 좌 "전시탐색" · 우 북마크 */}
+      {section ? (
+        <header className="exh-head exh-head--section">
+          <button
+            type="button"
+            className="exh-head__back"
+            aria-label="뒤로가기"
+            onClick={() => navigate(-1)}
+          >
+            <BackIcon size={24} />
+          </button>
+          <h1 className="exh-head__title exh-head__title--center">
+            {SECTION_TITLES[section] ?? "전시"}
+          </h1>
+          <span className="exh-head__spacer" aria-hidden="true" />
+        </header>
+      ) : (
+        <header className="exh-head">
+          <h1 className="exh-head__title">전시탐색</h1>
+          <button
+            type="button"
+            className="exh-head__bookmark"
+            aria-label="관심 전시"
+            onClick={() => navigate("/user")}
+          >
+            <BookmarkIcon size={24} />
+          </button>
+        </header>
+      )}
+
+      {/* 검색바 (Q 아이콘 · 2글자 이상) — 섹션 모드에선 시안대로 숨김 */}
+      {section ? null : (
       <form className="exh-search" onSubmit={onSubmit} role="search">
         <button
           type="submit"
@@ -178,7 +217,7 @@ export default function ExhibitionPage() {
           type="search"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="전시 · 작가 검색 (2글자 이상)"
+          placeholder="전시명, 작가명, 장소를 검색해보세요"
           aria-label="전시 검색어"
         />
         {draft && (
@@ -192,7 +231,8 @@ export default function ExhibitionPage() {
           </button>
         )}
       </form>
-      {keywordHint && <p className="exh-hint">{keywordHint}</p>}
+      )}
+      {!section && keywordHint && <p className="exh-hint">{keywordHint}</p>}
 
       {/* 오늘의 여운 도착 배너(wf-07) — "총 N개" 행 위 */}
       {remindCand && (
@@ -218,7 +258,10 @@ export default function ExhibitionPage() {
       {/* 결과 수 · 정렬 · 필터 */}
       <div className="exh-toolbar">
         <p className="exh-total">
-          {totalCount !== null && !error ? `총 ${totalCount}개` : " "}
+          전시
+          {totalCount !== null && !error && (
+            <span className="exh-total__num">{totalCount}</span>
+          )}
         </p>
         <div className="exh-toolbar__ctrls">
           <SortDropdown value={sort} onChange={setSort} />
@@ -242,17 +285,24 @@ export default function ExhibitionPage() {
         <ErrorState title="목록을 불러오지 못했어요" onRetry={reset} />
       ) : showEmpty ? (
         <EmptyState
-          title="조건에 맞는 전시가 없어요"
-          description="검색어나 필터를 바꿔 다시 시도해 보세요."
+          icon={<span className="exh-empty__img" aria-hidden="true" />}
+          title="검색 결과가 없어요"
+          description="다른 키워드로 검색해 보세요"
         />
       ) : (
         <>
-          <div className="exh-list">
+          {/* 오픈 예정 섹션은 시안(01_홈_오픈 전시 상세)대로 2열 그리드, 그 외 리스트 */}
+          <div
+            className={
+              section === "opening-this-month" ? "exh-grid" : "exh-list"
+            }
+          >
             {items.map((item) => (
               <ExhibitionCard
                 key={item.exhibitionId}
                 item={item}
-                variant="list"
+                variant={section === "opening-this-month" ? "grid" : "list"}
+                showOpenDate={section === "opening-this-month"}
                 onToggleBookmark={onToggleBookmark}
               />
             ))}

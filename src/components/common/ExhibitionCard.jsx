@@ -41,12 +41,13 @@ export default function ExhibitionCard({
 
   const href = to === undefined ? `/exhibition/${exhibitionId}` : to;
 
+  // 마감 임박 배지 — 시안 01의 "N일 후 종료" 문구
   const ddayLabel =
     typeof dDay === "number"
       ? dDay === 0
-        ? "D-DAY"
+        ? "오늘 종료"
         : dDay > 0
-          ? `D-${dDay}`
+          ? `${dDay}일 후 종료`
           : "종료"
       : null;
 
@@ -56,11 +57,24 @@ export default function ExhibitionCard({
       ? `${fmtDate(startDate)} ~ ${fmtDate(endDate)}`
       : fmtDate(startDate) || fmtDate(endDate);
 
-  // "이번 달 새로 열리는 전시" 그리드 카드 전용 오픈일 배지("7.12 오픈").
+  // "이번 달 새로 열리는 전시" 그리드 카드 전용 오픈 배지 — 시안 01의 "N일 후 오픈" 문구.
+  // (이미 오픈했거나 날짜 계산이 불가하면 "M.D 오픈" 표기로 폴백)
   const openDateLabel = (() => {
     if (!showOpenDate || !startDate) return null;
     const parts = String(startDate).slice(0, 10).split("-");
     if (parts.length < 3) return null;
+    const start = new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diff = Math.round((start - today) / 86400000);
+    if (Number.isFinite(diff)) {
+      if (diff > 0) return `${diff}일 후 오픈`;
+      if (diff === 0) return "오늘 오픈";
+    }
     return `${Number(parts[1])}.${Number(parts[2])} 오픈`;
   })();
 
@@ -115,13 +129,13 @@ export default function ExhibitionCard({
         </div>
 
         <div className="exh-card__row-body">
-          {badges}
           <p className="exh-card__title">{title}</p>
           {artistSummary && (
             <p className="exh-card__meta">{artistSummary}</p>
           )}
           {place && <p className="exh-card__place">{place}</p>}
           {dateRange && <p className="exh-card__date">{dateRange}</p>}
+          {badges}
         </div>
 
         {bookmarkBtn}
@@ -149,6 +163,7 @@ export default function ExhibitionCard({
         <div className="exh-card__body">
           <p className="exh-card__title">{title}</p>
           {place && <p className="exh-card__place">{place}</p>}
+          {dateRange && <p className="exh-card__date">{dateRange}</p>}
           {openDateLabel && (
             <span className="exh-card__open">{openDateLabel}</span>
           )}
