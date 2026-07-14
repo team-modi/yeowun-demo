@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getAiQuestions, composeAiRecord } from "@api/record";
 import { useUiStore } from "@store/uiStore";
 import Button from "@components/common/Button";
-import Spinner from "@components/common/Spinner";
+import AiProcessingOverlay from "@components/common/AiProcessingOverlay";
 import { MAX_CONTENT, errMessage } from "./constants";
 
 /* 새로고침 라인 아이콘 — "다른 질문 보기"·"다시 다듬기" 앞에 붙는다(wf-12). */
@@ -45,6 +45,7 @@ export default function WriteStep({
   const [answers, setAnswers] = useState([]);
   const [qi, setQi] = useState(0);
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiTask, setAiTask] = useState(null); // "questions" | "compose" — 오버레이 문구 분기
 
   const over = content.length > MAX_CONTENT;
 
@@ -76,6 +77,7 @@ export default function WriteStep({
     // 이미 질문이 있으면 "다른 질문 보기"(재생성), 없으면 최초 로드. 실패 시 처리 방식이 다르다.
     const regenerating = questions.length > 0;
     setAiLoading(true);
+    setAiTask("questions");
     try {
       const { data } = await withRetryOnce(() => getAiQuestions({ exhibitionId }));
       const qs = data?.questions ?? [];
@@ -105,6 +107,7 @@ export default function WriteStep({
       return false;
     } finally {
       setAiLoading(false);
+      setAiTask(null);
     }
   };
 
@@ -123,6 +126,7 @@ export default function WriteStep({
       return;
     }
     setAiLoading(true);
+    setAiTask("compose");
     try {
       const body = {
         exhibitionId,
@@ -144,8 +148,17 @@ export default function WriteStep({
       }
     } finally {
       setAiLoading(false);
+      setAiTask(null);
     }
   };
+
+  // AI 대기 오버레이 — 단순 스피너 대신 "AI가 일하고 있다"를 보여줘 체감 지연을 낮춘다.
+  const aiOverlay = aiLoading ? (
+    <AiProcessingOverlay
+      title={aiTask === "compose" ? "AI가 감상문으로 다듬고 있어요" : "AI가 질문을 만들고 있어요"}
+      description={aiTask === "compose" ? "답변을 한 편의 감상문으로 정리하는 중이에요" : "전시에 어울리는 질문을 고르고 있어요"}
+    />
+  ) : null;
 
   const submit = () => {
     if (!content.trim()) {
@@ -207,7 +220,7 @@ export default function WriteStep({
 
   // ── AI: 질문 1개씩 ──
   if (phase === "ai-q") {
-    if (aiLoading && questions.length === 0) return <Spinner full />;
+    if (aiLoading && questions.length === 0) return aiOverlay;
     const last = qi === questions.length - 1;
     const nextButton = last ? (
       <Button onClick={compose} disabled={aiLoading || !answers[qi]?.trim()}>
@@ -268,6 +281,7 @@ export default function WriteStep({
             {nextButton}
           </div>
         )}
+        {aiOverlay}
       </div>
     );
   }
@@ -313,6 +327,7 @@ export default function WriteStep({
             {submitting ? "저장 중…" : "작성 완료"}
           </Button>
         </div>
+        {aiOverlay}
       </div>
     );
   }
