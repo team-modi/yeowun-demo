@@ -135,7 +135,7 @@ export default function HomePage() {
   }, [banners, sections]);
 
   // 오늘의 여운 후보 조회 — 로그인 상태에서 홈 진입·재포커스 시 + 주기적으로 재확인한다.
-  // (기록 저장 1분 뒤에도 새로고침 없이 자동 도착하도록. 닫은 후보(recordId)는 노출하지 않는다.)
+  // (기록 저장 3초 뒤에도 새로고침 없이 자동 도착하도록. 닫은 후보(recordId)는 노출하지 않는다.)
   // 홈 로딩을 방해하지 않도록 실패는 조용히 무시한다.
   useEffect(() => {
     if (!authed) return undefined;
@@ -159,7 +159,7 @@ export default function HomePage() {
         });
     };
     check(); // 진입 즉시 1회
-    const id = setInterval(check, 20000); // 20초 폴링(소환 조건이 1분이라 충분)
+    const id = setInterval(check, 5000); // 5초 폴링(베타 소환 조건 3s — 홈 체류 중에도 곧 도착)
     window.addEventListener("focus", check);
     document.addEventListener("visibilitychange", check);
     return () => {
