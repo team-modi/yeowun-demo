@@ -8,6 +8,7 @@ import {
   CATEGORIES,
   MIN_KEYWORD,
 } from "@components/exhibition/constants";
+import { RefreshIcon } from "@components/exhibition/icons";
 
 const toggleIn = (arr, code) =>
   arr.includes(code) ? arr.filter((x) => x !== code) : [...arr, code];
@@ -91,6 +92,13 @@ export default function FilterSheet({
           <div className="exh-filter-group">
             <p className="exh-filter-group__label">지역</p>
             <div className="exh-chip-row">
+              {/* 시안: 선택 없음 = "전체" 활성 (빈 선택 = 전체 조회와 동일) */}
+              <FilterChip
+                active={draftRegions.length === 0}
+                onClick={() => setDraftRegions([])}
+              >
+                전체
+              </FilterChip>
               {REGIONS.map((r) => (
                 <FilterChip
                   key={r.code}
@@ -106,6 +114,12 @@ export default function FilterSheet({
           <div className="exh-filter-group">
             <p className="exh-filter-group__label">장르</p>
             <div className="exh-chip-row">
+              <FilterChip
+                active={draftCategories.length === 0}
+                onClick={() => setDraftCategories([])}
+              >
+                전체
+              </FilterChip>
               {CATEGORIES.map((c) => (
                 <FilterChip
                   key={c.code}
@@ -123,6 +137,7 @@ export default function FilterSheet({
 
         <div className="exh-sheet__actions">
           <Button variant="ghost" onClick={reset} className="exh-sheet__reset">
+            <RefreshIcon size={16} />
             초기화
           </Button>
           <Button

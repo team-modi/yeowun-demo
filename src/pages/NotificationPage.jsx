@@ -153,6 +153,9 @@ export default function NotificationPage() {
                 <span className="noti-card__main">
                   <span className="noti-card__head">
                     <span className="noti-card__label">
+                      {!n.read && (
+                        <span className="noti-card__dot" aria-hidden="true" />
+                      )}
                       {TYPE_LABEL[n.type] ?? n.type}
                     </span>
                     <span className="noti-card__time">{relativeTime(n.createdAt)}</span>

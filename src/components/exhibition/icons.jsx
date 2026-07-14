@@ -31,13 +31,26 @@ export function SearchIcon(props) {
   );
 }
 
-// 필터(슬라이더)
+// 필터(가로 슬라이더 + 노브) — 시안 02의 네이비 원형 버튼 내부 아이콘
 export function FilterIcon(props) {
   return (
     <Svg {...props}>
-      <path d="M4 6h16" />
-      <path d="M7 12h10" />
-      <path d="M10 18h4" />
+      <path d="M4 7h2.8M11.2 7H20" />
+      <circle cx="9" cy="7" r="2.2" />
+      <path d="M4 12h8.8M17.2 12H20" />
+      <circle cx="15" cy="12" r="2.2" />
+      <path d="M4 17h4.8M13.2 17H20" />
+      <circle cx="11" cy="17" r="2.2" />
+    </Svg>
+  );
+}
+
+// 새로고침(초기화) — 필터 시트 푸터 "초기화" 버튼용
+export function RefreshIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M21 12a9 9 0 1 1-2.64-6.36L21 8" />
+      <path d="M21 3v5h-5" />
     </Svg>
   );
 }
