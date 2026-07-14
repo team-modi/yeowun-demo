@@ -71,7 +71,7 @@ export default function RemindPage() {
   return (
     <div className="remind">
       <section className="remind__section">
-        <h2 className="remind__title">오늘의 여운</h2>
+        {/* 페이지 타이틀은 TopBar("오늘의 여운")가 제공 — 중복 헤딩 생략 */}
         <EmptyState
           title="오늘의 리마인드가 없어요"
           description="기록을 남기면 일주일 뒤, 다시 마주할 여운을 준비해 드려요."
