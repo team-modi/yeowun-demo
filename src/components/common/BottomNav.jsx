@@ -30,7 +30,7 @@ function ExhibitionInfoIcon(props) {
 
 const TABS = [
   { to: "/yeowun", label: "홈", Icon: HomeIcon },
-  { to: "/exhibition", label: "전시정보", Icon: ExhibitionInfoIcon },
+  { to: "/exhibition", label: "전시탐색", Icon: ExhibitionInfoIcon },
   { to: "/record", label: "기록", Icon: PencilIcon, center: true },
   { to: "/archive", label: "아카이브", Icon: ArchiveIcon },
   { to: "/user", label: "프로필", Icon: ProfileIcon },
@@ -38,8 +38,8 @@ const TABS = [
 
 /**
  * BottomNav — 하단 탭 내비게이션(와이어프레임 wf-03/wf-13/wf-14).
- * 5개 탭: 홈 · 전시정보 · [기록·중앙 돌출 원형 버튼] · 아카이브 · 프로필.
- * 중앙 기록 버튼은 위로 솟은 차콜 원형 FAB(연필 아이콘). 활성 탭은 하이라이트.
+ * 5개 탭: 홈 · 전시탐색 · [기록·중앙 돌출 원형 버튼] · 아카이브 · 프로필.
+ * 중앙 기록 버튼은 위로 솟은 브랜드 네이비 원형 FAB(연필 아이콘). 활성 탭은 하이라이트.
  */
 export default function BottomNav() {
   return (

@@ -7,18 +7,45 @@ export const REGIONS = [
   { code: "SEOUL", label: "서울" },
   { code: "GYEONGGI", label: "경기" },
   { code: "INCHEON", label: "인천" },
+  { code: "GANGWON", label: "강원" },
+  { code: "DAEJEON", label: "대전" },
+  { code: "SEJONG", label: "세종" },
+  { code: "CHUNGNAM", label: "충남" },
+  { code: "CHUNGBUK", label: "충북" },
+  { code: "GWANGJU", label: "광주" },
+  { code: "JEONNAM", label: "전남" },
+  { code: "JEONBUK", label: "전북" },
   { code: "DAEGU", label: "대구" },
   { code: "GYEONGBUK", label: "경북" },
   { code: "BUSAN", label: "부산" },
   { code: "ULSAN", label: "울산" },
   { code: "GYEONGNAM", label: "경남" },
-  { code: "SEJONG", label: "세종" },
-  { code: "JEONNAM", label: "전남" },
-  { code: "JEONBUK", label: "전북" },
   { code: "JEJU", label: "제주" },
-  { code: "CHUNGNAM", label: "충남" },
-  { code: "CHUNGBUK", label: "충북" },
   { code: "ETC", label: "기타" },
+];
+
+/**
+ * 지역 필터 그룹(디자인 병합 칩) — 서버 GET /exhibitions/region-groups 응답과 동일 구성.
+ * 서버가 단일 소스이며, 이 상수는 엔드포인트 미배포/실패 시 폴백이다.
+ */
+export const REGION_GROUPS = [
+  { code: "SEOUL", label: "서울", regions: ["SEOUL"] },
+  { code: "GYEONGGI_INCHEON", label: "경기·인천", regions: ["GYEONGGI", "INCHEON"] },
+  { code: "GANGWON", label: "강원", regions: ["GANGWON"] },
+  {
+    code: "DAEJEON_SEJONG_CHUNGCHEONG",
+    label: "대전·세종·충청",
+    regions: ["DAEJEON", "SEJONG", "CHUNGNAM", "CHUNGBUK"],
+  },
+  { code: "GWANGJU_JEOLLA", label: "광주·전라", regions: ["GWANGJU", "JEONNAM", "JEONBUK"] },
+  { code: "DAEGU_GYEONGBUK", label: "대구·경북", regions: ["DAEGU", "GYEONGBUK"] },
+  {
+    code: "BUSAN_ULSAN_GYEONGNAM",
+    label: "부산·울산·경남",
+    regions: ["BUSAN", "ULSAN", "GYEONGNAM"],
+  },
+  { code: "JEJU", label: "제주", regions: ["JEJU"] },
+  { code: "ETC", label: "기타", regions: ["ETC"] },
 ];
 
 export const CATEGORIES = [

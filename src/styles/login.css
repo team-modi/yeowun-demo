@@ -1,0 +1,40 @@
+/* ============================================================
+   [00] 로그인 (/login) — login.css
+   base.css 의 .login-* 공통 스타일 위에 얹는 페이지 스코프 오버라이드.
+   (base.css 는 공유 파일이라 여기서 로그인 전용 위계만 조정한다)
+   - 로고/타이틀 = --typo-display2 급, 브랜드 워드마크
+   - 카카오 버튼 브랜드 노랑은 base.css 그대로(변경 금지)
+   ============================================================ */
+
+/* 로고: 회색 플레이스홀더 박스 → '여운' 브랜드 워드마크 */
+.login-page .login-page__logo {
+  width: auto;
+  height: auto;
+  background: transparent;
+  border-radius: 0;
+  color: var(--brand-primary);
+  font-size: var(--typo-title2-size);
+  line-height: var(--typo-title2-line);
+  letter-spacing: var(--typo-ls-title2);
+  font-weight: 700;
+}
+
+/* 타이틀(태그라인): display2 급 위계 */
+.login-page .login-page__tagline {
+  color: var(--text-primary);
+  font-size: var(--typo-display2-size);
+  line-height: var(--typo-display2-line);
+  letter-spacing: var(--typo-ls-display2);
+  font-weight: 600;
+}
+
+.login-page .login-page__phone::placeholder {
+  color: var(--text-disabled);
+}
+
+/* 에러 문구: 살짝 키워 가독 확보(본문 보조 스케일) */
+.login-page .login-page__error {
+  color: var(--status-error);
+  font-size: var(--typo-body2-size);
+  line-height: var(--typo-body2-line);
+}

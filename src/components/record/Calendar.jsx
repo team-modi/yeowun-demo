@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { toISO } from "./constants";
+import { toISO, todayISO } from "./constants";
 
 const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -26,6 +26,8 @@ export default function Calendar({ start = null, end = null, onPick }) {
 
   const prev = () => setView((v) => (v.m === 0 ? { y: v.y - 1, m: 11 } : { y: v.y, m: v.m - 1 }));
   const next = () => setView((v) => (v.m === 11 ? { y: v.y + 1, m: 0 } : { y: v.y, m: v.m + 1 }));
+
+  const today = todayISO();
 
   const stateOf = (d) => {
     const cur = toISO(y, m, d);
@@ -66,7 +68,9 @@ export default function Calendar({ start = null, end = null, onPick }) {
             <button
               key={toISO(y, m, d)}
               type="button"
-              className={`rec-cal__cell ${stateOf(d) ? `is-${stateOf(d)}` : ""}`}
+              className={`rec-cal__cell ${stateOf(d) ? `is-${stateOf(d)}` : ""} ${
+                toISO(y, m, d) === today ? "is-today" : ""
+              }`}
               onClick={() => onPick(toISO(y, m, d))}
             >
               {d}

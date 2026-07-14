@@ -133,14 +133,16 @@ test.describe("아카이브 리마인드 탭", () => {
     await expect(page).toHaveURL(/\/archive\?tab=remind$/);
     await expect(titles(page)).toHaveText(["조용한 호숫가", "빛의 속삭임", "먼 바다"]);
 
-    // 항목 클릭 → 상세 시트(감정 변화 요약).
+    // 항목 클릭 → 상세 시트(PR#33 카드 레이아웃: 그날의 여운 → 다시 남긴 여운).
     await page.locator(".remind-item", { hasText: "조용한 호숫가" }).click();
-    await expect(page.getByText("감정 변화 요약")).toBeVisible();
+    await expect(page.getByText("리마인드 상세")).toBeVisible();
+    await expect(page.getByText("그날의 여운")).toBeVisible();
+    await expect(page.getByText("다시 남긴 여운")).toBeVisible();
     await expect(page.getByText("빛이 천천히 번지는 전시실을 지나며")).toBeVisible();
     await expect(page.getByText("지금 보니 더 잔잔하다").last()).toBeVisible();
 
     await page.getByRole("button", { name: "닫기" }).click();
-    await expect(page.getByText("감정 변화 요약")).toHaveCount(0);
+    await expect(page.getByText("리마인드 상세")).toHaveCount(0);
   });
 
   test("정렬 토글 — 과거 관람일순(viewedAt asc)", async ({ page }) => {

@@ -18,7 +18,7 @@ import {
 } from "@components/common/icons";
 
 import { categoryLabel } from "@components/exhibition/constants";
-import { ddayLabel } from "@components/exhibition/dates";
+import { daysUntil } from "@components/exhibition/dates";
 import MapSheet from "@components/exhibition/detail/MapSheet";
 import "@styles/detail.css";
 
@@ -35,6 +35,28 @@ const periodDots = (start, end) => {
  *   → [{days:"월 / 화 / 수", value:"10:00 ~ 18:00"}, ..., {days:"토 / 일", closed:true}]
  * HTML이 \n을 공백으로 뭉개 한 줄로 보이는 문제를, 프론트에서 행/열로 나눠 렌더한다.
  */
+/**
+ * 상태 배지(표시 전용) — 홈/탐색 카드의 status 배지 언어를 그대로 확장한다.
+ * 종료 → muted / 오픈 예정 → "N일 후 오픈"(블루) / 마감 임박(7일 이내) → "N일 후 종료"(레드) / 그 외 → 진행중.
+ */
+const exhibitionStatus = (startDate, endDate) => {
+  const untilOpen = daysUntil(startDate);
+  const untilEnd = daysUntil(endDate);
+  if (untilEnd != null && untilEnd < 0) return { label: "종료", tone: "ended" };
+  if (untilOpen != null && untilOpen > 0)
+    return { label: `${untilOpen}일 후 오픈`, tone: "opening" };
+  if (untilEnd != null && untilEnd === 0)
+    return { label: "오늘 종료", tone: "closing" };
+  if (untilEnd != null && untilEnd <= 7)
+    return { label: `${untilEnd}일 후 종료`, tone: "closing" };
+  if (untilOpen != null || untilEnd != null)
+    return { label: "진행중", tone: "ongoing" };
+  return null;
+};
+
+// 오늘 요일("월"~"일") — 운영시간 표에서 오늘 행 강조용(표시 전용)
+const TODAY_KO = ["일", "월", "화", "수", "목", "금", "토"][new Date().getDay()];
+
 const parseHoursRows = (text) => {
   if (!text) return [];
   return text
@@ -220,7 +242,7 @@ export default function DetailExhibitionPage() {
   const poster = posterUrl || imgUrl;
   const descriptionText = extractDescriptionText(description);
   const period = periodDots(startDate, endDate);
-  const dday = ddayLabel(endDate);
+  const status = exhibitionStatus(startDate, endDate);
   const genre =
     (Array.isArray(keywords) && keywords[0]) ||
     (category ? categoryLabel(category) : null);
@@ -254,9 +276,14 @@ export default function DetailExhibitionPage() {
         <header className="detail-card__head">
           <h2 className="detail-title">{title}</h2>
           {artistSummary && <p className="detail-artist">{artistSummary}</p>}
-          {genre && (
+          {(status || genre) && (
             <div className="detail-tags">
-              <span className="detail-tag">{genre}</span>
+              {status && (
+                <span className={`detail-status detail-status--${status.tone}`}>
+                  {status.label}
+                </span>
+              )}
+              {genre && <span className="detail-tag">{genre}</span>}
             </div>
           )}
         </header>
@@ -268,10 +295,7 @@ export default function DetailExhibitionPage() {
                 <CalendarIcon size={19} />
                 <span className="sr-only">전시 기간</span>
               </dt>
-              <dd>
-                {period}
-                {dday && <span className="detail-dday"> · {dday}</span>}
-              </dd>
+              <dd>{period}</dd>
             </div>
           )}
 
@@ -309,18 +333,19 @@ export default function DetailExhibitionPage() {
                 <span className="sr-only">운영 시간</span>
               </dt>
               <dd className="detail-hours">
-                {parseHoursRows(operatingHours).map((row, i) =>
-                  row.closed ? (
-                    <span key={i} className="detail-hours__closed">
+                {parseHoursRows(operatingHours).map((row, i) => {
+                  const today = row.days.includes(TODAY_KO) ? " is-today" : "";
+                  return row.closed ? (
+                    <span key={i} className={`detail-hours__closed${today}`}>
                       {row.days} 휴무
                     </span>
                   ) : (
                     <Fragment key={i}>
-                      <span className="detail-hours__days">{row.days}</span>
-                      <span className="detail-hours__time">{row.value}</span>
+                      <span className={`detail-hours__days${today}`}>{row.days}</span>
+                      <span className={`detail-hours__time${today}`}>{row.value}</span>
                     </Fragment>
-                  ),
-                )}
+                  );
+                })}
               </dd>
             </div>
           )}

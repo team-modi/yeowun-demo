@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
 
-import { getList } from "@api/exhibition";
+import { getList, getRegionGroups } from "@api/exhibition";
 import FilterChip from "@components/common/FilterChip";
 import Button from "@components/common/Button";
 import {
-  REGIONS,
+  REGION_GROUPS,
   CATEGORIES,
   MIN_KEYWORD,
 } from "@components/exhibition/constants";
+import { RefreshIcon } from "@components/exhibition/icons";
 
 const toggleIn = (arr, code) =>
   arr.includes(code) ? arr.filter((x) => x !== code) : [...arr, code];
+
+// 그룹 선택 = 그룹의 모든 지역 코드를 draft에 넣는다(요청은 기존처럼 region 콤마 다중).
+const groupActive = (draft, group) => group.regions.every((r) => draft.includes(r));
+const toggleGroup = (draft, group) =>
+  groupActive(draft, group)
+    ? draft.filter((r) => !group.regions.includes(r))
+    : [...draft, ...group.regions.filter((r) => !draft.includes(r))];
 
 /**
  * FilterSheet — 지역/장르 선택 바텀시트(스크림 + 슬라이드업).
@@ -33,6 +41,24 @@ export default function FilterSheet({
   const [draftRegions, setDraftRegions] = useState(regions);
   const [draftCategories, setDraftCategories] = useState(categories);
   const [count, setCount] = useState(null);
+
+  // 지역 그룹 칩 — 서버가 단일 소스(GET /exhibitions/region-groups), 실패 시 동일 구성 폴백 상수.
+  const [regionGroups, setRegionGroups] = useState(REGION_GROUPS);
+  useEffect(() => {
+    let cancelled = false;
+    getRegionGroups()
+      .then(({ data }) => {
+        if (!cancelled && Array.isArray(data?.groups) && data.groups.length) {
+          setRegionGroups(data.groups);
+        }
+      })
+      .catch(() => {
+        /* 미배포/일시 오류 — 폴백 상수 유지 */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // ---- 진입 애니메이션 & 스크롤 잠금 ----
   const [entered, setEntered] = useState(false);
@@ -91,13 +117,20 @@ export default function FilterSheet({
           <div className="exh-filter-group">
             <p className="exh-filter-group__label">지역</p>
             <div className="exh-chip-row">
-              {REGIONS.map((r) => (
+              {/* 시안: 선택 없음 = "전체" 활성 (빈 선택 = 전체 조회와 동일) */}
+              <FilterChip
+                active={draftRegions.length === 0}
+                onClick={() => setDraftRegions([])}
+              >
+                전체
+              </FilterChip>
+              {regionGroups.map((g) => (
                 <FilterChip
-                  key={r.code}
-                  active={draftRegions.includes(r.code)}
-                  onClick={() => setDraftRegions((prev) => toggleIn(prev, r.code))}
+                  key={g.code}
+                  active={groupActive(draftRegions, g)}
+                  onClick={() => setDraftRegions((prev) => toggleGroup(prev, g))}
                 >
-                  {r.label}
+                  {g.label}
                 </FilterChip>
               ))}
             </div>
@@ -106,6 +139,12 @@ export default function FilterSheet({
           <div className="exh-filter-group">
             <p className="exh-filter-group__label">장르</p>
             <div className="exh-chip-row">
+              <FilterChip
+                active={draftCategories.length === 0}
+                onClick={() => setDraftCategories([])}
+              >
+                전체
+              </FilterChip>
               {CATEGORIES.map((c) => (
                 <FilterChip
                   key={c.code}
@@ -123,6 +162,7 @@ export default function FilterSheet({
 
         <div className="exh-sheet__actions">
           <Button variant="ghost" onClick={reset} className="exh-sheet__reset">
+            <RefreshIcon size={16} />
             초기화
           </Button>
           <Button
