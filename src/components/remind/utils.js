@@ -18,6 +18,17 @@ export function fmtDateSpaced(value) {
   return fmtDate(value).replace(/\./g, ". ").trim();
 }
 
+// 리마인드 상세 안내문용 경과 표현. 관람일(viewedAt) → 리마인드 저장(createdAt) 간격을
+// "1주"/"2주"/"1개월" 형태로. 파싱 불가 시 빈 문자열(안내문에서 경과 절 생략).
+export function remindElapsedPhrase(viewedAt, createdAt) {
+  const from = Date.parse(viewedAt);
+  const to = Date.parse(createdAt);
+  if (Number.isNaN(from) || Number.isNaN(to)) return "";
+  const days = Math.max(0, Math.round((to - from) / (24 * 60 * 60 * 1000)));
+  if (days < 25) return `${Math.max(1, Math.round(days / 7))}주`;
+  return `${Math.max(1, Math.round(days / 30))}개월`;
+}
+
 // 인트로 문구용 짧은 경과 표현("1주일 전"/"오늘" 형태). "…기록" 접미사는 제거.
 export function elapsedPhrase(candidate) {
   if (!candidate) return "";
