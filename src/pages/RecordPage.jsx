@@ -11,6 +11,7 @@ import CustomExhibitionForm from "@components/record/CustomExhibitionForm";
 import EmotionMediaStep from "@components/record/EmotionMediaStep";
 import WriteStep from "@components/record/WriteStep";
 import AiProcessingOverlay from "@components/common/AiProcessingOverlay";
+import { trackClarityEvent, trackClarityEventOnce } from "@utils/clarity";
 import { errMessage, todayISO } from "@components/record/constants";
 import "@styles/record.css";
 
@@ -65,6 +66,11 @@ export default function RecordPage() {
   const [media, setMedia] = useState([]);
   const [initialContent, setInitialContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Clarity: 기록 화면 진입(세션당 1회) — 프리로딩이 끝나 첫 화면이 노출된 후.
+  useEffect(() => {
+    if (!preloading) trackClarityEventOnce("record_started");
+  }, [preloading]);
 
   // ?exhibitionId= → 전시 상세 프리셋 후 2단계로.
   useEffect(() => {
@@ -175,6 +181,7 @@ export default function RecordPage() {
         toast(res?.meta?.message || "기록 저장에 실패했어요.", "error");
         return;
       }
+      if (!isEdit) trackClarityEvent("record_saved"); // Clarity: 저장 API 성공 후
       goStep("done", { replace: true }); // 저장 완료 화면은 현재 항목 교체(뒤로가기로 재제출 방지)
     } catch (err) {
       toast(errMessage(err, "기록 저장에 실패했어요."), "error");

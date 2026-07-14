@@ -4,6 +4,7 @@ import { getAiQuestions, composeAiRecord } from "@api/record";
 import { useUiStore } from "@store/uiStore";
 import Button from "@components/common/Button";
 import AiProcessingOverlay from "@components/common/AiProcessingOverlay";
+import { trackClarityEvent } from "@utils/clarity";
 import { MAX_CONTENT, errMessage } from "./constants";
 
 /* 새로고침 라인 아이콘 — "다른 질문 보기"·"다시 다듬기" 앞에 붙는다(wf-12). */
@@ -135,6 +136,7 @@ export default function WriteStep({
       const { data } = await withRetryOnce(() => composeAiRecord(body));
       setContent((data?.content ?? "").slice(0, MAX_CONTENT));
       setPhase("ai-review");
+      trackClarityEvent("ai_draft_generated"); // Clarity: AI 초안이 화면에 표시되는 시점
       toast("AI가 감상문 초안을 만들었어요. 자유롭게 다듬어 보세요.", "success");
     } catch (err) {
       const status = err?.response?.status;

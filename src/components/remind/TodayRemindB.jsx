@@ -5,6 +5,7 @@ import EmotionChips from "@components/remind/EmotionChips";
 import RemindWriteStep from "@components/remind/RemindWriteStep";
 import RemindDoneScreen from "@components/remind/RemindDoneScreen";
 import useRemindSave from "@components/remind/useRemindSave";
+import { trackClarityEvent, trackClarityEventOnce } from "@utils/clarity";
 import { CalendarIcon, PinIcon } from "@components/remind/icons";
 import { fmtDateSpaced, elapsedPhrase } from "@components/remind/utils";
 
@@ -97,7 +98,14 @@ export default function TodayRemindB({ candidate }) {
         <div className="flow-step flow-step--center">
           <p className="flow-prompt">전시 속, 그 장면</p>
           <Poster src={sceneImg} className="flow-poster flow-poster--wide" emptyLabel="추가했던 사진 및 영상" />
-          <Button block onClick={() => setStep("original")}>
+          <Button
+            block
+            onClick={() => {
+              // Clarity: B안 마지막 스토리(원본 기록) 도달 — 세션당 1회
+              trackClarityEventOnce("reminder_story_completed");
+              setStep("original");
+            }}
+          >
             다음
           </Button>
         </div>
@@ -125,7 +133,14 @@ export default function TodayRemindB({ candidate }) {
             <Button variant="secondary" onClick={() => navigate("/archive")}>
               원본 기록 보기
             </Button>
-            <Button onClick={() => setStep("write")}>감정 다시 남기기</Button>
+            <Button
+              onClick={() => {
+                trackClarityEvent("reminder_reentry_started"); // Clarity: 감정 재기록 진입
+                setStep("write");
+              }}
+            >
+              감정 다시 남기기
+            </Button>
           </div>
         </div>
       )}

@@ -4,6 +4,7 @@ import Button from "@components/common/Button";
 import RemindWriteStep from "@components/remind/RemindWriteStep";
 import RemindDoneScreen from "@components/remind/RemindDoneScreen";
 import useRemindSave from "@components/remind/useRemindSave";
+import { trackClarityEvent } from "@utils/clarity";
 import { CalendarIcon, PinIcon } from "@components/remind/icons";
 import { fmtDateSpaced, elapsedPhrase } from "@components/remind/utils";
 
@@ -101,7 +102,14 @@ export default function TodayRemindA({ candidate }) {
         <Button variant="secondary" onClick={() => navigate("/archive")}>
           원본 기록 보기
         </Button>
-        <Button onClick={() => setStep("write")}>감정 다시 남기기</Button>
+        <Button
+          onClick={() => {
+            trackClarityEvent("reminder_reentry_started"); // Clarity: 감정 재기록 진입
+            setStep("write");
+          }}
+        >
+          감정 다시 남기기
+        </Button>
       </div>
     </div>
   );
